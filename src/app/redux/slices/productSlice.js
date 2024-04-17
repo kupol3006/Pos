@@ -23,6 +23,9 @@ export const fetchProduct = createAsyncThunk(
 const initialState = {
     data: [],
     isLoading: false,
+    productDetail: {},
+    listProduct: [],
+    total: 0,
 }
 
 // Then, handle actions in your reducers:
@@ -30,16 +33,20 @@ export const productSlice = createSlice({
     name: 'product',
     initialState,
     reducers: {
-        // standard reducer logic, with auto-generated action types per reducer
+        setListProduct: (state, action) => {
+            state.listProduct = [...state.listProduct, action.payload];
+            state.total = state.total + action.payload.price;
+        },
+        setTotal: (state, action) => {
+            state.total = action.payload;
+        },
     },
     extraReducers: (builder) => {
-        // Add reducers for additional action types here, and handle loading state as needed
         builder
             .addCase(fetchProduct.pending, (state) => {
                 state.isLoading = false
             })
             .addCase(fetchProduct.fulfilled, (state, action) => {
-                // Add user to the state array
                 state.isLoading = true
                 state.data = action.payload
             })
@@ -48,5 +55,7 @@ export const productSlice = createSlice({
             })
     },
 })
+
+export const { setListProduct, setTotal } = productSlice.actions;
 
 export default productSlice.reducer;

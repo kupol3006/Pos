@@ -39,6 +39,7 @@ export const orderSlice = createSlice({
         updateStaff: (state, action) => {
             state.staff = action.payload;
         },
+
     },
 });
 
