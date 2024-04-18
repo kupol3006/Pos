@@ -15,11 +15,12 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Grid from '@mui/material/Grid';
 import GridContainer from '@mui/material/Grid';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Button } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { fetchProduct, setListProduct, setTotal } from '../redux/slices/productSlice';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 // const createData = (name, calories, fat) => {
 //     return {
@@ -133,7 +134,7 @@ const CollapsibleTable = () => {
     // const data = useSelector((state) => state.product.data);
     const listProduct = useSelector((state) => state.product.listProduct);
     return (
-        <TableContainer component={Paper} sx={{ width: '100%' }}>
+        <TableContainer component={Paper} sx={{ width: '100%', height: 350, maxHeight: 350 }}>
             <Table aria-label="collapsible table">
                 <TableHead size='small'>
                     <TableRow size='small'>
@@ -214,47 +215,178 @@ const CollapsibleTable = () => {
 
 // }
 
+// const Products = () => {
+//     const [selectedProductId, setSelectedProductId] = useState(null);
+//     const [show, setShow] = useState(false);
+//     // const [show1, setShow1] = useState(false);
+//     const dispatch = useDispatch();
+//     const data = useSelector((state) => state.product.data);
+
+//     const handleShow = () => {
+//         setShow(!show);
+//     }
+
+//     const handleProductClick = (productId) => {
+//         // setShow1(true);
+//         setShow(true);
+//         setSelectedProductId(productId);
+//     };
+//     const handleProductDetailClick = (producDetailtId1) => {
+//         setShow(false);
+//         // setShow1(false);
+//         dispatch(setListProduct(producDetailtId1));
+//         console.log(producDetailtId1);
+//     };
+
+//     return (
+//         // <Box className='flex flex-row '>
+//         //     {data?.map((product) => (
+//         //         <Box key={product.id} className='flex flex-row w-[150px] items-start'>
+//         //             {selectedProductId === product.id ? (show1 &&
+//         //                 <Box className='flex flex-row flex-wrap'>
+//         //                     {product.product_detail.map((product_detail) => (
+//         //                         <Box
+//         //                             key={product_detail.id}
+//         //                             className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+//         //                             sx={{ color: 'primary.contrastText' }}
+//         //                             onClick={() => handleProductDetailClick(product_detail)}
+//         //                         >
+//         //                             <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}>{product_detail.name}</Typography>
+//         //                         </Box>
+//         //                     ))}
+//         //                 </Box>
+//         //             ) : (
+//         //                 (show && <Box
+//         //                     className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+//         //                     sx={{ color: 'primary.contrastText' }}
+//         //                     onClick={() => handleProductClick(product.id)}
+//         //                 >
+//         //                     <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}>{product.name}</Typography>
+//         //                 </Box>)
+//         //             )}
+//         //         </Box>
+//         //     ))}
+//         // </Box>
+//         <Box className='flex flex-row '>
+//             {
+//                 show ?
+//                     (
+//                         <Box className='flex'>
+//                             <Box
+//                                 className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+//                                 sx={{ color: 'primary.contrastText' }}
+//                                 onClick={handleShow}
+//                             >
+//                                 <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}><KeyboardBackspaceIcon /></Typography>
+//                             </Box>
+//                             <Box className='flex flex-row flex-wrap'>
+
+//                                 <Box
+//                                     // key={product_detail.id}
+//                                     className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+//                                     sx={{ color: 'primary.contrastText' }}
+//                                 // onClick={() => handleProductDetailClick(product_detail)}
+//                                 >
+//                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}>Cà phê nhỏ</Typography>
+//                                 </Box>
+
+//                             </Box>
+//                         </Box>
+
+//                     )
+//                     :
+//                     (
+//                         <Box>
+//                             <Box
+//                                 className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+//                                 sx={{ color: 'primary.contrastText' }}
+//                                 onClick={handleShow}
+//                             >
+//                                 <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}>Cà phê</Typography>
+//                             </Box>
+//                             <Box
+//                                 className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+//                                 sx={{ color: 'primary.contrastText' }}
+//                                 onClick={handleShow}
+//                             >
+//                                 <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}>Cà phê</Typography>
+//                             </Box>
+//                         </Box>
+
+//                     )
+//             }
+//         </Box >
+//     );
+// };
 const Products = () => {
     const [selectedProductId, setSelectedProductId] = useState(null);
+    const [show1, setShow1] = useState(false);
+    const [show, setShow] = useState(false);
+    const [selectedProductName, setSelectedProductName] = useState(''); // Thêm state để lưu tên sản phẩm được chọn
     const dispatch = useDispatch();
     const data = useSelector((state) => state.product.data);
 
+    const handleShow = (productName) => {
+        setShow1(!show1);
+        setShow(!show);
+        setSelectedProductName(productName); // Lưu tên sản phẩm được nhấn
+    }
 
-    const handleProductClick = (productId) => {
+    const handleProductClick = (productId, productName) => {
+        setShow1(!show1);
+        setShow(true);
         setSelectedProductId(productId);
+        setSelectedProductName(productName); // Lưu tên sản phẩm được nhấn
     };
+
     const handleProductDetailClick = (producDetailtId1) => {
+        // setShow(false);
         dispatch(setListProduct(producDetailtId1));
-        console.log(producDetailtId1);
     };
 
     return (
-        <Box className='flex flex-row '>
+        <Box className='flex flex-row w-[400px] justify-end'>
+            {show1 &&
+                <Box
+                    className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+                    sx={{ color: 'primary.contrastText' }}
+                    onClick={() => handleShow()} // Truyền tên sản phẩm vào hàm handleShow
+                >
+                    <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}><KeyboardBackspaceIcon /></Typography>
+                </Box>
+            }
+
             {data?.map((product) => (
-                <Box key={product.id} className='flex flex-row w-[200px]'>
-                    {selectedProductId === product.id ? (
-                        <Box className='flex flex-row flex-wrap text-[15px]'>
-                            {product.product_detail.map((product_detail) => (
-                                <Box
-                                    key={product_detail.id}
-                                    className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
-                                    sx={{ color: 'primary.contrastText' }}
-                                    onClick={() => handleProductDetailClick(product_detail)}
-                                >
-                                    <Typography variant="h6" gutterBottom component="div">{product_detail.name}</Typography>
+                <React.Fragment key={product.id}>
+                    {show ? (
+                        <Box className='flex items-start'>
+                            {selectedProductName === product.name && (
+                                <Box className='flex flex-row flex-wrap justify-end'>
+                                    {product.product_detail.map((product_detail) => (
+                                        <Box
+                                            key={product_detail.id}
+                                            className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+                                            sx={{ color: 'primary.contrastText' }}
+                                            onClick={() => handleProductDetailClick(product_detail)}
+                                        >
+                                            <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}>{product_detail.name}</Typography>
+                                        </Box>
+                                    ))}
                                 </Box>
-                            ))}
+                            )}
                         </Box>
                     ) : (
-                        <Box
-                            className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec] mr-1'
-                            sx={{ color: 'primary.contrastText' }}
-                            onClick={() => handleProductClick(product.id)}
-                        >
-                            <Typography variant="h6" gutterBottom component="div">{product.name}</Typography>
+                        <Box >
+                            <Box
+                                className='w-[150px] h-[50px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+                                sx={{ color: 'primary.contrastText' }}
+                                onClick={() => handleProductClick(product.id, product.name)} // Truyền ID và tên sản phẩm vào hàm handleProductClick
+                            >
+                                <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}>{product.name}</Typography>
+                            </Box>
                         </Box>
                     )}
-                </Box>
+                </React.Fragment>
             ))}
         </Box>
     );
@@ -272,56 +404,66 @@ export default function BoxSx() {
     // const [total, setTotal] = useState(0);
     const [cusPay, setCusPay] = useState('0đ');
     const pathName = usePathname();
+    const router = useRouter();
+    const handleBack = () => {
+        router.push('/Orders');
+    };
 
     useEffect(() => {
         dispatch(fetchProduct());
     }, []);
 
     return (
-        <Box className='flex flex-row w-full' sx={{ marginTop: '74px' }} >
-            <Box className='flex flex-col w-[50%]' >
-                <Box className='flex flex-row w-[100%]' >
-                    <Box
-                        sx={{
-                            width: 1 / 2,
-                            height: '90px',
-                            borderRadius: 1,
-                            bgcolor: 'success.main',
-                            color: 'primary.contrastText',
-                            border: '2px #fff solid',
-                        }}
-                    >
-                        <Typography variant="subtitle1" >
-                            Bàn: {bedNum} - Số lượng khách: {cusQuan}
-                        </Typography>
-                        <Typography variant="subtitle1" >
-                            Thuế: {tax}
-                        </Typography>
-                        <Typography variant="subtitle1" >
-                            Tổng: {formattedTotal}
-                        </Typography>
+        <Box>
+            <Box className='flex flex-row w-[80%] m-auto' sx={{ marginTop: '74px' }} >
+                <Box className='flex flex-col w-[50%]' >
+                    <Box className='flex flex-row w-full' >
+                        <Box
+                            sx={{
+                                width: 1 / 2,
+                                height: '90px',
+                                borderRadius: 1,
+                                bgcolor: 'success.main',
+                                color: 'primary.contrastText',
+                                border: '2px #fff solid',
+                            }}
+                        >
+                            <Typography variant="subtitle1" >
+                                Bàn: {bedNum} - Số lượng khách: {cusQuan}
+                            </Typography>
+                            <Typography variant="subtitle1" >
+                                Thuế: {tax}
+                            </Typography>
+                            <Typography variant="subtitle1" >
+                                Tổng: {formattedTotal}
+                            </Typography>
+                        </Box>
+                        <Box
+                            sx={{
+                                width: 1 / 2,
+                                height: '90px',
+                                borderRadius: 1,
+                                bgcolor: 'success.main',
+                                color: 'primary.contrastText',
+                                border: '2px #fff solid',
+                            }}
+                        >
+                            <Typography variant="subtitle1" >
+                                Tiền khách đưa: {formattedTotal}
+                            </Typography>
+                            <Typography variant="subtitle1" >
+                                Thanh toán: {formattedTotal}
+                            </Typography>
+                        </Box>
                     </Box>
-                    <Box
-                        sx={{
-                            width: 1 / 2,
-                            height: '90px',
-                            borderRadius: 1,
-                            bgcolor: 'success.main',
-                            color: 'primary.contrastText',
-                            border: '2px #fff solid',
-                        }}
-                    >
-                        <Typography variant="subtitle1" >
-                            Tiền khách đưa: {formattedTotal}
-                        </Typography>
-                        <Typography variant="subtitle1" >
-                            Thanh toán: {formattedTotal}
-                        </Typography>
-                    </Box>
-                </Box>
-                <CollapsibleTable />
-            </Box>
-            <Products />
+                    <CollapsibleTable />
+                </Box >
+                <Products />
+            </Box >
+            <div className='w-[62%] flex justify-end m-auto gap-1 mt-[2px]'>
+                <Button variant="contained" color="error" onClick={() => { handleBack() }} className='ml-auto'>Quay lại</Button>
+                <Button variant="contained" color="success" type="submit" className='ml-auto'>Tiếp theo</Button>
+            </div>
         </Box>
     );
 }

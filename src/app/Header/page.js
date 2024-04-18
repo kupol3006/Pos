@@ -59,8 +59,8 @@ function ResponsiveAppBar() {
     return (
         <AppBar position="fixed">
             <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                <Toolbar disableGutters className='flex justify-end'>
+                    {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
                     <Typography
                         variant="h6"
                         noWrap
@@ -77,9 +77,9 @@ function ResponsiveAppBar() {
                         }}
                     >
                         LOGO
-                    </Typography>
+                    </Typography> */}
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                    {/* <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -144,7 +144,7 @@ function ResponsiveAppBar() {
                                 {page}
                             </Button>
                         ))}
-                    </Box>
+                    </Box> */}
 
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">

@@ -21,13 +21,13 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
 
-  const pathname = usePathname();
-  const [isLogin, setIsLogin] = useState('');
+  // const pathname = usePathname();
+  // const [isLogin, setIsLogin] = useState('');
 
-  useEffect(() => {
-    const token = parseCookies()['token'];
-    setIsLogin(token);
-  }, [pathname]);
+  // useEffect(() => {
+  //   const token = parseCookies()['token'];
+  //   setIsLogin(token);
+  // }, [pathname]);
 
   return (
     <html lang="en">
@@ -36,7 +36,6 @@ export default function RootLayout({ children }) {
           <AppRouterCacheProvider options={{ key: 'css' }}>
             <ThemeProvider theme={theme}>
               <AuthProvider>
-                {isLogin && <Menu />}
                 {children}
               </AuthProvider>
             </ThemeProvider>
