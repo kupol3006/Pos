@@ -34,14 +34,17 @@ const RegisterForm = () => {
     const form = useSelector(selectForm);
     const dispatch = useDispatch();
 
-    const pathName = usePathname();
+    const isClient = typeof window !== 'undefined';
+
     useEffect(() => {
-        async function fetchData() {
-            await dispatch(fetchOrderType());
-            await dispatch(fetchStaff());
+        if (isClient) {
+            async function fetchData() {
+                await dispatch(fetchOrderType());
+                await dispatch(fetchStaff());
+            }
+            fetchData();
         }
-        fetchData();
-    }, [pathName])
+    }, []);
 
 
     const router = useRouter();
