@@ -19,20 +19,6 @@ import { parseCookies } from 'nookies';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-// function Copyright(props) {
-//   return (
-//     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-//       {'Copyright © '}
-//       <Link color="inherit" href="https://mui.com/">
-//         Your Website
-//       </Link>{' '}
-//       {new Date().getFullYear()}
-//       {'.'}
-//     </Typography>
-//   );
-// }
-
-// TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
@@ -45,10 +31,10 @@ export default function SignInSide() {
     const [pin, setPin] = useState('');
     const router = useRouter();
 
-    const handleSubmit = (event) => {
-        event.preventDefault(); // Ngăn chặn hành vi mặc định của form
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         if (code === '65613728' && pin === '000000') {
-            dispatch(loginAsync({ code, pin }));
+            await dispatch(loginAsync({ code, pin }));
             setStatus(parseCookies()['token']);
             router.push('/');
         } else {
@@ -89,7 +75,7 @@ export default function SignInSide() {
                         <Typography component="h1" variant="h5">
                             Log in
                         </Typography>
-                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                        <Box component="form" noValidate sx={{ mt: 1 }}>
                             <TextField
                                 margin="normal"
                                 required
@@ -116,31 +102,15 @@ export default function SignInSide() {
                                 InputLabelProps={{ shrink: true }}
                                 autoComplete="current-password"
                             />
-                            {/* <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              /> */}
                             <Button
                                 type="submit"
                                 fullWidth
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
+                                onClick={handleSubmit}
                             >
                                 Sign In
                             </Button>
-                            {/* <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="#" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid> */}
-                            {/* <Copyright sx={{ mt: 5 }} /> */}
                         </Box>
                     </Box>
                 </Grid>

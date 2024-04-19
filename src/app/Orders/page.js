@@ -9,6 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import { fetchOrderType, setOrderTypeDetail, setPosId } from '../redux/slices/orderTypeSlice';
 import { fetchStaff } from '../redux/slices/staffSlice';
+import { usePathname } from 'next/navigation';
 
 const RegisterForm = () => {
     const data = useSelector((state) => state.orderType.data);
@@ -32,10 +33,15 @@ const RegisterForm = () => {
 
     const form = useSelector(selectForm);
     const dispatch = useDispatch();
+
+    const pathName = usePathname();
     useEffect(() => {
-        dispatch(fetchOrderType());
-        dispatch(fetchStaff());
-    }, [])
+        async function fetchData() {
+            await dispatch(fetchOrderType());
+            await dispatch(fetchStaff());
+        }
+        fetchData();
+    }, [pathName])
 
 
     const router = useRouter();
@@ -154,7 +160,7 @@ const RegisterForm = () => {
                             onChange={e => setOrderType(e.target.value)}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
-                            {data.map((item, index) => (
+                            {data?.map((item, index) => (
                                 <MenuItem key={index} value={item.name} onClick={() => (handleOrderTypeDetail(item.details, item.pos_id))}>{item.name}</MenuItem>
                             ))}
                         </Select>
@@ -183,7 +189,7 @@ const RegisterForm = () => {
                             onChange={e => setStaff(e.target.value)}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
-                            {staffData.map((item, index) => (
+                            {staffData?.map((item, index) => (
                                 <MenuItem key={index} value={item.staff.first_name}>{item.staff.first_name}</MenuItem>
                             ))}
                         </Select>
