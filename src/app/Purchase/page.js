@@ -127,20 +127,20 @@ import { useRouter } from 'next/navigation';
 // ];
 
 const CollapsibleTable = () => {
-    const currentDate = new Date().toLocaleDateString();
-    const currentTime = new Date().toLocaleTimeString();
+    // const currentDate = new Date().toLocaleDateString();
+    // const currentTime = new Date().toLocaleTimeString();
     const staff = useSelector((state) => state.order.staff);
     // const producDetailtId = useSelector((state) => state.order.productDetailId);
     // const data = useSelector((state) => state.product.data);
     const listProduct = useSelector((state) => state.product.listProduct);
     return (
-        <TableContainer component={Paper} sx={{ width: '100%', height: 350, maxHeight: 350 }}>
+        <TableContainer component={Paper} sx={{ width: '100%', maxHeight: '70%' }} className='h-[70%]'>
             <Table aria-label="collapsible table">
                 <TableHead size='small'>
                     <TableRow size='small'>
                         {/* <TableCell style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }} /> */}
-                        <TableCell size='small' style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }}>{currentDate}</TableCell>
-                        <TableCell size='small' align="right" style={{ padding: '0px', width: '100px', borderRight: '1px black solid' }}>{currentTime}</TableCell>
+                        <TableCell size='small' style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }}>{ }</TableCell>
+                        <TableCell size='small' align="right" style={{ padding: '0px', width: '100px', borderRight: '1px black solid' }}>{ }</TableCell>
                         <TableCell size='small' align="center" style={{ padding: '0px', width: '200px' }}></TableCell>
                         <TableCell size='small' align="center" style={{ padding: '0px', width: '150px', borderRight: '1px black solid' }}>Phục vụ: {staff}</TableCell>
                     </TableRow>
@@ -402,7 +402,7 @@ export default function BoxSx() {
 
     const [tax, setTax] = useState('0');
     // const [total, setTotal] = useState(0);
-    const [cusPay, setCusPay] = useState('0đ');
+    // const [cusPay, setCusPay] = useState('0đ');
     const pathName = usePathname();
     const router = useRouter();
     const handleBack = () => {
@@ -411,47 +411,49 @@ export default function BoxSx() {
 
     useEffect(() => {
         dispatch(fetchProduct());
-    }, []);
+    }, [router.pathName]);
 
     return (
         <Box>
-            <Box className='flex flex-row w-[80%] m-auto' sx={{ marginTop: '74px' }} >
+            <Box className='flex flex-row w-full h-screen' sx={{ gap: '2px' }} >
                 <Box className='flex flex-col w-[50%]' >
                     <Box className='flex flex-row w-full' >
                         <Box
                             sx={{
                                 width: 1 / 2,
-                                height: '90px',
+                                // height: '90px',
+                                padding: '10px',
                                 borderRadius: 1,
-                                bgcolor: 'success.main',
+                                bgcolor: '#00429F',
                                 color: 'primary.contrastText',
-                                border: '2px #fff solid',
+                                borderRight: '2px #fff solid',
                             }}
                         >
-                            <Typography variant="subtitle1" >
+                            <Typography variant="subtitle1" sx={{ lineHeight: '1.2' }}>
                                 Bàn: {bedNum} - Số lượng khách: {cusQuan}
                             </Typography>
-                            <Typography variant="subtitle1" >
+                            <Typography variant="subtitle1" sx={{ lineHeight: '1.2' }}>
                                 Thuế: {tax}
                             </Typography>
-                            <Typography variant="subtitle1" >
+                            <Typography variant="subtitle1" sx={{ lineHeight: '1.2' }}>
                                 Tổng: {formattedTotal}
                             </Typography>
                         </Box>
                         <Box
                             sx={{
                                 width: 1 / 2,
-                                height: '90px',
+                                // height: '90px',
+                                padding: '10px',
                                 borderRadius: 1,
-                                bgcolor: 'success.main',
+                                bgcolor: '#00429F',
                                 color: 'primary.contrastText',
-                                border: '2px #fff solid',
+                                // border: '2px #fff solid',
                             }}
                         >
-                            <Typography variant="subtitle1" >
+                            <Typography variant="subtitle1" sx={{ lineHeight: '1.2' }}>
                                 Tiền khách đưa: {formattedTotal}
                             </Typography>
-                            <Typography variant="subtitle1" >
+                            <Typography variant="subtitle1" sx={{ lineHeight: '1.2' }}>
                                 Thanh toán: {formattedTotal}
                             </Typography>
                         </Box>
@@ -460,10 +462,10 @@ export default function BoxSx() {
                 </Box >
                 <Products />
             </Box >
-            <div className='w-[62%] flex justify-end m-auto gap-1 mt-[2px]'>
+            {/* <div className='w-[62%] flex justify-end m-auto gap-1 mt-[2px]'>
                 <Button variant="contained" color="error" onClick={() => { handleBack() }} className='ml-auto'>Quay lại</Button>
                 <Button variant="contained" color="success" type="submit" className='ml-auto'>Tiếp theo</Button>
-            </div>
+            </div> */}
         </Box>
     );
 }
