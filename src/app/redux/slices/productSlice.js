@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { parseCookies } from 'nookies';
+import { selectPosId } from './orderTypeSlice';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
 const token = parseCookies()['token'];
@@ -8,10 +9,11 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
 export const fetchProduct = createAsyncThunk(
     'product/fetchbyid',
-    async () => {
+    async (_, { getState }) => {
+        const pos_id = selectPosId(getState());
         try {
-            const response = await axios.get(API_BASE_URL + 'products?page=1&limit=2');
-            const data = response.data.items;
+            const response = await axios.get(API_BASE_URL + 'menu/' + pos_id);
+            const data = response.data.data;
             return data
         } catch (err) {
             console.log(err)
@@ -23,7 +25,7 @@ export const fetchProduct = createAsyncThunk(
 const initialState = {
     data: [],
     isLoading: false,
-    productDetail: {},
+    productDetail: [],
     listProduct: [],
     total: 0,
 }
@@ -39,6 +41,9 @@ export const productSlice = createSlice({
         },
         setTotal: (state, action) => {
             state.total = action.payload;
+        },
+        setProductDetail: (state, action) => {
+            state.productDetail = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -56,6 +61,6 @@ export const productSlice = createSlice({
     },
 })
 
-export const { setListProduct, setTotal } = productSlice.actions;
+export const { setListProduct, setTotal, setProductDetail } = productSlice.actions;
 
 export default productSlice.reducer;
