@@ -36,6 +36,8 @@ export const logout = createAsyncThunk(
     }
 );
 
+// Remove the existing declaration of 'initialState'
+// Declare 'initialState' again
 const initialState = {
     token: null,
     isLogin: false,
@@ -65,6 +67,5 @@ export const loginSlice = createSlice({
     },
 })
 
-export const selectToken = (state) => state.auth.token;
 
 export default loginSlice.reducer;

@@ -1,19 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { parseCookies } from 'nookies';
-import { selectToken } from './authSlice';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
-const token = parseCookies()['token'];
-axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
 
 
 
 export const fetchOrderType = createAsyncThunk(
     'orderType/fetchOrderType',
-    async (_, { getState }) => {
-        // const token1 = selectToken(getState());
-        axios.defaults.headers.common['Authorization'] = `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiNjU2MTM3MjgiLCJzdWIiOjEsInBvc19pZCI6MTMsImlhdCI6MTcxMzU3NjAwNn0.6Gt2uJo78D7nRlcy9URKzsmTAZ6HlBqKh5p-pmQQbMk'}`;
+    async () => {
+        const token = parseCookies()['token'];
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         try {
             const response = await axios.get(API_BASE_URL + 'order/types');
             const data = response.data.data;
