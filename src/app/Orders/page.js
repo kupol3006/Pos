@@ -21,6 +21,7 @@ const RegisterForm = () => {
     const orderType1 = useSelector((state) => state.order.orderType);
     const orderChannel1 = useSelector((state) => state.order.orderChannel);
     const staff1 = useSelector((state) => state.order.staff);
+    const isLoading = useSelector((state) => state.orderType.isLoading);
 
     const [cusType, setCusType] = useState('AAA')
     const [cusQuan, setcusQuan] = useState('1')
@@ -33,19 +34,21 @@ const RegisterForm = () => {
 
     const form = useSelector(selectForm);
     const dispatch = useDispatch();
+    const pathname = usePathname();
 
-    const isClient = typeof window !== 'undefined';
+    // const isClient = typeof window !== 'undefined';
 
     useEffect(() => {
-        if (isClient) {
-            async function fetchData() {
-                await dispatch(fetchOrderType());
-                await dispatch(fetchStaff());
-            }
-            fetchData();
-        }
+        dispatch(fetchOrderType());
+        dispatch(fetchStaff());
     }, []);
 
+    useEffect(() => {
+        if (!isLoading) {
+            // dispatch(fetchOrderType());
+            // dispatch(fetchStaff());
+        }
+    }, [isLoading]);
 
     const router = useRouter();
     const handleBack = () => {
