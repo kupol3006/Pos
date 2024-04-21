@@ -14,11 +14,12 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { Typography, Box, Button } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useLayoutEffect } from 'react';
-import { fetchProduct, setListProduct, setTotal, setProductDetail } from '../redux/slices/productSlice';
+import { fetchProduct, setListProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setToppingSelected, setStoreToppingSelected, resetStateToppingSelected, resetState } from '../redux/slices/productSlice';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
+import EastIcon from '@mui/icons-material/East';
 
 // const createData = (name, calories, fat) => {
 //     return {
@@ -128,9 +129,11 @@ const CollapsibleTable = () => {
     // const currentDate = new Date().toLocaleDateString();
     // const currentTime = new Date().toLocaleTimeString();
     const staff = useSelector((state) => state.order.staff);
-    // const producDetailtId = useSelector((state) => state.order.productDetailId);
-    // const data = useSelector((state) => state.product.data);
     const listProduct = useSelector((state) => state.product.listProduct);
+    const items = useSelector((state) => state.product.items);
+    const toppingSelected = useSelector((state) => state.product.toppingSelected);
+    const storeToppingSelected = useSelector((state) => state.product.storeToppingSelected);
+
     return (
         <TableContainer component={Paper} sx={{ width: '100%', maxHeight: '70%' }} className='h-[70%]'>
             <Table aria-label="collapsible table">
@@ -155,10 +158,36 @@ const CollapsibleTable = () => {
                     </TableBody>
                 ))} */}
                 <TableBody>
-                    {listProduct.map((product, index) => (
+                    {items?.map((item, index) => (
                         <TableRow key={index} >
-                            <TableCell size='small' colSpan={4}>{product.name}</TableCell>
-                            <TableCell size='small'>{Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}</TableCell>
+                            <TableCell size='small' colSpan={4}>
+                                <p className='w-[20px] h-[20px] text-center mr-1 inline-block bg-black text-[#fff] rounded-[100%]'>{item.quantity}</p>
+                                {item.name}
+                                {toppingSelected.length > 0 ?
+                                    (
+                                        <div>
+                                            {toppingSelected?.map((topping, index) => (
+                                                <p key={index}>
+                                                    {topping}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    )
+                                    :
+                                    (
+                                        <div>
+                                            {storeToppingSelected.length > 0 &&
+                                                storeToppingSelected[index]?.map((topping, index) => (
+                                                    <p key={index}>
+                                                        {topping}
+                                                    </p>
+                                                ))
+                                            }
+                                        </div>
+                                    )}
+
+                            </TableCell>
+                            <TableCell size='small'>{Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -169,25 +198,47 @@ const CollapsibleTable = () => {
 
 const Products = () => {
     const [show, setShow] = useState(false);
-    const [selectedProductName, setSelectedProductName] = useState(''); // Thêm state để lưu tên sản phẩm được chọn
+    const [show1, setShow1] = useState(true);
+    const [show2, setShow2] = useState(true);
     const dispatch = useDispatch();
     const data = useSelector((state) => state.product.data);
     const productDetail1 = useSelector((state) => state.product.productDetail);
+    const items = useSelector((state) => state.product.items);
+    const toppings = useSelector((state) => state.product.topping);
+    const toppingDetails = useSelector((state) => state.product.toppingDetail);
 
-    const handleShow = (productName) => {
+    const handleShow = () => {
         setShow(!show);
-        setSelectedProductName(productName); // Lưu tên sản phẩm được nhấn
+    }
+
+    const handleShow1 = () => {
+        dispatch(setStoreToppingSelected());
+        dispatch(resetStateToppingSelected());
+        setShow1(!show1);
     }
 
     const handleProductClick = (productId, productDetail) => {
         setShow(true);
-        // setSelectedProductName(productName); // Lưu tên sản phẩm được nhấn
         dispatch(setProductDetail(productDetail));
     };
 
-    const handleProductDetailClick = (producDetailtId2) => {
-        // setShow(false);
+    const handleProductDetailClick = (producDetailtId2, topping) => {
+        setShow1(false);
+        dispatch(setToping(topping));
         dispatch(setListProduct(producDetailtId2));
+        dispatch(addItems(producDetailtId2));
+        console.log(items);
+    };
+    const handleToppingClick = (toppingDetail, toppingName) => {
+        dispatch(setToppingSelected(toppingName));
+        dispatch(setToppingDetail(toppingDetail));
+        if (toppingDetail.length > 0) {
+            setShow2(false);
+        }
+    };
+
+    const handleToppingDetailClick = (toppingDetail) => {
+        setShow2(true);
     };
 
     return (
@@ -196,39 +247,83 @@ const Products = () => {
             <Box className='w-full flex flex-row justify-start flex-wrap'>
 
                 {show ? (
-                    <Box className='w-full flex items-start'>
-                        <Box className='w-full flex flex-row flex-wrap'>
-                            <Box
-                                className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#ffdd00] hover:bg-[#ffdd00]'
-                                sx={{ color: 'primary.contrastText' }}
-                                onClick={() => handleShow()} // Truyền tên sản phẩm vào hàm handleShow
-                            >
-                                <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}><KeyboardBackspaceIcon /></Typography>
-                            </Box>
-                            {productDetail1.map((product_detail) => (
-
-                                <Box
-                                    key={product_detail.id}
-                                    className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
-                                    sx={{ color: 'primary.contrastText' }}
-                                    onClick={() => handleProductDetailClick(product_detail)}
-                                >
-                                    <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product_detail.name}</Typography>
+                    show1 ?
+                        (
+                            <Box className='w-full flex items-start'>
+                                <Box className='w-full flex flex-row flex-wrap'>
+                                    <Box
+                                        className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#ffdd00] hover:bg-[#ffdd00]'
+                                        sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                        onClick={() => handleShow()} // Truyền tên sản phẩm vào hàm handleShow
+                                    >
+                                        <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}><KeyboardBackspaceIcon /></Typography>
+                                    </Box>
+                                    {productDetail1.map((product_detail) => (
+                                        <Box
+                                            key={product_detail.id}
+                                            className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
+                                            sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                            onClick={() => handleProductDetailClick(product_detail, product_detail.toppings)}
+                                        >
+                                            <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product_detail.name}</Typography>
+                                        </Box>
+                                    ))}
                                 </Box>
-                            ))}
-                        </Box>
-                    </Box>
+                            </Box>
+                        )
+                        :
+                        (
+                            show2 ?
+                                (
+                                    <div className='w-full flex flex-row flex-wrap'>
+                                        <Box
+                                            className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#ffdd00] hover:bg-[#ffdd00]'
+                                            sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                            onClick={() => handleShow1()}
+                                        >
+                                            <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}><KeyboardBackspaceIcon /></Typography>
+                                        </Box>
+                                        {toppings.map((topping) => (
+                                            <Box
+                                                key={topping.id}
+                                                className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
+                                                sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                                onClick={() => handleToppingClick(topping.details, topping.name)}
+                                            >
+                                                <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name}</Typography>
+                                            </Box>
+                                        ))}
+                                    </div>
+                                )
+                                :
+                                (
+                                    <div className='w-full flex flex-row flex-wrap'>
+                                        {toppingDetails.map((toppingDetail) => (
+                                            <Box
+                                                key={toppingDetail.id}
+                                                className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
+                                                sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                                onClick={() => handleToppingDetailClick()}
+                                            >
+                                                <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{toppingDetail.name}</Typography>
+                                                <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}><KeyboardBackspaceIcon sx={{ fontSize: 15 }} /></Typography>
+                                            </Box>
+                                        ))}
+                                    </div>
+                                )
+                        )
                 ) : (
 
                     <div className='w-full flex flex-row flex-wrap'>
                         {data?.map((product, index) => (
                             <Box
                                 key={index}
-                                className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
-                                sx={{ color: 'primary.contrastText' }}
+                                className='w-[32%] h-[100px] m-[1px] flex flex-col flex-wrap justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+                                sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
                                 onClick={() => handleProductClick(product.id, product.details)} // Truyền ID và tên sản phẩm vào hàm handleProductClick
                             >
                                 <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product.name}</Typography>
+                                <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}><EastIcon sx={{ fontSize: 15 }} /></Typography>
                             </Box>
                         ))}
                     </div>
@@ -253,12 +348,13 @@ export default function BoxSx() {
     const pathName = usePathname();
     const router = useRouter();
     const handleBack = () => {
+        dispatch(resetState());
         router.push('/Orders');
     };
 
     useEffect(() => {
         dispatch(fetchProduct());
-    }, [router.pathName]);
+    }, [pathName]);
 
     return (
         <Box>
@@ -329,26 +425,26 @@ export default function BoxSx() {
                 <Products />
                 <div className='w-[19%] h-screen flex flex-col'>
                     <div className='w-full h-[50%] bg-black'></div>
-                    <div className='w-full h-[50%] flex flex-col'>
+                    <div className='w-full h-[50%] flex flex-col text-[11px]'>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
                             <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thực đơn</div>
                             <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Topping</div>
                         </div>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thực đơn</div>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Topping</div>
+                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Mã nhận từ bàn phím</div>
+                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Bổ sung</div>
                         </div>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thực đơn</div>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Topping</div>
+                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thanh toán ví</div>
+                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>In kiểm món</div>
                         </div>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thực đơn</div>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Topping</div>
+                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Tạm tính</div>
+                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Mở két tiền</div>
                         </div>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thực đơn</div>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Topping</div>
+                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Giảm giá</div>
+                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thanh toán</div>
                         </div>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
                             <Button variant="contained" color="error" onClick={() => { handleBack() }} className='w-[50%]'><CloseIcon /></Button>

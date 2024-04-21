@@ -28,6 +28,11 @@ const initialState = {
     productDetail: [],
     listProduct: [],
     total: 0,
+    items: [],
+    topping: [],
+    toppingDetail: [],
+    toppingSelected: [],
+    storeToppingSelected: [],
 }
 
 // Then, handle actions in your reducers:
@@ -45,14 +50,44 @@ export const productSlice = createSlice({
         setProductDetail: (state, action) => {
             state.productDetail = action.payload;
         },
+        setToping: (state, action) => {
+            state.topping = action.payload;
+        },
+        addItems: (state, action) => {
+            const item = action.payload;
+            const existItem = state.items.find((i) => i.id === item.id);
+            if (existItem) {
+                // Nếu món hàng đã tồn tại, tăng số lượng lên 1
+                existItem.quantity++;
+            } else {
+                // Nếu món hàng chưa tồn tại, thêm vào giỏ hàng với số lượng là 1
+                state.items.push({ ...item, quantity: 1 });
+            }
+        },
+        setToppingDetail: (state, action) => {
+            state.toppingDetail = action.payload;
+        },
+        setToppingSelected: (state, action) => {
+            state.toppingSelected = [...state.toppingSelected, action.payload];
+        },
+        setStoreToppingSelected: (state, action) => {
+            state.storeToppingSelected = [...state.storeToppingSelected, state.toppingSelected];
+        },
+        resetStateToppingSelected: (state) => {
+            state.toppingSelected = initialState.toppingSelected;
+        },
+        resetState: (state) => {
+            // Đặt lại state về giá trị ban đầu
+            return initialState;
+        },
     },
     extraReducers: (builder) => {
         builder
             .addCase(fetchProduct.pending, (state) => {
-                state.isLoading = false
+                state.isLoading = true
             })
             .addCase(fetchProduct.fulfilled, (state, action) => {
-                state.isLoading = true
+                state.isLoading = false
                 state.data = action.payload
             })
             .addCase(fetchProduct.rejected, (state) => {
@@ -61,6 +96,6 @@ export const productSlice = createSlice({
     },
 })
 
-export const { setListProduct, setTotal, setProductDetail } = productSlice.actions;
+export const { setListProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setToppingSelected, setStoreToppingSelected, resetStateToppingSelected, resetState } = productSlice.actions;
 
 export default productSlice.reducer;

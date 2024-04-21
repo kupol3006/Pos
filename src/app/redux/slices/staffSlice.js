@@ -1,11 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { parseCookies } from 'nookies';
-import { store } from '../store';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
-const token = parseCookies()['token'];
-axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
 
 export const fetchStaff = createAsyncThunk(
     'staff/fetchStaff',
