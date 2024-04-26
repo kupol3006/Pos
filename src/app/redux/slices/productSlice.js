@@ -32,7 +32,7 @@ const initialState = {
     topping: [],
     toppingDetail: [],
     toppingSelected: [],
-    storeToppingSelected: [],
+    storeToppingSelected: [[]],
 }
 
 // Then, handle actions in your reducers:
@@ -69,9 +69,21 @@ export const productSlice = createSlice({
         },
         setToppingSelected: (state, action) => {
             state.toppingSelected = [...state.toppingSelected, action.payload];
+            state.storeToppingSelected.push([]);
         },
         setStoreToppingSelected: (state, action) => {
-            state.storeToppingSelected = [...state.storeToppingSelected, state.toppingSelected];
+            // state.storeToppingSelected[state.storeToppingSelected.length - 1].push(action.payload);
+            const topping = action.payload;
+            if (state.items.length === 1) {
+                if (!state.items[state.items.length - 1].topping) {
+                    state.items[state.items.length - 1].topping = [];
+                }
+                // Thêm topping vào mảng topping hiện tại
+                state.items[state.items.length - 1].topping.push(topping);
+                // state.items.topping[state.items.topping.length - 1].push(...action.payload);
+            } else if (state.items.length > 1) {
+
+            }
         },
         resetStateToppingSelected: (state) => {
             state.toppingSelected = initialState.toppingSelected;

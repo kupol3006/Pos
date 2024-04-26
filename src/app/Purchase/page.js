@@ -159,36 +159,32 @@ const CollapsibleTable = () => {
                 ))} */}
                 <TableBody>
                     {items?.map((item, index) => (
-                        <TableRow key={index} >
-                            <TableCell size='small' colSpan={4}>
-                                <p className='w-[20px] h-[20px] text-center mr-1 inline-block bg-black text-[#fff] rounded-[100%]'>{item.quantity}</p>
-                                {item.name}
-                                {toppingSelected.length > 0 ?
-                                    (
-                                        <div>
-                                            {toppingSelected?.map((topping, index) => (
-                                                <p key={index}>
-                                                    {topping}
-                                                </p>
-                                            ))}
-                                        </div>
-                                    )
-                                    :
-                                    (
-                                        <div>
-                                            {storeToppingSelected.length > 0 &&
-                                                storeToppingSelected[index]?.map((topping, index) => (
-                                                    <p key={index}>
-                                                        {topping}
-                                                    </p>
-                                                ))
-                                            }
-                                        </div>
-                                    )}
+                        <React.Fragment key={index}>
+                            <TableRow>
+                                <TableCell size='small' colSpan={4}>
+                                    <p className='w-[20px] h-[20px] text-center mr-1 inline-block bg-black text-[#fff] rounded-[100%]'>{item.quantity}</p>
+                                    {item.name}
+                                </TableCell>
+                                <TableCell size='small'>{Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</TableCell>
+                            </TableRow>
+                            <TableRow className='border-[1px solid black]'>
 
-                            </TableCell>
-                            <TableCell size='small'>{Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</TableCell>
-                        </TableRow>
+                                <TableCell size='small' key={index} colSpan={5}>
+                                    <Box>
+                                        <TableBody>
+                                            <TableRow>
+                                                {storeToppingSelected.length > 0 &&
+                                                    storeToppingSelected[index]?.map((topping, index) => (
+                                                        <TableCell key={index} size='small'>{topping}</TableCell>
+                                                    ))
+                                                }
+                                            </TableRow>
+                                        </TableBody>
+                                    </Box>
+                                </TableCell>
+
+                            </TableRow>
+                        </React.Fragment>
                     ))}
                 </TableBody>
             </Table>
@@ -212,8 +208,8 @@ const Products = () => {
     }
 
     const handleShow1 = () => {
-        dispatch(setStoreToppingSelected());
-        dispatch(resetStateToppingSelected());
+        // dispatch(setStoreToppingSelected());
+        dispatch(setToppingSelected());
         setShow1(!show1);
     }
 
@@ -230,7 +226,7 @@ const Products = () => {
         console.log(items);
     };
     const handleToppingClick = (toppingDetail, toppingName) => {
-        dispatch(setToppingSelected(toppingName));
+        dispatch(setStoreToppingSelected(toppingName));
         dispatch(setToppingDetail(toppingDetail));
         if (toppingDetail.length > 0) {
             setShow2(false);
@@ -246,88 +242,89 @@ const Products = () => {
 
             <Box className='w-full flex flex-row justify-start flex-wrap'>
 
-                {show ? (
-                    show1 ?
-                        (
-                            <Box className='w-full flex items-start'>
-                                <Box className='w-full flex flex-row flex-wrap'>
-                                    <Box
-                                        className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#ffdd00] hover:bg-[#ffdd00]'
-                                        sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
-                                        onClick={() => handleShow()} // Truyền tên sản phẩm vào hàm handleShow
-                                    >
-                                        <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}><KeyboardBackspaceIcon /></Typography>
-                                    </Box>
-                                    {productDetail1.map((product_detail) => (
-                                        <Box
-                                            key={product_detail.id}
-                                            className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
-                                            sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
-                                            onClick={() => handleProductDetailClick(product_detail, product_detail.toppings)}
-                                        >
-                                            <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product_detail.name}</Typography>
-                                        </Box>
-                                    ))}
-                                </Box>
-                            </Box>
-                        )
-                        :
-                        (
-                            show2 ?
-                                (
-                                    <div className='w-full flex flex-row flex-wrap'>
+                {show ?
+                    (
+                        show1 ?
+                            (
+                                <Box className='w-full flex items-start'>
+                                    <Box className='w-full flex flex-row flex-wrap'>
                                         <Box
                                             className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#ffdd00] hover:bg-[#ffdd00]'
                                             sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
-                                            onClick={() => handleShow1()}
+                                            onClick={() => handleShow()} // Truyền tên sản phẩm vào hàm handleShow
                                         >
                                             <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}><KeyboardBackspaceIcon /></Typography>
                                         </Box>
-                                        {toppings.map((topping) => (
+                                        {productDetail1.map((product_detail) => (
                                             <Box
-                                                key={topping.id}
+                                                key={product_detail.id}
                                                 className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
                                                 sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
-                                                onClick={() => handleToppingClick(topping.details, topping.name)}
+                                                onClick={() => handleProductDetailClick(product_detail, product_detail.toppings)}
                                             >
-                                                <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name}</Typography>
+                                                <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product_detail.name}</Typography>
                                             </Box>
                                         ))}
-                                    </div>
-                                )
-                                :
-                                (
-                                    <div className='w-full flex flex-row flex-wrap'>
-                                        {toppingDetails.map((toppingDetail) => (
+                                    </Box>
+                                </Box>
+                            )
+                            :
+                            (
+                                show2 ?
+                                    (
+                                        <div className='w-full flex flex-row flex-wrap'>
                                             <Box
-                                                key={toppingDetail.id}
-                                                className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
+                                                className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#ffdd00] hover:bg-[#ffdd00]'
                                                 sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
-                                                onClick={() => handleToppingDetailClick()}
+                                                onClick={() => handleShow1()}
                                             >
-                                                <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{toppingDetail.name}</Typography>
-                                                <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}><KeyboardBackspaceIcon sx={{ fontSize: 15 }} /></Typography>
+                                                <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}><KeyboardBackspaceIcon /></Typography>
                                             </Box>
-                                        ))}
-                                    </div>
-                                )
-                        )
-                ) : (
+                                            {toppings.map((topping) => (
+                                                <Box
+                                                    key={topping.id}
+                                                    className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
+                                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                                    onClick={() => handleToppingClick(topping.details, topping.name)}
+                                                >
+                                                    <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name}</Typography>
+                                                </Box>
+                                            ))}
+                                        </div>
+                                    )
+                                    :
+                                    (
+                                        <div className='w-full flex flex-row flex-wrap'>
+                                            {toppingDetails.map((toppingDetail) => (
+                                                <Box
+                                                    key={toppingDetail.id}
+                                                    className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
+                                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                                    onClick={() => handleToppingDetailClick()}
+                                                >
+                                                    <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{toppingDetail.name}</Typography>
+                                                    <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}><KeyboardBackspaceIcon sx={{ fontSize: 15 }} /></Typography>
+                                                </Box>
+                                            ))}
+                                        </div>
+                                    )
+                            )
+                    ) : (
 
-                    <div className='w-full flex flex-row flex-wrap'>
-                        {data?.map((product, index) => (
-                            <Box
-                                key={index}
-                                className='w-[32%] h-[100px] m-[1px] flex flex-col flex-wrap justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
-                                sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
-                                onClick={() => handleProductClick(product.id, product.details)} // Truyền ID và tên sản phẩm vào hàm handleProductClick
-                            >
-                                <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product.name}</Typography>
-                                <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}><EastIcon sx={{ fontSize: 15 }} /></Typography>
-                            </Box>
-                        ))}
-                    </div>
-                )}
+                        <div className='w-full flex flex-row flex-wrap'>
+                            {data?.map((product, index) => (
+                                <Box
+                                    key={index}
+                                    className='w-[32%] h-[100px] m-[1px] flex flex-col flex-wrap justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
+                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                    onClick={() => handleProductClick(product.id, product.details)} // Truyền ID và tên sản phẩm vào hàm handleProductClick
+                                >
+                                    <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product.name}</Typography>
+                                    <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}><EastIcon sx={{ fontSize: 15 }} /></Typography>
+                                </Box>
+                            ))}
+                        </div>
+                    )}
             </Box>
 
         </Box >
