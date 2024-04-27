@@ -30,6 +30,33 @@ export default function Table() {
                             <Box className='w-[80px] h-[80px] border-[2px] border-lime-600 flex justify-center items-center'>
                                 Bàn 1
                             </Box>
+                            <Box className='w-[80px] h-[80px] border-[2px] border-lime-600 flex justify-center items-center'>
+                                Bàn 2
+                            </Box>
+                            <Box className='w-[80px] h-[80px] border-[2px] border-lime-600 flex justify-center items-center'>
+                                Bàn 3
+                            </Box>
+                            <Box className='w-[80px] h-[80px] border-[2px] border-lime-600 flex justify-center items-center'>
+                                Bàn 4
+                            </Box>
+                            <Box className='w-[80px] h-[80px] border-[2px] border-lime-600 flex justify-center items-center'>
+                                Bàn 5
+                            </Box>
+                            <Box className='w-[80px] h-[80px] border-[2px] border-lime-600 flex justify-center items-center'>
+                                Bàn 6
+                            </Box>
+                            <Box className='w-[80px] h-[80px] border-[2px] border-lime-600 flex justify-center items-center'>
+                                Bàn 7
+                            </Box>
+                            <Box className='w-[80px] h-[80px] border-[2px] border-lime-600 flex justify-center items-center'>
+                                Bàn 8
+                            </Box>
+                            <Box className='w-[80px] h-[80px] border-[2px] border-lime-600 flex justify-center items-center'>
+                                Bàn 9
+                            </Box>
+                            <Box className='w-[80px] h-[80px] border-[2px] border-lime-600 flex justify-center items-center'>
+                                Bàn 10
+                            </Box>
 
                         </div>
                     </div>

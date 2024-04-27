@@ -41,7 +41,7 @@ export default function Home() {
                 </div>
                 <h1 className="font-semibold text-[18px] mt-3 mb-2">Menu bán hàng</h1>
                 <div className="flex flex-row flex-wrap justify-start gap-[10px]">
-                  <Link href={''} className="w-[43%] h-[70px] bg-[#00f2ff] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
+                  <Link href={'/OutStock'} className="w-[43%] h-[70px] bg-[#00f2ff] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
                     <h3>Các món ngưng bán</h3>
                   </Link>
                   <Link href={''} className="w-[43%] h-[70px] bg-[#00f2ff] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
@@ -58,8 +58,8 @@ export default function Home() {
               <div className="w-[60%]  p-[10px]">
                 <h1 className="font-semibold text-[18px] mt-3 mb-2">Đơn hàng</h1>
                 <div className="flex flex-row flex-wrap justify-start gap-[10px]">
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Lập order</h3>
+                  <Link href={'/Shift'} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
+                    <h3>Cấu hình ngày làm việc</h3>
                   </Link>
                   <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
                     <h3>Mở sơ đồ bàn</h3>
@@ -67,11 +67,11 @@ export default function Home() {
                   <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
                     <h3>Các đơn hàng đã đóng</h3>
                   </Link>
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Các đơn hàng đã đóng</h3>
+                  <Link href={'/MonOut'} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
+                    <h3>Rút tiền từ két</h3>
                   </Link>
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Các đơn hàng đã đóng</h3>
+                  <Link href={'/MonIn'} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
+                    <h3>Nộp tiền vào két</h3>
                   </Link>
                 </div>
                 <h1 className="font-semibold text-[18px] mt-3 mb-2">Đơn hàng</h1>
