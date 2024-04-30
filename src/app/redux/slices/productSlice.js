@@ -26,13 +26,13 @@ const initialState = {
     data: [],
     isLoading: false,
     productDetail: [],
-    listProduct: [],
     total: 0,
     items: [],
     topping: [],
     toppingDetail: [],
     toppingSelected: [],
-    storeToppingSelected: [[]],
+    productId: '',
+    toppingId: '',
 }
 
 // Then, handle actions in your reducers:
@@ -40,12 +40,11 @@ export const productSlice = createSlice({
     name: 'product',
     initialState,
     reducers: {
-        setListProduct: (state, action) => {
-            state.listProduct = [...state.listProduct, action.payload];
-            state.total = state.total + action.payload.price;
-        },
         setTotal: (state, action) => {
-            state.total = action.payload;
+            let price = state.items.map((item) => {
+                return item.price * item.quantity
+            });
+            state.total = price.reduce((a, b) => a + b, 0);
         },
         setProductDetail: (state, action) => {
             state.productDetail = action.payload;
@@ -69,21 +68,49 @@ export const productSlice = createSlice({
         },
         setToppingSelected: (state, action) => {
             state.toppingSelected = [...state.toppingSelected, action.payload];
-            state.storeToppingSelected.push([]);
+            // state.storeToppingSelected.push([]);
+        },
+        setProductId: (state, action) => {
+            state.productId = action.payload;
         },
         setStoreToppingSelected: (state, action) => {
             // state.storeToppingSelected[state.storeToppingSelected.length - 1].push(action.payload);
             const topping = action.payload;
-            if (state.items.length === 1) {
-                if (!state.items[state.items.length - 1].topping) {
-                    state.items[state.items.length - 1].topping = [];
-                }
-                // Thêm topping vào mảng topping hiện tại
-                state.items[state.items.length - 1].topping.push(topping);
-                // state.items.topping[state.items.topping.length - 1].push(...action.payload);
-            } else if (state.items.length > 1) {
+            if (state.items.length > 0) {
+                state.items.map((item, index) => {
+                    if (item.id === state.productId) {
+                        if (!state.items[index].topping) {
+                            state.items[index].topping = [];
+                            // state.items[index].topping.quantity++;
+                            state.items[index].topping.push({ topping, quantity: 1 });
 
+                        } else if (state.items[index].topping.find((i) => i.topping.id === topping.id)) {
+                            state.items[index].topping.find((i) => i.topping.id === topping.id).quantity++;
+                        } else {
+                            // Thêm topping vào mảng topping hiện tại
+                            state.items[index].topping.push({ topping, quantity: 1 });
+                        }
+
+                    }
+                });
             }
+
+        },
+        setToppingId: (state, action) => {
+            state.toppingId = action.payload;
+
+        },
+        addToppingDetail: (state, action) => {
+            const toppingDetail = action.payload;
+            state.items.map((item, index) => {
+                item.topping.map((topping, index) => {
+                    if (topping.topping.id === state.toppingId) {
+                        state.items[index].topping.details = [];
+                        state.items[index].topping.details.push({ toppingDetail, quantity: 1 });
+                    }
+                })
+            });
+
         },
         resetStateToppingSelected: (state) => {
             state.toppingSelected = initialState.toppingSelected;
@@ -108,6 +135,6 @@ export const productSlice = createSlice({
     },
 })
 
-export const { setListProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setToppingSelected, setStoreToppingSelected, resetStateToppingSelected, resetState } = productSlice.actions;
+export const { setTotal, setProductDetail, addItems, setToping, setToppingDetail, setToppingSelected, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail } = productSlice.actions;
 
 export default productSlice.reducer;

@@ -14,7 +14,7 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { Typography, Box, Button } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
-import { fetchProduct, setListProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setToppingSelected, setStoreToppingSelected, resetStateToppingSelected, resetState } from '../redux/slices/productSlice';
+import { fetchProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setToppingSelected, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail } from '../redux/slices/productSlice';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import CloseIcon from '@mui/icons-material/Close';
@@ -26,10 +26,9 @@ const CollapsibleTable = () => {
     // const currentDate = new Date().toLocaleDateString();
     // const currentTime = new Date().toLocaleTimeString();
     const staff = useSelector((state) => state.order.staff);
-    const listProduct = useSelector((state) => state.product.listProduct);
     const items = useSelector((state) => state.product.items);
     const toppingSelected = useSelector((state) => state.product.toppingSelected);
-    const storeToppingSelected = useSelector((state) => state.product.storeToppingSelected);
+    // const storeToppingSelected = useSelector((state) => state.product.storeToppingSelected);
 
     return (
         <TableContainer component={Paper} sx={{ width: '100%', maxHeight: '70%' }} className='h-[70%]'>
@@ -43,17 +42,6 @@ const CollapsibleTable = () => {
                         <TableCell size='small' align="center" style={{ padding: '0px', width: '150px', borderRight: '1px black solid' }}>Phục vụ: {staff}</TableCell>
                     </TableRow>
                 </TableHead>
-                {/* <TableBody>
-                    {rows.map((row) => (
-                        <Row key={row.name} row={row} />
-                    ))}
-                </TableBody> */}
-                {/* {listProduct.map((product) => (
-                    <TableBody>
-                        <TableCell colSpan={4}>Hồng trà</TableCell>
-                        <TableCell>200000</TableCell>
-                    </TableBody>
-                ))} */}
                 <TableBody>
                     {items?.map((item, index) => (
                         <React.Fragment key={index}>
@@ -64,19 +52,19 @@ const CollapsibleTable = () => {
                                 </TableCell>
                                 <TableCell size='small'>{Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</TableCell>
                             </TableRow>
-                            <TableRow className='border-[1px solid black]'>
+                            <TableRow className='h-[33px]'>
 
-                                <TableCell size='small' key={index} colSpan={5}>
-                                    <Box>
-                                        <TableBody>
-                                            <TableRow>
-                                                {storeToppingSelected.length > 0 &&
-                                                    storeToppingSelected[index]?.map((topping, index) => (
-                                                        <TableCell key={index} size='small'>{topping}</TableCell>
-                                                    ))
-                                                }
-                                            </TableRow>
-                                        </TableBody>
+                                <TableCell size='small' key={index} colSpan={5} className=''>
+
+                                    <Box className='flex border-none'>
+                                        {items.length > 0 &&
+                                            items[index].topping?.map((topping, index) => (
+                                                <Box key={index} size='small' className='w-[25%] flex'>
+                                                    <p className='w-[20px] h-[20px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{topping.quantity}</p>
+                                                    <p>{topping.topping.name}</p>
+                                                </Box>
+                                            ))
+                                        }
                                     </Box>
                                 </TableCell>
 
@@ -105,7 +93,6 @@ const Products = () => {
     }
 
     const handleShow1 = () => {
-        // dispatch(setStoreToppingSelected());
         dispatch(setToppingSelected());
         setShow1(!show1);
     }
@@ -115,22 +102,26 @@ const Products = () => {
         dispatch(setProductDetail(productDetail));
     };
 
-    const handleProductDetailClick = (producDetailtId2, topping) => {
+    const handleProductDetailClick = (producDetailtId2, topping, productId) => {
         setShow1(false);
         dispatch(setToping(topping));
-        dispatch(setListProduct(producDetailtId2));
         dispatch(addItems(producDetailtId2));
+        dispatch(setProductId(productId));
+        dispatch(setTotal());
         console.log(items);
     };
-    const handleToppingClick = (toppingDetail, toppingName) => {
-        dispatch(setStoreToppingSelected(toppingName));
+    const handleToppingClick = (toppingDetail, toppingName, topping) => {
+        dispatch(setStoreToppingSelected(topping));
         dispatch(setToppingDetail(toppingDetail));
+        dispatch(setToppingId(topping.id));
         if (toppingDetail.length > 0) {
             setShow2(false);
         }
     };
 
-    const handleToppingDetailClick = (toppingDetail) => {
+    const handleToppingDetailClick = (toppingDetail, toppingDetailId) => {
+
+        dispatch(addToppingDetail(toppingDetail));
         setShow2(true);
     };
 
@@ -157,7 +148,7 @@ const Products = () => {
                                                 key={product_detail.id}
                                                 className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
                                                 sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
-                                                onClick={() => handleProductDetailClick(product_detail, product_detail.toppings)}
+                                                onClick={() => handleProductDetailClick(product_detail, product_detail.toppings, product_detail.id)}
                                             >
                                                 <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product_detail.name}</Typography>
                                             </Box>
@@ -182,7 +173,7 @@ const Products = () => {
                                                     key={topping.id}
                                                     className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
                                                     sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
-                                                    onClick={() => handleToppingClick(topping.details, topping.name)}
+                                                    onClick={() => handleToppingClick(topping.details, topping.name, topping)}
                                                 >
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name}</Typography>
                                                 </Box>
@@ -197,7 +188,7 @@ const Products = () => {
                                                     key={toppingDetail.id}
                                                     className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
                                                     sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
-                                                    onClick={() => handleToppingDetailClick()}
+                                                    onClick={() => handleToppingDetailClick(toppingDetail, toppingDetail.id)}
                                                 >
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{toppingDetail.name}</Typography>
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}><KeyboardBackspaceIcon sx={{ fontSize: 15 }} /></Typography>
