@@ -11,7 +11,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import { Typography, Box, Button } from '@mui/material';
+import { Typography, Box, Button, TextField } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { fetchProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setToppingSelected, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail } from '../redux/slices/productSlice';
@@ -23,8 +23,8 @@ import EastIcon from '@mui/icons-material/East';
 
 
 const CollapsibleTable = () => {
-    // const currentDate = new Date().toLocaleDateString();
-    // const currentTime = new Date().toLocaleTimeString();
+    const currentDate = new Date().toLocaleDateString();
+    const currentTime = new Date().toLocaleTimeString();
     const staff = useSelector((state) => state.order.staff);
     const items = useSelector((state) => state.product.items);
     const toppingSelected = useSelector((state) => state.product.toppingSelected);
@@ -36,8 +36,8 @@ const CollapsibleTable = () => {
                 <TableHead size='small'>
                     <TableRow size='small'>
                         {/* <TableCell style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }} /> */}
-                        <TableCell size='small' style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }}>{ }</TableCell>
-                        <TableCell size='small' align="right" style={{ padding: '0px', width: '100px', borderRight: '1px black solid' }}>{ }</TableCell>
+                        <TableCell size='small' style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }}>{currentDate}</TableCell>
+                        <TableCell size='small' align="right" style={{ padding: '0px', width: '100px', borderRight: '1px black solid' }}>{currentTime}</TableCell>
                         <TableCell size='small' align="center" style={{ padding: '0px', width: '200px' }}></TableCell>
                         <TableCell size='small' align="center" style={{ padding: '0px', width: '150px', borderRight: '1px black solid' }}>Phục vụ: {staff}</TableCell>
                     </TableRow>
@@ -226,6 +226,8 @@ export default function BoxSx() {
     const total = useSelector((state) => state.product.total);
     const dispatch = useDispatch();
     const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
+    const staff = useSelector((state) => state.order.staff);
+    const currentTime = new Date().toLocaleTimeString();
 
     const [tax, setTax] = useState('0');
     // const [total, setTotal] = useState(0);
@@ -236,6 +238,19 @@ export default function BoxSx() {
         dispatch(resetState());
         router.push('/Orders');
     };
+    const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const [value, setValue] = useState('');
+
+    const handleChange = (num) => {
+        setValue(prevValue => prevValue + `${num}`)
+        console.log(value);
+    }
+
+    const handleDelete = () => {
+        let arr = value.split('');
+        arr.splice(arr.length - 1, 1);
+        setValue(arr.join(''));
+    }
 
     useEffect(() => {
         dispatch(fetchProduct());
@@ -309,7 +324,45 @@ export default function BoxSx() {
                 </Box >
                 <Products />
                 <div className='w-[19%] h-screen flex flex-col'>
-                    <div className='w-full h-[50%] bg-black'></div>
+                    <div className='w-full h-[50%] '>
+                        <div className="w-full flex flex-col items-center pt-[3px] bg-[#c5bcb425] rounded-[5px]">
+                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[3px] mt-[10px] leading-[4px]'>
+                                <p className=''>Nhân viên:</p>
+                                <p className=''>{staff}</p>
+                            </div>
+                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[3px]'>
+                                <p className=''>Thu ngân:</p>
+                                <p className=''>{staff}</p>
+                            </div>
+                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[3px] leading-[4px] mb-[5px]'>
+                                <p className=''>Lúc:</p>
+                                <p className=''>{currentTime}</p>
+                            </div>
+                            <TextField
+                                id="outlined-basic" variant="outlined" size='small'
+                                sx={{ width: '98%', background: '#fff', borderRadius: '5px' }}
+                                inputProps={{ style: { height: '20px' } }}
+                                value={value}
+
+                            />
+                            <div className='w-full flex flex-row items-center flex-wrap p-[3px] gap-[2px]'>
+                                {num.map((item, index) => {
+                                    return (
+                                        <Button
+                                            key={index} className='w-[32.7%] h-[60px]' variant="contained"
+                                            sx={{ background: '#575851' }}
+                                            value={item}
+                                            onClick={() => handleChange(item)}
+                                        >
+                                            {item}
+                                        </Button>
+                                    )
+                                })}
+                                <Button className='w-[32.7%] h-[60px]' variant="contained" sx={{ background: '#575851' }} onClick={() => { handleChange('.') }} value='.'>.</Button>
+                                <Button className='w-[32.7%] h-[60px]' variant="contained" color='error' onClick={() => { handleDelete() }}>xóa</Button>
+                            </div>
+                        </div>
+                    </div>
                     <div className='w-full h-[50%] flex flex-col text-[11px]'>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
                             <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thực đơn</div>

@@ -74,6 +74,44 @@ const RegisterForm = () => {
         router.push('/Purchase');
     }
 
+    const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    // const [value, setValue] = useState('');
+    const [input1, setInput1] = useState('');
+    const [input2, setInput2] = useState('');
+
+    const handleChange = (num) => {
+        setValue(prevValue => prevValue + `${num}`)
+        console.log(value);
+    }
+
+    const handleDelete = (event) => {
+        event.preventDefault();
+        if (focusedInput === 'cusQuan') {
+            let arr = cusQuan.split('');
+            arr.splice(arr.length - 1, 1);
+            setcusQuan(arr.join(''));
+            // setcusQuan(prevValue => prevValue + `${num}`);
+        } else if (focusedInput === 'phone') {
+            let arr = phone.split('');
+            arr.splice(arr.length - 1, 1);
+            setPhone(arr.join(''));
+            // setPhone(prevValue => prevValue + `${num}`);
+        }
+    }
+    const [focusedInput, setFocusedInput] = useState(null);
+
+    const handleFocus = (inputName) => {
+        setFocusedInput(inputName);
+    }
+
+    const handleNumPadClick = (num, event) => {
+        event.preventDefault();
+        if (focusedInput === 'cusQuan') {
+            setcusQuan(prevValue => prevValue + `${num}`);
+        } else if (focusedInput === 'phone') {
+            setPhone(prevValue => prevValue + `${num}`);
+        }
+    }
     return (
         <React.Fragment>
             <div className='w-full h-screen flex flex-row'>
@@ -97,6 +135,7 @@ const RegisterForm = () => {
                             variant='outlined'
                             color='secondary'
                             label="Số lượng khách"
+                            onFocus={() => handleFocus('cusQuan')}
                             onChange={e => setcusQuan(e.target.value)}
                             value={cusQuan}
                             size='small'
@@ -112,6 +151,7 @@ const RegisterForm = () => {
                             variant='outlined'
                             color='secondary'
                             label="Số điện thoại khách hàng"
+                            onFocus={() => handleFocus('phone')}
                             onChange={e => setPhone(e.target.value)}
                             value={phone}
                             size='small'
@@ -219,6 +259,32 @@ const RegisterForm = () => {
                     <div className='w-full h-[14%] mb-[1px] flex text-[#fff] font-semibold rounded-[7px] gap-[1px]'>
                         <Button variant="contained" color="error" onClick={() => { handleBack() }} className='w-[50%]'><CloseIcon /></Button>
                         <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={() => { handleSubmit() }}><CheckIcon /></Button>
+                    </div>
+                    <div className="w-full h-[43%] flex flex-col items-center pt-[3px]">
+                        {/* <TextField
+                            id="outlined-basic" variant="outlined" size='small'
+                            sx={{ width: '98%', background: '#fff', borderRadius: '5px' }}
+                            inputProps={{ style: { height: '20px' } }}
+                            value={value}
+
+                        /> */}
+                        <div className='w-full h-full flex flex-row items-center flex-wrap p-[3px] gap-[2px]'>
+                            {num.map((item, index) => {
+                                return (
+                                    <Button
+                                        key={index} className='w-[32.7%] h-[25%]' variant="contained"
+                                        sx={{ background: '#575851', fontSize: '22px' }}
+                                        value={item}
+                                        onClick={(event) => handleNumPadClick(item, event)}
+                                        onMouseDown={(event) => event.preventDefault()}
+                                    >
+                                        {item}
+                                    </Button>
+                                )
+                            })}
+                            <Button className='w-[32.7%] h-[25%]' variant="contained" sx={{ background: '#575851', fontSize: '22px' }} onClick={(event) => handleNumPadClick('.', event)} value='.'>.</Button>
+                            <Button className='w-[32.7%] h-[25%]' variant="contained" sx={{ fontSize: '22px' }} color='error' onClick={(event) => { handleDelete(event) }}>xóa</Button>
+                        </div>
                     </div>
                 </div>
             </div>
