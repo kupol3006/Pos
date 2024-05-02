@@ -30,6 +30,36 @@ export default function SignInSide() {
     const [code, setCode] = useState('');
     const [pin, setPin] = useState('');
     const router = useRouter();
+    const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    const handleDelete = (event) => {
+        event.preventDefault();
+        if (focusedInput === 'code') {
+            let arr = code.split('');
+            arr.splice(arr.length - 1, 1);
+            setCode(arr.join(''));
+            // setcusQuan(prevValue => prevValue + `${num}`);
+        } else if (focusedInput === 'pin') {
+            let arr = pin.split('');
+            arr.splice(arr.length - 1, 1);
+            setPin(arr.join(''));
+            // setPhone(prevValue => prevValue + `${num}`);
+        }
+    }
+    const [focusedInput, setFocusedInput] = useState(null);
+
+    const handleFocus = (inputName) => {
+        setFocusedInput(inputName);
+    }
+
+    const handleNumPadClick = (num, event) => {
+        event.preventDefault();
+        if (focusedInput === 'code') {
+            setCode(prevValue => prevValue + `${num}`);
+        } else if (focusedInput === 'pin') {
+            setPin(prevValue => prevValue + `${num}`);
+        }
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -43,23 +73,8 @@ export default function SignInSide() {
     };
     return (
         <ThemeProvider theme={defaultTheme}>
-            <Grid container component="main" sx={{ height: '100vh' }}>
-                <CssBaseline />
-                <Grid
-                    item
-                    xs={false}
-                    sm={4}
-                    md={7}
-                    sx={{
-                        backgroundImage: 'url(hinh1.jpg)',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundColor: (t) =>
-                            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                    }}
-                />
-                <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+            <Grid container component="main" sx={{ width: '100%', height: '100vh' }} >
+                <Box item xs={12} sm={8} md={5} component={Paper} elevation={6} square className='m-auto flex'>
                     <Box
                         sx={{
                             my: 8,
@@ -68,6 +83,7 @@ export default function SignInSide() {
                             flexDirection: 'column',
                             alignItems: 'center',
                         }}
+                        className='flex'
                     >
                         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                             <LockOutlinedIcon />
@@ -75,45 +91,85 @@ export default function SignInSide() {
                         <Typography component="h1" variant="h5">
                             Log in
                         </Typography>
-                        <Box component="form" noValidate sx={{ mt: 1 }}>
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="code"
-                                label="Code"
-                                name="code"
-                                autoComplete="code"
-                                value={code}
-                                onChange={(e) => setCode(e.target.value)}
-                                InputLabelProps={{ shrink: true }}
-                                autoFocus
-                            />
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                name="pin"
-                                label="Pin"
-                                type="password"
-                                id="pin"
-                                value={pin}
-                                onChange={(e) => setPin(e.target.value)}
-                                InputLabelProps={{ shrink: true }}
-                                autoComplete="current-password"
-                            />
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                                onClick={handleSubmit}
-                            >
-                                Sign In
-                            </Button>
+                        <Box component="form" noValidate sx={{ mt: 1 }} >
+                            <Box className=''>
+                                <Box className='h-[50px] flex'>
+                                    <h6 className='w-[80px] h-[34px] border border-[#DAE4E4] flex items-center rounded-tl-[5px] rounded-bl-[5px] p-[3px] text-[12px] font-bold'>Mã</h6>
+                                    <TextField
+                                        // margin="normal"
+                                        required
+                                        // fullWidth
+                                        id="code"
+                                        // label="Code"
+                                        name="code"
+                                        autoComplete="code"
+                                        size='small'
+                                        value={code}
+                                        onChange={(e) => setCode(e.target.value)}
+                                        onFocus={() => handleFocus('code')}
+                                        InputLabelProps={{ shrink: true }}
+                                        autoFocus
+                                        InputProps={{ // Thêm dòng này
+                                            sx: { borderRadius: 0, fontSize: '12px', width: '250px' }
+                                        }}
+                                    />
+                                </Box>
+                                <Box className='h-[50px] flex'>
+                                    <h6 className='w-[80px] h-[34px] border border-[#DAE4E4] flex items-center rounded-tl-[5px] rounded-bl-[5px] p-[3px] text-[12px] font-bold'>Mật khẩu</h6>
+                                    <TextField
+                                        // margin="normal"
+                                        required
+                                        // fullWidth
+                                        size='small'
+                                        name="pin"
+                                        onFocus={() => handleFocus('pin')}
+                                        type="password"
+                                        id="pin"
+                                        value={pin}
+                                        onChange={(e) => setPin(e.target.value)}
+                                        InputLabelProps={{ shrink: true }}
+                                        autoComplete="current-password"
+                                        InputProps={{ // Thêm dòng này
+                                            sx: { borderRadius: 0, fontSize: '12px', width: '250px' }
+                                        }}
+                                    />
+                                </Box>
+
+                            </Box>
+
                         </Box>
+
                     </Box>
-                </Grid>
+                    <Box className='p-[50px]'>
+                        <div className='w-[260px] h-[300px] flex flex-row items-center justify-center flex-wrap gap-[2px]'>
+                            {num.map((item, index) => {
+                                return (
+                                    <Button
+                                        key={index} className='w-[32%] h-[24%]' variant="contained"
+                                        sx={{ background: '#575851', fontSize: '22px' }}
+                                        value={item}
+                                        onClick={(event) => handleNumPadClick(item, event)}
+                                        onMouseDown={(event) => event.preventDefault()}
+                                    >
+                                        {item}
+                                    </Button>
+                                )
+                            })}
+                            <Button className='w-[32%] h-[24%]' variant="contained" sx={{ background: '#575851', fontSize: '22px' }} onClick={(event) => handleNumPadClick('.', event)} value='.'>.</Button>
+                            <Button className='w-[32%] h-[24%]' variant="contained" sx={{ fontSize: '22px' }} color='error' onClick={(event) => { handleDelete(event) }}>xóa</Button>
+                        </div>
+                        <Button
+                            type="submit"
+                            // fullWidth
+                            variant="contained"
+                            sx={{ width: '255px', height: '60px', marginLeft: '3px', marginTop: '2px' }}
+                            // size='small'
+                            onClick={handleSubmit}
+                        >
+                            Sign In
+                        </Button>
+                    </Box>
+                </Box>
             </Grid>
         </ThemeProvider>
     );

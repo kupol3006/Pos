@@ -171,11 +171,33 @@ const Products = () => {
                                             {toppings.map((topping) => (
                                                 <Box
                                                     key={topping.id}
-                                                    className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
-                                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                                    className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px]'
+                                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: topping.color }}
                                                     onClick={() => handleToppingClick(topping.details, topping.name, topping)}
                                                 >
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name}</Typography>
+                                                    {topping.details.length > 0 ?
+                                                        (
+                                                            <Box className='w-full flex flex-col justify-start items-center gap-[2px] m-auto text-[12px]'>
+                                                                {topping.details.map((detail) => {
+                                                                    const color = detail.color;
+                                                                    return (
+                                                                        <Box
+                                                                            key={detail.id}
+                                                                            sx={{ width: '90%', height: '23px', backgroundColor: color, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '5px' }}
+                                                                        >
+                                                                            {detail.name}
+                                                                        </Box>
+                                                                    )
+                                                                })}
+                                                            </Box>
+                                                        )
+                                                        :
+                                                        (
+                                                            <></>
+                                                        )
+                                                    }
+
                                                 </Box>
                                             ))}
                                         </div>
@@ -332,7 +354,7 @@ export default function BoxSx() {
                 <Products />
                 <div className='w-[19%] h-screen flex flex-col'>
                     <div className='w-full h-[50%] '>
-                        <div className="w-full flex flex-col items-center pt-[3px] bg-[#c5bcb425] rounded-[5px]">
+                        <div className="w-full h-full flex flex-col items-center pt-[3px] bg-[#c5bcb425] rounded-[5px]">
                             <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[5px] mt-[10px] leading-[4px]'>
                                 <p className=''>Nhân viên:</p>
                                 <p className=''>{staff}</p>
@@ -352,11 +374,11 @@ export default function BoxSx() {
                                 value={value}
 
                             />
-                            <div className='w-full flex flex-row items-center flex-wrap p-[3px] gap-[2px]'>
+                            <div className='w-full h-full flex flex-row items-center flex-wrap p-[3px] gap-[2px]'>
                                 {num.map((item, index) => {
                                     return (
                                         <Button
-                                            key={index} className='w-[32.7%] h-[83px]' variant="contained"
+                                            key={index} className='w-[32.7%] h-[24%]' variant="contained"
                                             sx={{ background: '#575851' }}
                                             value={item}
                                             onClick={() => handleChange(item)}
@@ -365,8 +387,8 @@ export default function BoxSx() {
                                         </Button>
                                     )
                                 })}
-                                <Button className='w-[32.7%] h-[83px]' variant="contained" sx={{ background: '#575851' }} onClick={() => { handleChange('.') }} value='.'>.</Button>
-                                <Button className='w-[32.7%] h-[83px]' variant="contained" color='error' onClick={() => { handleDelete() }}>xóa</Button>
+                                <Button className='w-[32.7%] h-[24%]' variant="contained" sx={{ background: '#575851' }} onClick={() => { handleChange('.') }} value='.'>.</Button>
+                                <Button className='w-[32.7%] h-[24%]' variant="contained" color='error' onClick={() => { handleDelete() }}>xóa</Button>
                             </div>
                         </div>
                     </div>

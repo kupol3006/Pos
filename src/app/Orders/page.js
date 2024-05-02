@@ -81,9 +81,6 @@ const RegisterForm = () => {
     }
 
     const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    // const [value, setValue] = useState('');
-    const [input1, setInput1] = useState('');
-    const [input2, setInput2] = useState('');
 
     const handleChange = (num) => {
         setValue(prevValue => prevValue + `${num}`)

@@ -102,14 +102,14 @@ export const productSlice = createSlice({
         },
         addToppingDetail: (state, action) => {
             const toppingDetail = action.payload;
-            state.items.map((item, index) => {
-                item.topping.map((topping, index) => {
-                    if (topping.topping.id === state.toppingId) {
-                        state.items[index].topping.details = [];
-                        state.items[index].topping.details.push({ toppingDetail, quantity: 1 });
-                    }
-                })
-            });
+            // state.items.map((item, index) => {
+            //     item.topping.map((topping, index) => {
+            //         if (topping.topping.id === state.toppingId) {
+            //             state.items[index].topping.details = [];
+            //             state.items[index].topping.details.push({ toppingDetail, quantity: 1 });
+            //         }
+            //     })
+            // });
 
         },
         resetStateToppingSelected: (state) => {
