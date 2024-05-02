@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import EastIcon from '@mui/icons-material/East';
-
+import { parseCookies } from "nookies";
 
 const CollapsibleTable = () => {
     const currentDate = new Date().toLocaleDateString();
@@ -228,12 +228,12 @@ export default function BoxSx() {
     const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
     const staff = useSelector((state) => state.order.staff);
     const currentTime = new Date().toLocaleTimeString();
+    const router = useRouter();
 
     const [tax, setTax] = useState('0');
     // const [total, setTotal] = useState(0);
     // const [cusPay, setCusPay] = useState('0đ');
     const pathName = usePathname();
-    const router = useRouter();
     const handleBack = () => {
         dispatch(resetState());
         router.push('/Orders');
@@ -255,6 +255,13 @@ export default function BoxSx() {
     useEffect(() => {
         dispatch(fetchProduct());
     }, [pathName]);
+
+    useEffect(() => {
+        const token = parseCookies()["token"];
+        if (token === undefined) {
+            router.push("/Login");
+        }
+    }, []);
 
     return (
         <Box>
@@ -326,15 +333,15 @@ export default function BoxSx() {
                 <div className='w-[19%] h-screen flex flex-col'>
                     <div className='w-full h-[50%] '>
                         <div className="w-full flex flex-col items-center pt-[3px] bg-[#c5bcb425] rounded-[5px]">
-                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[3px] mt-[10px] leading-[4px]'>
+                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[5px] mt-[10px] leading-[4px]'>
                                 <p className=''>Nhân viên:</p>
                                 <p className=''>{staff}</p>
                             </div>
-                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[3px]'>
+                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[5px]'>
                                 <p className=''>Thu ngân:</p>
                                 <p className=''>{staff}</p>
                             </div>
-                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[3px] leading-[4px] mb-[5px]'>
+                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[5px] leading-[4px] mb-[5px]'>
                                 <p className=''>Lúc:</p>
                                 <p className=''>{currentTime}</p>
                             </div>
@@ -349,7 +356,7 @@ export default function BoxSx() {
                                 {num.map((item, index) => {
                                     return (
                                         <Button
-                                            key={index} className='w-[32.7%] h-[60px]' variant="contained"
+                                            key={index} className='w-[32.7%] h-[83px]' variant="contained"
                                             sx={{ background: '#575851' }}
                                             value={item}
                                             onClick={() => handleChange(item)}
@@ -358,8 +365,8 @@ export default function BoxSx() {
                                         </Button>
                                     )
                                 })}
-                                <Button className='w-[32.7%] h-[60px]' variant="contained" sx={{ background: '#575851' }} onClick={() => { handleChange('.') }} value='.'>.</Button>
-                                <Button className='w-[32.7%] h-[60px]' variant="contained" color='error' onClick={() => { handleDelete() }}>xóa</Button>
+                                <Button className='w-[32.7%] h-[83px]' variant="contained" sx={{ background: '#575851' }} onClick={() => { handleChange('.') }} value='.'>.</Button>
+                                <Button className='w-[32.7%] h-[83px]' variant="contained" color='error' onClick={() => { handleDelete() }}>xóa</Button>
                             </div>
                         </div>
                     </div>

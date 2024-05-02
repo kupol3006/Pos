@@ -10,6 +10,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import { fetchOrderType, setOrderTypeDetail, setPosId } from '../redux/slices/orderTypeSlice';
 import { fetchStaff } from '../redux/slices/staffSlice';
 import { usePathname } from 'next/navigation';
+import { parseCookies } from "nookies";
 
 const RegisterForm = () => {
     const data = useSelector((state) => state.orderType.data);
@@ -31,6 +32,7 @@ const RegisterForm = () => {
     const [orderType, setOrderType] = useState(orderType1)
     const [orderChannel, setOrderChannel] = useState(orderChannel1)
     const [staff, setStaff] = useState(staff1)
+    const router = useRouter();
 
     const form = useSelector(selectForm);
     const dispatch = useDispatch();
@@ -44,13 +46,13 @@ const RegisterForm = () => {
     }, []);
 
     useEffect(() => {
-        if (!isLoading) {
-            // dispatch(fetchOrderType());
-            // dispatch(fetchStaff());
+        const token = parseCookies()["token"];
+        if (token === undefined) {
+            router.push("/Login");
         }
-    }, [isLoading]);
+    }, []);
 
-    const router = useRouter();
+
     const handleBack = () => {
         router.push('/');
     };
@@ -61,17 +63,21 @@ const RegisterForm = () => {
         console.log(posId);
     };
     function handleSubmit(event) {
-        // event.preventDefault();
-        console.log(cusType, cusQuan, phone, bedNum, test, orderType, orderChannel, staff)
-        dispatch(updateCusType(cusType));
-        dispatch(updateCusQuan(cusQuan));
-        dispatch(updatePhone(phone));
-        dispatch(updateBedNum(bedNum));
-        dispatch(updateTest(test));
-        dispatch(updateOrderType(orderType));
-        dispatch(updateOrderChannel(orderChannel));
-        dispatch(updateStaff(staff));
-        router.push('/Purchase');
+        event.preventDefault();
+        // console.log(cusType, cusQuan, phone, bedNum, test, orderType, orderChannel, staff)
+        if (cusType !== '' && cusQuan !== '' && phone !== '' && bedNum !== '' && test !== '' && orderType !== '' && orderChannel !== '' && staff !== '') {
+            dispatch(updateCusType(cusType));
+            dispatch(updateCusQuan(cusQuan));
+            dispatch(updatePhone(phone));
+            dispatch(updateBedNum(bedNum));
+            dispatch(updateTest(test));
+            dispatch(updateOrderType(orderType));
+            dispatch(updateOrderChannel(orderChannel));
+            dispatch(updateStaff(staff));
+            router.push('/Purchase');
+        } else {
+            alert('Vui lòng nhập đầy đủ thông tin');
+        }
     }
 
     const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -115,7 +121,7 @@ const RegisterForm = () => {
     return (
         <React.Fragment>
             <div className='w-full h-screen flex flex-row'>
-                <form onSubmit={handleSubmit} className='flex flex-wrap w-[79%] h-screen p-[2px] gap-[2px]'>
+                <form onSubmit={(event) => handleSubmit(event)} className='flex flex-wrap w-[79%] h-screen p-[2px] gap-[2px]'>
                     <Stack sx={{ width: '49.8%', height: '50%', border: '1px black solid', borderRadius: '5px' }}>
                         <h2 className='w-full bg-[#2688B2] p-[5px 10px 5px 10px] text-[#fff] text-[15px] text-center'>Loại khách</h2>
                         <TextField
@@ -158,9 +164,6 @@ const RegisterForm = () => {
                             required
                             InputLabelProps={{ shrink: true }}
                             sx={{ marginTop: 1, margin: '10px 10px 10px 10px', '& input': { fontSize: '10px', }, }}
-
-
-
                         />
                         <TextField
                             type="text"
@@ -258,7 +261,7 @@ const RegisterForm = () => {
                     </div>
                     <div className='w-full h-[14%] mb-[1px] flex text-[#fff] font-semibold rounded-[7px] gap-[1px]'>
                         <Button variant="contained" color="error" onClick={() => { handleBack() }} className='w-[50%]'><CloseIcon /></Button>
-                        <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={() => { handleSubmit() }}><CheckIcon /></Button>
+                        <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={(event) => { handleSubmit(event) }}><CheckIcon /></Button>
                     </div>
                     <div className="w-full h-[43%] flex flex-col items-center pt-[3px]">
                         {/* <TextField
