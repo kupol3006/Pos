@@ -65,7 +65,7 @@ const RegisterForm = () => {
     function handleSubmit(event) {
         event.preventDefault();
         // console.log(cusType, cusQuan, phone, bedNum, test, orderType, orderChannel, staff)
-        if (cusType !== '' && cusQuan !== '' && phone !== '' && bedNum !== '' && test !== '' && orderType !== '' && orderChannel !== '' && staff !== '') {
+        if (cusType !== '' && cusQuan !== '' && phone !== '' && bedNum !== '' && test !== '' && orderType !== '' && staff !== '') {
             dispatch(updateCusType(cusType));
             dispatch(updateCusQuan(cusQuan));
             dispatch(updatePhone(phone));

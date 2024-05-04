@@ -89,7 +89,7 @@ export default function SignInSide() {
                             <LockOutlinedIcon />
                         </Avatar>
                         <Typography component="h1" variant="h5">
-                            Log in
+                            Đăng nhập
                         </Typography>
                         <Box component="form" noValidate sx={{ mt: 1 }} >
                             <Box className=''>
@@ -166,7 +166,7 @@ export default function SignInSide() {
                             // size='small'
                             onClick={handleSubmit}
                         >
-                            Sign In
+                            Đăng nhập
                         </Button>
                     </Box>
                 </Box>

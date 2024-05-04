@@ -38,30 +38,38 @@ const CollapsibleTable = () => {
                         {/* <TableCell style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }} /> */}
                         <TableCell size='small' style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }}>{currentDate}</TableCell>
                         <TableCell size='small' align="right" style={{ padding: '0px', width: '100px', borderRight: '1px black solid' }}>{currentTime}</TableCell>
-                        <TableCell size='small' align="center" style={{ padding: '0px', width: '200px' }}></TableCell>
-                        <TableCell size='small' align="center" style={{ padding: '0px', width: '150px', borderRight: '1px black solid' }}>Phục vụ: {staff}</TableCell>
+                        <TableCell size='small' align="center" style={{ padding: '0px', width: '200px' }}>Phục vụ:</TableCell>
+                        <TableCell size='small' align="center" style={{ padding: '0px', width: '150px', borderRight: '1px black solid' }}> {staff}</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {items?.map((item, index) => (
                         <React.Fragment key={index}>
                             <TableRow>
-                                <TableCell size='small' colSpan={4}>
-                                    <p className='w-[20px] h-[20px] text-center mr-1 inline-block bg-black text-[#fff] rounded-[100%]'>{item.quantity}</p>
-                                    {item.name}
+                                <TableCell size='small' colSpan={4} className='w-[115%]'>
+                                    <Box className='w-[100%] flex flex-row justify-between'>
+                                        <p><p className='w-[20px] h-[20px] text-center mr-1 inline-block bg-black text-[#fff] rounded-[100%]'>{item.quantity}</p>{item.name}</p>
+                                        {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                                    </Box>
                                 </TableCell>
-                                <TableCell size='small'>{Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</TableCell>
+                                <TableCell size='small'></TableCell>
                             </TableRow>
                             <TableRow className='h-[33px]'>
-
                                 <TableCell size='small' key={index} colSpan={5} className=''>
-
-                                    <Box className='flex border-none'>
+                                    <Box className='flex flex-row flex-wrap justify-start items-start border-none h-[34px]'>
                                         {items.length > 0 &&
                                             items[index].topping?.map((topping, index) => (
-                                                <Box key={index} size='small' className='w-[25%] flex'>
-                                                    <p className='w-[20px] h-[20px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{topping.quantity}</p>
+                                                <Box key={index} size='small' className='w-[25%] flex text-[14px]'>
+                                                    <p className='w-[17px] h-[17px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{topping.quantity}</p>
                                                     <p>{topping.topping.name}</p>
+                                                </Box>
+                                            ))
+                                        }
+                                        {items.length > 0 &&
+                                            items[index].toppingDetail?.map((toppingDetail, index) => (
+                                                <Box key={index} size='small' className='w-[25%] flex text-[14px]'>
+                                                    <p className='w-[17px] h-[17px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{toppingDetail.quantity}</p>
+                                                    <p>{toppingDetail.toppingDetail.name}</p>
                                                 </Box>
                                             ))
                                         }
@@ -114,9 +122,9 @@ const Products = () => {
         dispatch(setStoreToppingSelected(topping));
         dispatch(setToppingDetail(toppingDetail));
         dispatch(setToppingId(topping.id));
-        if (toppingDetail.length > 0) {
-            setShow2(false);
-        }
+        // if (toppingDetail.length > 0) {
+        //     setShow2(false);
+        // }
     };
 
     const handleToppingDetailClick = (toppingDetail, toppingDetailId) => {
@@ -171,20 +179,25 @@ const Products = () => {
                                             {toppings.map((topping) => (
                                                 <Box
                                                     key={topping.id}
-                                                    className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px]'
+                                                    className='w-[98%] h-[150px] m-[1px] flex flex-col justify-center items-center rounded-[10px]'
                                                     sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: topping.color }}
-                                                    onClick={() => handleToppingClick(topping.details, topping.name, topping)}
+                                                    onClick={() => {
+                                                        if (topping.details.length === 0) {
+                                                            handleToppingClick(topping.details, topping.name, topping);
+                                                        }
+                                                    }}
                                                 >
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name}</Typography>
                                                     {topping.details.length > 0 ?
                                                         (
-                                                            <Box className='w-full flex flex-col justify-start items-center gap-[2px] m-auto text-[12px]'>
+                                                            <Box className='w-full h-full flex flex-col justify-s items-center gap-[2px] m-auto text-[12px]'>
                                                                 {topping.details.map((detail) => {
                                                                     const color = detail.color;
                                                                     return (
                                                                         <Box
                                                                             key={detail.id}
-                                                                            sx={{ width: '90%', height: '23px', backgroundColor: color, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '5px' }}
+                                                                            sx={{ width: '90%', height: '35px', backgroundColor: color, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '5px' }}
+                                                                            onClick={() => handleToppingDetailClick(detail)}
                                                                         >
                                                                             {detail.name}
                                                                         </Box>

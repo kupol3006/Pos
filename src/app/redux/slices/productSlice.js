@@ -102,14 +102,22 @@ export const productSlice = createSlice({
         },
         addToppingDetail: (state, action) => {
             const toppingDetail = action.payload;
-            // state.items.map((item, index) => {
-            //     item.topping.map((topping, index) => {
-            //         if (topping.topping.id === state.toppingId) {
-            //             state.items[index].topping.details = [];
-            //             state.items[index].topping.details.push({ toppingDetail, quantity: 1 });
-            //         }
-            //     })
-            // });
+            if (state.items.length > 0) {
+                state.items.map((item, index) => {
+                    if (item.id === state.productId) {
+                        if (!state.items[index].toppingDetail) {
+                            state.items[index].toppingDetail = [];
+                            // state.items[index].topping.quantity++;
+                            state.items[index].toppingDetail.push({ toppingDetail, quantity: 1 });
+                        } else if (state.items[index].toppingDetail.find((i) => i.toppingDetail.id === toppingDetail.id)) {
+                            state.items[index].toppingDetail.find((i) => i.toppingDetail.id === toppingDetail.id).quantity++;
+                        } else {
+                            // Thêm topping vào mảng topping hiện tại
+                            state.items[index].toppingDetail.push({ toppingDetail, quantity: 1 });
+                        }
+                    }
+                });
+            }
 
         },
         resetStateToppingSelected: (state) => {
