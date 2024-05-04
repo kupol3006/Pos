@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Button, Container, Stack, Box, MenuItem, InputLabel } from '@mui/material';
 import { Select } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectForm, updateCusType, updateCusQuan, updatePhone, updateBedNum, updateTest, updateOrderType, updateOrderChannel, updateStaff } from '../redux/slices/orderSlice';
+import { selectForm, updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNum, updateTest, updateOrderType, updateOrderChannel, updateStaff } from '../redux/slices/orderSlice';
 import { useRouter } from "next/navigation";
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
@@ -11,6 +11,7 @@ import { fetchOrderType, setOrderTypeDetail, setPosId } from '../redux/slices/or
 import { fetchStaff } from '../redux/slices/staffSlice';
 import { usePathname } from 'next/navigation';
 import { parseCookies } from "nookies";
+import { fetchTable, setFloorDetail } from '../redux/slices/tableSlice';
 
 const RegisterForm = () => {
     const data = useSelector((state) => state.orderType.data);
@@ -18,16 +19,20 @@ const RegisterForm = () => {
     const orderTypeDetail = useSelector((state) => state.orderType.orderTypeDetail);
     const pos_id = useSelector((state) => state.orderType.pos_id);
     const phone1 = useSelector((state) => state.order.phone);
-    const bedNum1 = useSelector((state) => state.order.bedNum);
+    const floorNum1 = useSelector((state) => state.order.floorNum);
+    const roomNum1 = useSelector((state) => state.order.roomNum);
     const orderType1 = useSelector((state) => state.order.orderType);
     const orderChannel1 = useSelector((state) => state.order.orderChannel);
     const staff1 = useSelector((state) => state.order.staff);
     const isLoading = useSelector((state) => state.orderType.isLoading);
+    const dataFloor = useSelector((state) => state.table.data);
+    const dataFloorDetail = useSelector((state) => state.table.floorDetail);
 
     const [cusType, setCusType] = useState('AAA')
     const [cusQuan, setcusQuan] = useState('1')
     const [phone, setPhone] = useState(phone1)
-    const [bedNum, setBedNum] = useState(bedNum1)
+    const [floorNum, setfloorNum] = useState(floorNum1)
+    const [room, setRoom] = useState(roomNum1)
     const [test, setTest] = useState('Khách lẻ')
     const [orderType, setOrderType] = useState(orderType1)
     const [orderChannel, setOrderChannel] = useState(orderChannel1)
@@ -43,6 +48,7 @@ const RegisterForm = () => {
     useEffect(() => {
         dispatch(fetchOrderType());
         dispatch(fetchStaff());
+        dispatch(fetchTable());
     }, []);
 
     useEffect(() => {
@@ -64,12 +70,13 @@ const RegisterForm = () => {
     };
     function handleSubmit(event) {
         event.preventDefault();
-        // console.log(cusType, cusQuan, phone, bedNum, test, orderType, orderChannel, staff)
-        if (cusType !== '' && cusQuan !== '' && phone !== '' && bedNum !== '' && test !== '' && orderType !== '' && staff !== '') {
+        // console.log(cusType, cusQuan, phone, floorNum, test, orderType, orderChannel, staff)
+        if (cusType !== '' && cusQuan !== '' && phone !== '' && floorNum !== '' && test !== '' && orderType !== '' && staff !== '') {
             dispatch(updateCusType(cusType));
             dispatch(updateCusQuan(cusQuan));
             dispatch(updatePhone(phone));
-            dispatch(updateBedNum(bedNum));
+            dispatch(updateFloorNum(floorNum));
+            dispatch(updateRoomNum(room));
             dispatch(updateTest(test));
             dispatch(updateOrderType(orderType));
             dispatch(updateOrderChannel(orderChannel));
@@ -115,6 +122,10 @@ const RegisterForm = () => {
             setPhone(prevValue => prevValue + `${num}`);
         }
     }
+
+    const handelFloorDetail = (floorDetail) => {
+        dispatch(setFloorDetail(floorDetail));
+    };
     return (
         <React.Fragment>
             <div className='w-full h-screen flex flex-row'>
@@ -173,26 +184,39 @@ const RegisterForm = () => {
                             InputLabelProps={{ shrink: true }}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', '& input': { fontSize: '10px', }, }}
                         />
-                        <InputLabel id="demo-simple-select-helper-label" sx={{ margin: '5px 20px 0px 12px', fontSize: '12px' }}>Chọn giường</InputLabel>
+                        <InputLabel id="demo-simple-select-helper-label" sx={{ margin: '5px 20px 0px 12px', fontSize: '12px' }}>Chọn Tầng hoặc phương thức đặt hàng</InputLabel>
                         <Select
                             labelId="demo-simple-select-helper-label"
                             id="demo-simple-select-helper"
                             // label="Chọn giường"
-                            value={bedNum}
+                            value={floorNum}
                             size='small'
-                            onChange={e => setBedNum(e.target.value)}
+                            onChange={e => setfloorNum(e.target.value)}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
-                            <MenuItem value={'Giường 1'}>Giường 1</MenuItem>
-                            <MenuItem value={'Giường 2'}>Giường 2</MenuItem>
-                            <MenuItem value={'Giường 3'}>Giường 3</MenuItem>
-                            <MenuItem value={'Giường 4'}>Giường 4</MenuItem>
-                            <MenuItem value={'Giường 5'}>Giường 5</MenuItem>
-                            <MenuItem value={'Giường 6'}>Giường 6</MenuItem>
-                            <MenuItem value={'Giường 7'}>Giường 7</MenuItem>
-                            <MenuItem value={'Giường 8'}>Giường 8</MenuItem>
-                            <MenuItem value={'Giường 9'}>Giường 9</MenuItem>
-                            <MenuItem value={'Giường 10'}>Giường 10</MenuItem>
+                            {dataFloor?.map((floor, index) => {
+                                return (
+                                    <MenuItem key={floor.id} value={floor.name} onClick={() => (handelFloorDetail(floor.details))}>{floor.name}</MenuItem>
+                                )
+                            })}
+
+                        </Select>
+                        <InputLabel id="demo-simple-select-helper-label1" sx={{ margin: '5px 20px 0px 12px', fontSize: '12px' }}>Chọn Phòng hoặc phương thức giao hàng</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-helper-label1"
+                            id="demo-simple-select-helper1"
+                            // label="Chọn giường"
+                            value={room}
+                            size='small'
+                            onChange={e => setRoom(e.target.value)}
+                            sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
+                        >
+                            {dataFloorDetail?.map((room, index) => {
+                                return (
+                                    <MenuItem key={room.id} value={room.name}>{room.name}</MenuItem>
+                                )
+                            })}
+
                         </Select>
                     </Stack>
                     <Stack sx={{ width: '49.8%', height: '50%', border: '1px black solid', borderRadius: '5px' }}>

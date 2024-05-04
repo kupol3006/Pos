@@ -4,7 +4,8 @@ const initialState = {
     cusType: '',
     cusQuan: '',
     phone: '',
-    bedNum: '',
+    floorNum: '',
+    roomNum: '',
     test: '',
     orderType: '',
     orderChannel: '',
@@ -24,8 +25,11 @@ export const orderSlice = createSlice({
         updatePhone: (state, action) => {
             state.phone = action.payload;
         },
-        updateBedNum: (state, action) => {
-            state.bedNum = action.payload;
+        updateFloorNum: (state, action) => {
+            state.floorNum = action.payload;
+        },
+        updateRoomNum: (state, action) => {
+            state.roomNum = action.payload;
         },
         updateTest: (state, action) => {
             state.test = action.payload;
@@ -43,7 +47,7 @@ export const orderSlice = createSlice({
     },
 });
 
-export const { updateCusType, updateCusQuan, updatePhone, updateBedNum, updateTest, updateOrderType, updateOrderChannel, updateStaff } = orderSlice.actions;
+export const { updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNum, updateTest, updateOrderType, updateOrderChannel, updateStaff } = orderSlice.actions;
 export const selectForm = (state) => state.form;
 
 export default orderSlice.reducer;

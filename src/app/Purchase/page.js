@@ -256,7 +256,7 @@ const Products = () => {
 
 
 export default function BoxSx() {
-    const bedNum = useSelector((state) => state.order.bedNum);
+    const roomNum = useSelector((state) => state.order.roomNum);
     const cusQuan = useSelector((state) => state.order.cusQuan);
     const total = useSelector((state) => state.product.total);
     const dispatch = useDispatch();
@@ -314,13 +314,13 @@ export default function BoxSx() {
                                 borderRight: '2px #fff solid',
                             }}
                         >
-                            <Typography variant="subtitle1" sx={{ lineHeight: '1.2' }}>
-                                Bàn: {bedNum} - Số lượng khách: {cusQuan}
+                            <Typography variant="subtitle1" sx={{ lineHeight: '1.7', fontSize: '12px' }}>
+                                Phòng hoặc giao hàng: {roomNum} ---- Số lượng khách: {cusQuan}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ lineHeight: '1.2' }}>
+                            <Typography variant="subtitle1" sx={{ lineHeight: '1.7', fontSize: '12px' }}>
                                 Thuế: {tax}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ lineHeight: '1.2' }}>
+                            <Typography variant="subtitle1" sx={{ lineHeight: '1.7', fontSize: '12px' }}>
                                 Tổng: {formattedTotal}
                             </Typography>
                         </Box>
@@ -335,10 +335,10 @@ export default function BoxSx() {
                                 // border: '2px #fff solid',
                             }}
                         >
-                            <Typography variant="subtitle1" sx={{ lineHeight: '1.2' }}>
+                            <Typography variant="subtitle1" sx={{ lineHeight: '1.7', fontSize: '12px' }}>
                                 Tiền khách đưa: {formattedTotal}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ lineHeight: '1.2' }}>
+                            <Typography variant="subtitle1" sx={{ lineHeight: '1.7', fontSize: '12px' }}>
                                 Thanh toán: {formattedTotal}
                             </Typography>
                         </Box>
