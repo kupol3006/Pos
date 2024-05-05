@@ -71,7 +71,7 @@ const RegisterForm = () => {
     function handleSubmit(event) {
         event.preventDefault();
         // console.log(cusType, cusQuan, phone, floorNum, test, orderType, orderChannel, staff)
-        if (cusType !== '' && cusQuan !== '' && phone !== '' && floorNum !== '' && test !== '' && orderType !== '' && staff !== '') {
+        if (cusType !== '' && cusQuan !== '' && floorNum !== '' && test !== '' && orderType !== '' && staff !== '') {
             dispatch(updateCusType(cusType));
             dispatch(updateCusQuan(cusQuan));
             dispatch(updatePhone(phone));
@@ -169,7 +169,7 @@ const RegisterForm = () => {
                             onChange={e => setPhone(e.target.value)}
                             value={phone}
                             size='small'
-                            required
+                            // required
                             InputLabelProps={{ shrink: true }}
                             sx={{ marginTop: 1, margin: '10px 10px 10px 10px', '& input': { fontSize: '10px', }, }}
                         />

@@ -69,7 +69,17 @@ export default function Table() {
             <div className='w-[20%] h-screen pt-[34px] bg-[#89878557] flex flex-col justify-between'>
                 <div className='w-[100%] h-[100px] flex flex-row text-[#fff] gap-[3px] justify-center pt-[3px] cursor-pointer select-none'>
                     <Button variant="contained" className='w-[48%] h-full flex flex-row items-center justify-center rounded-[9px]' sx={{ backgroundColor: '#FFCA28', color: '#fff', '&:hover': { backgroundColor: '#FFCA28' } }} onClick={() => setShow(true)}>Sơ đồ bàn</Button>
-                    <Button disabled={room.length === 0} variant="contained" className='w-[48%] h-full flex flex-row items-center justify-center rounded-[9px]' sx={{ backgroundColor: '#FFCA28', color: '#fff', '&:hover': { backgroundColor: '#FFCA28' } }} onClick={() => setShow(false)}>Chi tiết</Button>
+                    <Button disabled={room.length === 0} variant="contained" className='w-[48%] h-full flex flex-row items-center justify-center rounded-[9px]'
+                        sx={{
+                            backgroundColor: room.length === 0 ? '#FFCA20' : '#FFCA28',
+                            "&.Mui-disabled": {
+                                background: "#FFCA20",
+                                color: "#fff"
+                            },
+                            '&:hover': {
+                                backgroundColor: room.length === 0 ? '#ffd95b' : '#FFCA28', // màu nhạt khi disabled và hover
+                            },
+                        }} onClick={() => setShow(false)}>Chi tiết</Button>
                 </div>
                 <div className='w-[100%] h-[70%] flex flex-col text-[#fff] justify-center items-center pt-[3px] cursor-pointer select-none gap-[2px]'>
                     {dataFloor.map((floor, index) => {

@@ -31,50 +31,55 @@ const CollapsibleTable = () => {
     // const storeToppingSelected = useSelector((state) => state.product.storeToppingSelected);
 
     return (
-        <TableContainer component={Paper} sx={{ width: '100%', maxHeight: '70%' }} className='h-[70%]'>
+        <TableContainer component={Paper} sx={{ width: '100%', maxHeight: '74%' }} className='h-[74%]'>
             <Table aria-label="collapsible table">
-                <TableHead size='small'>
-                    <TableRow size='small'>
-                        {/* <TableCell style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }} /> */}
-                        <TableCell size='small' style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }}>{currentDate}</TableCell>
+                <TableHead size='small' sx={{ height: '10px' }}>
+                    <TableRow size='small' sx={{ height: '10px' }}>
+                        {/* <TableCell size='small' style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }}>{currentDate}</TableCell>
                         <TableCell size='small' align="right" style={{ padding: '0px', width: '100px', borderRight: '1px black solid' }}>{currentTime}</TableCell>
                         <TableCell size='small' align="center" style={{ padding: '0px', width: '200px' }}>Phục vụ:</TableCell>
-                        <TableCell size='small' align="center" style={{ padding: '0px', width: '150px', borderRight: '1px black solid' }}> {staff}</TableCell>
+                        <TableCell size='small' align="center" style={{ padding: '0px', width: '150px', marginRight: '3px' }} colSpan={2}> {staff}</TableCell> */}
+                        <Box className='flex flex-row w-full h-[20px] border-b border-black'>
+                            <Typography sx={{ width: '25%', marginLeft: '2px', borderRight: '1px solid black', fontSize: '15px' }}>{currentDate}</Typography>
+                            <Typography sx={{ width: '25%', marginLeft: '2px', borderRight: '1px solid black', fontSize: '15px' }}>{currentTime}</Typography>
+                            <Typography sx={{ width: '25%', marginLeft: '2px', fontSize: '15px' }}>Phục vụ:</Typography>
+                            <Typography sx={{ width: '25%', marginLeft: '2px', fontSize: '15px' }}>{staff}</Typography>
+                        </Box>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {items?.map((item, index) => (
                         <React.Fragment key={index}>
-                            <TableRow>
-                                <TableCell size='small' colSpan={4} className='w-[115%]'>
-                                    <Box className='w-[100%] flex flex-row justify-between'>
-                                        <p><p className='w-[20px] h-[20px] text-center mr-1 inline-block bg-black text-[#fff] rounded-[100%]'>{item.quantity}</p>{item.name}</p>
-                                        {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
-                                    </Box>
-                                </TableCell>
-                                <TableCell size='small'></TableCell>
+                            <TableRow className='h-[10px]'>
+
+                                <Box className='w-[100%] h-[20px] flex flex-row justify-between items-center p-[5px] text-[12px] border-b-[1px]'>
+                                    <p className='mt-1'><p className='w-[15px] h-[15px]  mr-1 inline-block text-center bg-black text-[#fff] rounded-[50%]'>{item.quantity}</p>{item.name}</p>
+                                    {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                                </Box>
+
+                                {/* <TableCell size='small'></TableCell> */}
                             </TableRow>
-                            <TableRow className='h-[33px]'>
-                                <TableCell size='small' key={index} colSpan={5} className=''>
-                                    <Box className='flex flex-row flex-wrap justify-start items-start border-none h-[34px]'>
-                                        {items.length > 0 &&
-                                            items[index].topping?.map((topping, index) => (
-                                                <Box key={index} size='small' className='w-[25%] flex text-[14px]'>
-                                                    <p className='w-[17px] h-[17px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{topping.quantity}</p>
-                                                    <p>{topping.topping.name}</p>
-                                                </Box>
-                                            ))
-                                        }
-                                        {items.length > 0 &&
-                                            items[index].toppingDetail?.map((toppingDetail, index) => (
-                                                <Box key={index} size='small' className='w-[25%] flex text-[14px]'>
-                                                    <p className='w-[17px] h-[17px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{toppingDetail.quantity}</p>
-                                                    <p>{toppingDetail.toppingDetail.name}</p>
-                                                </Box>
-                                            ))
-                                        }
-                                    </Box>
-                                </TableCell>
+                            <TableRow className=''>
+
+                                <Box className='flex flex-row flex-wrap justify-start items-start pl-[6px] border-b-[1px]'>
+                                    {items.length > 0 &&
+                                        items[index].topping?.map((topping, index) => (
+                                            <Box key={index} size='small' className='flex text-[10px] w-[25%]'>
+                                                <p className='w-[13px] h-[13px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{topping.quantity}</p>
+                                                <p>{topping.topping.name}</p>
+                                            </Box>
+                                        ))
+                                    }
+                                    {items.length > 0 &&
+                                        items[index].toppingDetail?.map((toppingDetail, index) => (
+                                            <Box key={index} size='small' className='flex text-[10px] w-[25%]'>
+                                                <p className='w-[13px] h-[13px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{toppingDetail.quantity}</p>
+                                                <p>{toppingDetail.toppingDetail.name}</p>
+                                            </Box>
+                                        ))
+                                    }
+                                </Box>
+
 
                             </TableRow>
                         </React.Fragment>
@@ -181,11 +186,7 @@ const Products = () => {
                                                     key={topping.id}
                                                     className='w-[98%] h-[150px] m-[1px] flex flex-col justify-center items-center rounded-[10px]'
                                                     sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: topping.color }}
-                                                    onClick={() => {
-                                                        if (topping.details.length === 0) {
-                                                            handleToppingClick(topping.details, topping.name, topping);
-                                                        }
-                                                    }}
+                                                    onClick={() => { handleToppingClick(topping.details, topping.name, topping) }}
                                                 >
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name}</Typography>
                                                     {topping.details.length > 0 ?
@@ -302,43 +303,43 @@ export default function BoxSx() {
         <Box>
             <Box className='flex flex-row w-full h-screen' sx={{ gap: '2px' }} >
                 <Box className='flex flex-col w-[50%] h-screen' >
-                    <Box className='flex flex-row w-full h-[14%]' >
+                    <Box className='flex flex-row w-full h-[10%]' >
                         <Box
                             sx={{
                                 width: 1 / 2,
-                                // height: '90px',
-                                padding: '10px',
+                                height: '100%',
+                                padding: '1%',
                                 borderRadius: 1,
                                 bgcolor: '#00429F',
                                 color: 'primary.contrastText',
                                 borderRight: '2px #fff solid',
                             }}
                         >
-                            <Typography variant="subtitle1" sx={{ lineHeight: '1.7', fontSize: '12px' }}>
+                            <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px' }}>
                                 Phòng hoặc giao hàng: {roomNum} ---- Số lượng khách: {cusQuan}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ lineHeight: '1.7', fontSize: '12px' }}>
+                            <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px' }}>
                                 Thuế: {tax}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ lineHeight: '1.7', fontSize: '12px' }}>
+                            <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px', marginBottom: '2px' }}>
                                 Tổng: {formattedTotal}
                             </Typography>
                         </Box>
                         <Box
                             sx={{
                                 width: 1 / 2,
-                                // height: '90px',
-                                padding: '10px',
+                                height: '100%',
+                                padding: '1%',
                                 borderRadius: 1,
                                 bgcolor: '#00429F',
                                 color: 'primary.contrastText',
-                                // border: '2px #fff solid',
+                                borderRight: '2px #fff solid',
                             }}
                         >
-                            <Typography variant="subtitle1" sx={{ lineHeight: '1.7', fontSize: '12px' }}>
+                            <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px' }}>
                                 Tiền khách đưa: {formattedTotal}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ lineHeight: '1.7', fontSize: '12px' }}>
+                            <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px' }}>
                                 Thanh toán: {formattedTotal}
                             </Typography>
                         </Box>
