@@ -14,7 +14,7 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { Typography, Box, Button, TextField } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
-import { fetchProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setToppingSelected, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail } from '../redux/slices/productSlice';
+import { fetchProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail } from '../redux/slices/productSlice';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import CloseIcon from '@mui/icons-material/Close';
@@ -106,7 +106,6 @@ const Products = () => {
     }
 
     const handleShow1 = () => {
-        dispatch(setToppingSelected());
         setShow1(!show1);
     }
 
@@ -121,15 +120,20 @@ const Products = () => {
         dispatch(addItems(producDetailtId2));
         dispatch(setProductId(productId));
         dispatch(setTotal());
-        console.log(items);
+        // console.log(items);
     };
-    const handleToppingClick = (toppingDetail, toppingName, topping) => {
-        dispatch(setStoreToppingSelected(topping));
+    const handleToppingClick = (toppingDetail, topping) => {
+        if (topping.details.length === 0) {
+            dispatch(setStoreToppingSelected(topping));
+        }
         dispatch(setToppingDetail(toppingDetail));
         dispatch(setToppingId(topping.id));
-        // if (toppingDetail.length > 0) {
-        //     setShow2(false);
-        // }
+
+        if (toppingDetail.length > 0) {
+            setShow2(false);
+        }
+
+
     };
 
     const handleToppingDetailClick = (toppingDetail, toppingDetailId) => {
@@ -150,7 +154,7 @@ const Products = () => {
                                 <Box className='w-full flex items-start'>
                                     <Box className='w-full flex flex-row flex-wrap'>
                                         <Box
-                                            className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#ffdd00] hover:bg-[#ffdd00]'
+                                            className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
                                             sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
                                             onClick={() => handleShow()} // Truyền tên sản phẩm vào hàm handleShow
                                         >
@@ -159,8 +163,8 @@ const Products = () => {
                                         {productDetail1.map((product_detail) => (
                                             <Box
                                                 key={product_detail.id}
-                                                className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
-                                                sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                                className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px]'
+                                                sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: product_detail.color }}
                                                 onClick={() => handleProductDetailClick(product_detail, product_detail.toppings, product_detail.id)}
                                             >
                                                 <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product_detail.name}</Typography>
@@ -175,7 +179,7 @@ const Products = () => {
                                     (
                                         <div className='w-full flex flex-row flex-wrap'>
                                             <Box
-                                                className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#ffdd00] hover:bg-[#ffdd00]'
+                                                className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
                                                 sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
                                                 onClick={() => handleShow1()}
                                             >
@@ -184,12 +188,12 @@ const Products = () => {
                                             {toppings.map((topping) => (
                                                 <Box
                                                     key={topping.id}
-                                                    className='w-[98%] h-[150px] m-[1px] flex flex-col justify-center items-center rounded-[10px]'
+                                                    className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px]'
                                                     sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: topping.color }}
-                                                    onClick={() => { handleToppingClick(topping.details, topping.name, topping) }}
+                                                    onClick={() => { handleToppingClick(topping.details, topping) }}
                                                 >
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name}</Typography>
-                                                    {topping.details.length > 0 ?
+                                                    {/* {topping.details.length > 0 ?
                                                         (
                                                             <Box className='w-full h-full flex flex-col justify-s items-center gap-[2px] m-auto text-[12px]'>
                                                                 {topping.details.map((detail) => {
@@ -210,7 +214,7 @@ const Products = () => {
                                                         (
                                                             <></>
                                                         )
-                                                    }
+                                                    } */}
 
                                                 </Box>
                                             ))}
@@ -222,8 +226,8 @@ const Products = () => {
                                             {toppingDetails.map((toppingDetail) => (
                                                 <Box
                                                     key={toppingDetail.id}
-                                                    className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px] bg-[#64c776] hover:bg-[#64c776ef]'
-                                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                                    className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px]'
+                                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: toppingDetail.color }}
                                                     onClick={() => handleToppingDetailClick(toppingDetail, toppingDetail.id)}
                                                 >
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{toppingDetail.name}</Typography>
@@ -239,8 +243,8 @@ const Products = () => {
                             {data?.map((product, index) => (
                                 <Box
                                     key={index}
-                                    className='w-[32%] h-[100px] m-[1px] flex flex-col flex-wrap justify-center items-center rounded-[10px] bg-[#648FC7] hover:bg-[#648fc7ec]'
-                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none' }}
+                                    className='w-[32%] h-[100px] m-[1px] flex flex-col flex-wrap justify-center items-center rounded-[10px]'
+                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: product.color }}
                                     onClick={() => handleProductClick(product.id, product.details)} // Truyền ID và tên sản phẩm vào hàm handleProductClick
                                 >
                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product.name}</Typography>

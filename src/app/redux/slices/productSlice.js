@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { parseCookies } from 'nookies';
 import { selectPosId } from './orderTypeSlice';
+import { v4 as uuidv4 } from 'uuid';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
 const token = parseCookies()['token'];
@@ -30,7 +31,6 @@ const initialState = {
     items: [],
     topping: [],
     toppingDetail: [],
-    toppingSelected: [],
     productId: '',
     toppingId: '',
 }
@@ -54,27 +54,37 @@ export const productSlice = createSlice({
         },
         addItems: (state, action) => {
             const item = action.payload;
-            const existItem = state.items.find((i) => i.id === item.id);
-            if (existItem) {
-                // Nếu món hàng đã tồn tại, tăng số lượng lên 1
-                existItem.quantity++;
-            } else {
-                // Nếu món hàng chưa tồn tại, thêm vào giỏ hàng với số lượng là 1
-                state.items.push({ ...item, quantity: 1 });
+
+            function generateUniqueId() {
+                return uuidv4();
+            }
+            const idCard = generateUniqueId();
+            const existItem = state.items.find((i) => i.idCard === item.idCard);
+            // if (existItem) {
+            //     // Nếu món hàng đã tồn tại, tăng số lượng lên 1
+            //     existItem.quantity++;
+            // } else {
+            //     // Nếu món hàng chưa tồn tại, thêm vào giỏ hàng với số lượng là 1
+            //     state.items.push({ ...item, quantity: 1, idCard: generateUniqueId() });
+            // }
+            switch (key) {
+                case (state.items.length === 0):
+                    state.items.push({ ...item, quantity: 1, idCard: idCard });
+                    break;
+                case (existItem):
+                    existItem.quantity++;
+                    break;
+                default:
+                    break;
             }
         },
         setToppingDetail: (state, action) => {
             state.toppingDetail = action.payload;
         },
-        setToppingSelected: (state, action) => {
-            state.toppingSelected = [...state.toppingSelected, action.payload];
-            // state.storeToppingSelected.push([]);
-        },
         setProductId: (state, action) => {
             state.productId = action.payload;
         },
         setStoreToppingSelected: (state, action) => {
-            // state.storeToppingSelected[state.storeToppingSelected.length - 1].push(action.payload);
             const topping = action.payload;
             if (state.items.length > 0) {
                 state.items.map((item, index) => {
@@ -143,6 +153,6 @@ export const productSlice = createSlice({
     },
 })
 
-export const { setTotal, setProductDetail, addItems, setToping, setToppingDetail, setToppingSelected, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail } = productSlice.actions;
+export const { setTotal, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail } = productSlice.actions;
 
 export default productSlice.reducer;
