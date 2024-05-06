@@ -22,7 +22,6 @@ export const fetchProduct = createAsyncThunk(
     },
 )
 
-
 const initialState = {
     data: [],
     isLoading: false,
@@ -33,6 +32,7 @@ const initialState = {
     toppingDetail: [],
     productId: '',
     toppingId: '',
+    idCard: '',
 }
 
 // Then, handle actions in your reducers:
@@ -54,28 +54,17 @@ export const productSlice = createSlice({
         },
         addItems: (state, action) => {
             const item = action.payload;
+            const existItem = state.items.find((i) => i.id === item.id);
+            const uniqueId = uuidv4();
 
-            function generateUniqueId() {
-                return uuidv4();
-            }
-            const idCard = generateUniqueId();
-            const existItem = state.items.find((i) => i.idCard === item.idCard);
-            // if (existItem) {
-            //     // Nếu món hàng đã tồn tại, tăng số lượng lên 1
-            //     existItem.quantity++;
-            // } else {
-            //     // Nếu món hàng chưa tồn tại, thêm vào giỏ hàng với số lượng là 1
-            //     state.items.push({ ...item, quantity: 1, idCard: generateUniqueId() });
-            // }
-            switch (key) {
-                case (state.items.length === 0):
-                    state.items.push({ ...item, quantity: 1, idCard: idCard });
-                    break;
-                case (existItem):
-                    existItem.quantity++;
-                    break;
-                default:
-                    break;
+            if (state.items.length === 0) {
+                state.items.push({ ...item, quantity: 1, idCard: uniqueId });
+            } else {
+                if (state.items[state.items.length - 1].id === item.id) {
+                    state.items[state.items.length - 1].quantity++;
+                } else {
+                    state.items.push({ ...item, quantity: 1, idCard: uniqueId });
+                }
             }
         },
         setToppingDetail: (state, action) => {
@@ -88,7 +77,21 @@ export const productSlice = createSlice({
             const topping = action.payload;
             if (state.items.length > 0) {
                 state.items.map((item, index) => {
-                    if (item.id === state.productId) {
+                    // if (item.id === state.productId) {
+                    //     if (!state.items[index].topping) {
+                    //         state.items[index].topping = [];
+                    //         // state.items[index].topping.quantity++;
+                    //         state.items[index].topping.push({ topping, quantity: 1 });
+
+                    //     } else if (state.items[index].topping.find((i) => i.topping.idCard === state.idCard)) {
+                    //         state.items[index].topping.find((i) => i.topping.id === topping.id).quantity++;
+                    //     } else {
+                    //         // Thêm topping vào mảng topping hiện tại
+                    //         state.items[index].topping.push({ topping, quantity: 1 });
+                    //     }
+
+                    // }
+                    if (item.idCard === state.idCard) {
                         if (!state.items[index].topping) {
                             state.items[index].topping = [];
                             // state.items[index].topping.quantity++;
@@ -104,17 +107,27 @@ export const productSlice = createSlice({
                     }
                 });
             }
-
         },
         setToppingId: (state, action) => {
             state.toppingId = action.payload;
-
         },
         addToppingDetail: (state, action) => {
             const toppingDetail = action.payload;
             if (state.items.length > 0) {
                 state.items.map((item, index) => {
-                    if (item.id === state.productId) {
+                    // if (item.id === state.productId) {
+                    //     if (!state.items[index].toppingDetail) {
+                    //         state.items[index].toppingDetail = [];
+                    //         // state.items[index].topping.quantity++;
+                    //         state.items[index].toppingDetail.push({ toppingDetail, quantity: 1 });
+                    //     } else if (state.items[index].toppingDetail.find((i) => i.toppingDetail.id === toppingDetail.id)) {
+                    //         state.items[index].toppingDetail.find((i) => i.toppingDetail.id === toppingDetail.id).quantity++;
+                    //     } else {
+                    //         // Thêm topping vào mảng topping hiện tại
+                    //         state.items[index].toppingDetail.push({ toppingDetail, quantity: 1 });
+                    //     }
+                    // }
+                    if (item.idCard === state.idCard) {
                         if (!state.items[index].toppingDetail) {
                             state.items[index].toppingDetail = [];
                             // state.items[index].topping.quantity++;
@@ -137,6 +150,9 @@ export const productSlice = createSlice({
             // Đặt lại state về giá trị ban đầu
             return initialState;
         },
+        setIdCard: (state, action) => {
+            state.idCard = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -153,6 +169,6 @@ export const productSlice = createSlice({
     },
 })
 
-export const { setTotal, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail } = productSlice.actions;
+export const { setTotal, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail, setIdCard } = productSlice.actions;
 
 export default productSlice.reducer;

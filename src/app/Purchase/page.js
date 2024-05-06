@@ -13,14 +13,15 @@ import Paper from '@mui/material/Paper';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { Typography, Box, Button, TextField } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useState, useEffect } from 'react';
-import { fetchProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail } from '../redux/slices/productSlice';
+import { useState, useEffect, useRef } from 'react';
+import { fetchProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail, setIdCard } from '../redux/slices/productSlice';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import EastIcon from '@mui/icons-material/East';
 import { parseCookies } from "nookies";
+import { set } from 'date-fns';
 
 const CollapsibleTable = () => {
     const currentDate = new Date().toLocaleDateString();
@@ -29,6 +30,24 @@ const CollapsibleTable = () => {
     const items = useSelector((state) => state.product.items);
     const toppingSelected = useSelector((state) => state.product.toppingSelected);
     // const storeToppingSelected = useSelector((state) => state.product.storeToppingSelected);
+    const dispatch = useDispatch();
+    const [isNew, setIsNew] = useState(true);
+    const idCard = useSelector((state) => state.product.idCard);
+
+    useEffect(() => {
+        if (items.length > 0) {
+            dispatch(setIdCard(items[items.length - 1].idCard));
+
+        }
+        setIsNew(true);
+        console.log(isNew);
+    }, [items]);
+
+    const updateIdCard = (IdCard) => {
+        dispatch(setIdCard(IdCard));
+        setIsNew(false);
+        console.log(isNew);
+    }
 
     return (
         <TableContainer component={Paper} sx={{ width: '100%', maxHeight: '74%' }} className='h-[74%]'>
@@ -50,17 +69,24 @@ const CollapsibleTable = () => {
                 <TableBody>
                     {items?.map((item, index) => (
                         <React.Fragment key={index}>
-                            <TableRow className='h-[10px]'>
-
-                                <Box className='w-[100%] h-[20px] flex flex-row justify-between items-center p-[5px] text-[12px] border-b-[1px]'>
+                            <TableRow
+                                className='h-[10px] cursor-pointer select-none'
+                                style={{ backgroundColor: index === items.length - 1 && isNew ? 'gray' : 'transparent' }}
+                                onClick={() => updateIdCard(item.idCard)}
+                            >
+                                <Box
+                                    className='w-[100%] h-[20px] flex flex-row justify-between items-center p-[5px] text-[12px] border-b-[1px]'
+                                    style={{ backgroundColor: isNew === false && item.idCard === idCard ? 'gray' : 'transparent', color: backgroundColor === 'gray' && item.idCard === idCard ? 'white' : 'black' }}
+                                    autoFocus
+                                >
                                     <p className='mt-1'><p className='w-[15px] h-[15px]  mr-1 inline-block text-center bg-black text-[#fff] rounded-[50%]'>{item.quantity}</p>{item.name}</p>
                                     {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
                                 </Box>
-
-                                {/* <TableCell size='small'></TableCell> */}
                             </TableRow>
-                            <TableRow className=''>
-
+                            <TableRow
+                                className='select-none'
+                            // onClick={() => updateIdCard(item.idCard)}
+                            >
                                 <Box className='flex flex-row flex-wrap justify-start items-start pl-[6px] border-b-[1px]'>
                                     {items.length > 0 &&
                                         items[index].topping?.map((topping, index) => (
@@ -79,8 +105,6 @@ const CollapsibleTable = () => {
                                         ))
                                     }
                                 </Box>
-
-
                             </TableRow>
                         </React.Fragment>
                     ))}
