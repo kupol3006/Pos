@@ -74,7 +74,8 @@ export default function SignInSide() {
     return (
         <ThemeProvider theme={defaultTheme}>
             <Grid container component="main" sx={{ width: '100%', height: '100vh' }} >
-                <Box item xs={12} sm={8} md={5} component={Paper} elevation={6} square className='m-auto flex'>
+                {/* <Box item xs={12} sm={8} md={5} component={Paper} elevation={6} square className='m-auto flex'> */}
+                <Box item='value' xs={12} sm={8} md={5} component={Paper} elevation={6} square className='m-auto flex'>
                     <Box
                         sx={{
                             my: 8,

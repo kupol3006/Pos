@@ -14,14 +14,15 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { Typography, Box, Button, TextField } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useRef } from 'react';
-import { fetchProduct, setTotal, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail, setIdCard } from '../redux/slices/productSlice';
+import { fetchProduct, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail, setIdCard, setItemSelected, updateQuantity } from '../redux/slices/productSlice';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import EastIcon from '@mui/icons-material/East';
 import { parseCookies } from "nookies";
-import { set } from 'date-fns';
+// import { set } from 'date-fns';
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 
 const CollapsibleTable = () => {
     const currentDate = new Date().toLocaleDateString();
@@ -32,19 +33,22 @@ const CollapsibleTable = () => {
     // const storeToppingSelected = useSelector((state) => state.product.storeToppingSelected);
     const dispatch = useDispatch();
     const [isNew, setIsNew] = useState(true);
+    const [isGray, setIsGray] = useState(true);
     const idCard = useSelector((state) => state.product.idCard);
+    const itemSelected = useSelector((state) => state.product.itemSelected);
 
     useEffect(() => {
-        if (items.length > 0) {
+        if (items.length > 0 && itemSelected.idCard !== idCard) {
             dispatch(setIdCard(items[items.length - 1].idCard));
-
+            setIsNew(true);
         }
-        setIsNew(true);
+
         console.log(isNew);
     }, [items]);
 
-    const updateIdCard = (IdCard) => {
+    const updateIdCard = (IdCard, item) => {
         dispatch(setIdCard(IdCard));
+        dispatch(setItemSelected(item));
         setIsNew(false);
         console.log(isNew);
     }
@@ -52,19 +56,13 @@ const CollapsibleTable = () => {
     return (
         <TableContainer component={Paper} sx={{ width: '100%', maxHeight: '74%' }} className='h-[74%]'>
             <Table aria-label="collapsible table">
-                <TableHead size='small' sx={{ height: '10px' }}>
-                    <TableRow size='small' sx={{ height: '10px' }}>
-                        {/* <TableCell size='small' style={{ padding: '8px', width: '100px', borderRight: '1px black solid' }}>{currentDate}</TableCell>
-                        <TableCell size='small' align="right" style={{ padding: '0px', width: '100px', borderRight: '1px black solid' }}>{currentTime}</TableCell>
-                        <TableCell size='small' align="center" style={{ padding: '0px', width: '200px' }}>Phục vụ:</TableCell>
-                        <TableCell size='small' align="center" style={{ padding: '0px', width: '150px', marginRight: '3px' }} colSpan={2}> {staff}</TableCell> */}
-                        <Box className='flex flex-row w-full h-[20px] border-b border-black'>
-                            <Typography sx={{ width: '25%', marginLeft: '2px', borderRight: '1px solid black', fontSize: '15px' }}>{currentDate}</Typography>
-                            <Typography sx={{ width: '25%', marginLeft: '2px', borderRight: '1px solid black', fontSize: '15px' }}>{currentTime}</Typography>
-                            <Typography sx={{ width: '25%', marginLeft: '2px', fontSize: '15px' }}>Phục vụ:</Typography>
-                            <Typography sx={{ width: '25%', marginLeft: '2px', fontSize: '15px' }}>{staff}</Typography>
-                        </Box>
-                    </TableRow>
+                <TableHead size='small' className='h-[15px] border-b border-[black]' >
+                    <tr size='small'>
+                        <td size='small' style={{ padding: '0px', width: '25%', borderRight: '1px black solid' }}>{currentDate}</td>
+                        <td size='small' align="right" style={{ padding: '0px', width: '25%', borderRight: '1px black solid' }}>{currentTime}</td>
+                        <td size='small' align="center" style={{ padding: '0px', width: '25%' }}>Phục vụ:</td>
+                        <td size='small' align="center" style={{ padding: '0px', width: '25%' }}>{staff}</td>
+                    </tr>
                 </TableHead>
                 <TableBody>
                     {items?.map((item, index) => (
@@ -72,45 +70,60 @@ const CollapsibleTable = () => {
                             <TableRow
                                 className='h-[10px] cursor-pointer select-none'
                                 style={{ backgroundColor: index === items.length - 1 && isNew ? 'gray' : 'transparent' }}
-                                onClick={() => updateIdCard(item.idCard)}
+                                onClick={() => updateIdCard(item.idCard, item)}
                             >
-                                <Box
-                                    className='w-[100%] h-[20px] flex flex-row justify-between items-center p-[5px] text-[12px] border-b-[1px]'
-                                    style={{ backgroundColor: isNew === false && item.idCard === idCard ? 'gray' : 'transparent', color: backgroundColor === 'gray' && item.idCard === idCard ? 'white' : 'black' }}
-                                    autoFocus
-                                >
-                                    <p className='mt-1'><p className='w-[15px] h-[15px]  mr-1 inline-block text-center bg-black text-[#fff] rounded-[50%]'>{item.quantity}</p>{item.name}</p>
-                                    {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
-                                </Box>
+                                <td size='small' colSpan={4} className='h-[20px]'>
+                                    <Box
+                                        className='w-full h-full flex flex-row justify-between items-center pl-[5px] pr-[5px] text-[12px] border-t border-[gray]'
+                                        style={{
+                                            backgroundColor: isNew === false && item.idCard === idCard ? 'gray' : 'transparent',
+                                            color: isGray && item.idCard === idCard ? 'white' : 'black',
+                                            width: '100%',
+                                            height: '100%'
+                                        }}
+                                        autoFocus
+                                    >
+                                        <div className="mt-1">
+                                            <div className='w-[15px] h-[15px] mr-1 inline-block text-center bg-[#3B44B6] text-[#fff] rounded-[50%]'>
+                                                {item.quantity}
+                                            </div>
+                                            <span>{item.name}</span>
+                                        </div>
+                                        {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                                    </Box>
+                                </td>
                             </TableRow>
                             <TableRow
-                                className='select-none'
-                            // onClick={() => updateIdCard(item.idCard)}
+                                className='select-none cursor-pointer'
+                                onClick={() => updateIdCard(item.idCard, item)}
                             >
-                                <Box className='flex flex-row flex-wrap justify-start items-start pl-[6px] border-b-[1px]'>
-                                    {items.length > 0 &&
-                                        items[index].topping?.map((topping, index) => (
-                                            <Box key={index} size='small' className='flex text-[10px] w-[25%]'>
-                                                <p className='w-[13px] h-[13px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{topping.quantity}</p>
-                                                <p>{topping.topping.name}</p>
-                                            </Box>
-                                        ))
-                                    }
-                                    {items.length > 0 &&
-                                        items[index].toppingDetail?.map((toppingDetail, index) => (
-                                            <Box key={index} size='small' className='flex text-[10px] w-[25%]'>
-                                                <p className='w-[13px] h-[13px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{toppingDetail.quantity}</p>
-                                                <p>{toppingDetail.toppingDetail.name}</p>
-                                            </Box>
-                                        ))
-                                    }
-                                </Box>
+                                <td size='small' colSpan={4} >
+                                    <Box className='flex flex-row flex-wrap justify-start items-start pl-[6px] '>
+                                        {items.length > 0 &&
+                                            items[index].topping?.map((topping, index) => (
+                                                <Box key={index} size='small' className='flex text-[10px] w-[25%]'>
+                                                    <p className='w-[13px] h-[13px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{topping.quantity}</p>
+                                                    <p>{topping.topping.name}</p>
+                                                </Box>
+                                            ))
+                                        }
+                                        {items.length > 0 &&
+                                            items[index].toppingDetail?.map((toppingDetail, index) => (
+                                                <Box key={index} size='small' className='flex text-[10px] w-[25%]'>
+                                                    <p className='w-[13px] h-[13px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{toppingDetail.quantity}</p>
+                                                    <p>{toppingDetail.toppingDetail.name}</p>
+                                                </Box>
+                                            ))
+                                        }
+                                    </Box>
+                                </td>
                             </TableRow>
                         </React.Fragment>
                     ))}
                 </TableBody>
             </Table>
         </TableContainer>
+
     );
 }
 
@@ -143,7 +156,6 @@ const Products = () => {
         dispatch(setToping(topping));
         dispatch(addItems(producDetailtId2));
         dispatch(setProductId(productId));
-        dispatch(setTotal());
         // console.log(items);
     };
     const handleToppingClick = (toppingDetail, topping) => {
@@ -161,7 +173,6 @@ const Products = () => {
     };
 
     const handleToppingDetailClick = (toppingDetail, toppingDetailId) => {
-
         dispatch(addToppingDetail(toppingDetail));
         setShow2(true);
     };
@@ -287,15 +298,17 @@ const Products = () => {
 export default function BoxSx() {
     const roomNum = useSelector((state) => state.order.roomNum);
     const cusQuan = useSelector((state) => state.order.cusQuan);
-    const total = useSelector((state) => state.product.total);
+
     const dispatch = useDispatch();
-    const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
+
     const staff = useSelector((state) => state.order.staff);
     const currentTime = new Date().toLocaleTimeString();
     const router = useRouter();
+    const items = useSelector((state) => state.product.items);
+    const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
 
     const [tax, setTax] = useState('0');
-    // const [total, setTotal] = useState(0);
     // const [cusPay, setCusPay] = useState('0đ');
     const pathName = usePathname();
     const handleBack = () => {
@@ -307,7 +320,7 @@ export default function BoxSx() {
 
     const handleChange = (num) => {
         setValue(prevValue => prevValue + `${num}`)
-        console.log(value);
+        // console.log(value);
     }
 
     const handleDelete = () => {
@@ -326,6 +339,11 @@ export default function BoxSx() {
             router.push("/Login");
         }
     }, []);
+
+    const handleUpdateQuantity = (value) => {
+        dispatch(updateQuantity(value));
+        console.log('aaa');
+    }
 
     return (
         <Box>
@@ -376,8 +394,8 @@ export default function BoxSx() {
                     <div className='w-full h-[16%] mt-[2px] flex flex-row flex-wrap justify-center items-center border border-[#E7E7E7]'>
                         <div className='w-[24.6%] h-full flex-col mr-[2px]'>
                             <div className='w-full h-[31.8%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Chuyển bàn</div>
-                            <div className='w-full h-[31.8%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Tăng SL món</div>
-                            <div className='w-full h-[31.8%] bg-[#0044ff] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Giảm SL món</div>
+                            <div className='w-full h-[31.8%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px] cursor-pointer select-none' onClick={() => { handleUpdateQuantity('plus') }}>Tăng SL món</div>
+                            <div className='w-full h-[31.8%] bg-[#0044ff] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px] cursor-pointer select-none' onClick={() => { handleUpdateQuantity('minus') }}>Giảm SL món</div>
                         </div>
                         <div className='w-[24.6%] h-full flex-col mr-[2px]'>
                             <div className='w-full h-[33%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Gộp bàn</div>
@@ -429,8 +447,9 @@ export default function BoxSx() {
                                         </Button>
                                     )
                                 })}
-                                <Button className='w-[32.7%] h-[24%]' variant="contained" sx={{ background: '#575851' }} onClick={() => { handleChange('.') }} value='.'>.</Button>
                                 <Button className='w-[32.7%] h-[24%]' variant="contained" color='error' onClick={() => { handleDelete() }}>xóa</Button>
+                                <Button className='w-[32.7%] h-[24%]' variant="contained" sx={{ backgroundColor: '#086BFF' }} onClick={() => { handleUpdateQuantity(value) }} ><KeyboardReturnIcon /></Button>
+
                             </div>
                         </div>
                     </div>

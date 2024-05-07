@@ -26,13 +26,13 @@ const initialState = {
     data: [],
     isLoading: false,
     productDetail: [],
-    total: 0,
     items: [],
     topping: [],
     toppingDetail: [],
     productId: '',
     toppingId: '',
     idCard: '',
+    itemSelected: [],
 }
 
 // Then, handle actions in your reducers:
@@ -40,17 +40,14 @@ export const productSlice = createSlice({
     name: 'product',
     initialState,
     reducers: {
-        setTotal: (state, action) => {
-            let price = state.items.map((item) => {
-                return item.price * item.quantity
-            });
-            state.total = price.reduce((a, b) => a + b, 0);
-        },
         setProductDetail: (state, action) => {
             state.productDetail = action.payload;
         },
         setToping: (state, action) => {
             state.topping = action.payload;
+        },
+        setItemSelected: (state, action) => {
+            state.itemSelected = action.payload;
         },
         addItems: (state, action) => {
             const item = action.payload;
@@ -59,7 +56,17 @@ export const productSlice = createSlice({
 
             if (state.items.length === 0) {
                 state.items.push({ ...item, quantity: 1, idCard: uniqueId });
-            } else {
+            }
+            else if (state.items.find((i) => i.idCard === state.itemSelected.idCard)) {
+                const itemToUpdate = state.items.find((i) => i.id === item.id && i.idCard === state.itemSelected.idCard);
+                if (itemToUpdate) {
+                    itemToUpdate.quantity++;
+                } else {
+                    state.itemSelected = [];
+                    state.items.push({ ...item, quantity: 1, idCard: uniqueId });
+                }
+            }
+            else {
                 if (state.items[state.items.length - 1].id === item.id) {
                     state.items[state.items.length - 1].quantity++;
                 } else {
@@ -91,6 +98,7 @@ export const productSlice = createSlice({
                     //     }
 
                     // }
+
                     if (item.idCard === state.idCard) {
                         if (!state.items[index].topping) {
                             state.items[index].topping = [];
@@ -103,7 +111,6 @@ export const productSlice = createSlice({
                             // Thêm topping vào mảng topping hiện tại
                             state.items[index].topping.push({ topping, quantity: 1 });
                         }
-
                     }
                 });
             }
@@ -153,6 +160,25 @@ export const productSlice = createSlice({
         setIdCard: (state, action) => {
             state.idCard = action.payload;
         },
+        updateQuantity: (state, action) => {
+            const value = action.payload;
+            if (value === 'plus') {
+                state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity++;
+            } else if (value === 'minus') {
+                const quantity = state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity
+
+                if (quantity === 1) {
+                    state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity--
+                    state.items = state.items.filter((i) => i.quantity > 0);
+                }
+                else if (quantity >= 1) {
+                    state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity--;
+                }
+
+            } else {
+                state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity = value;
+            }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -169,6 +195,6 @@ export const productSlice = createSlice({
     },
 })
 
-export const { setTotal, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail, setIdCard } = productSlice.actions;
+export const { setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail, setIdCard, setItemSelected, updateQuantity } = productSlice.actions;
 
 export default productSlice.reducer;
