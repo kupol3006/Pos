@@ -23,6 +23,7 @@ import EastIcon from '@mui/icons-material/East';
 import { parseCookies } from "nookies";
 // import { set } from 'date-fns';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import { createOrder } from '../redux/slices/orderSlice';
 
 const CollapsibleTable = () => {
     const currentDate = new Date().toLocaleDateString();
@@ -345,6 +346,10 @@ export default function BoxSx() {
         console.log('aaa');
     }
 
+    const handleSubmit = () => {
+        dispatch(createOrder());
+    }
+
     return (
         <Box>
             <Box className='flex flex-row w-full h-screen' sx={{ gap: '2px' }} >
@@ -476,7 +481,7 @@ export default function BoxSx() {
                         </div>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
                             <Button variant="contained" color="error" onClick={() => { handleBack() }} className='w-[50%]'><CloseIcon /></Button>
-                            <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={() => { handleSubmit() }}><CheckIcon /></Button>
+                            <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={() => handleSubmit()}><CheckIcon /></Button>
                         </div>
                     </div>
                 </div>

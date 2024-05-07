@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Button, Container, Stack, Box, MenuItem, InputLabel } from '@mui/material';
 import { Select } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectForm, updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNum, updateTest, updateOrderType, updateOrderChannel, updateStaff } from '../redux/slices/orderSlice';
+import { updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNum, updateTest, updateOrderType, updateOrderChannel, updateStaff } from '../redux/slices/orderSlice';
 import { useRouter } from "next/navigation";
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
@@ -39,7 +39,7 @@ const RegisterForm = () => {
     const [staff, setStaff] = useState(staff1)
     const router = useRouter();
 
-    const form = useSelector(selectForm);
+    // const form = useSelector(selectForm);
     const dispatch = useDispatch();
     const pathname = usePathname();
 
@@ -196,7 +196,7 @@ const RegisterForm = () => {
                         >
                             {dataFloor?.map((floor, index) => {
                                 return (
-                                    <MenuItem key={floor.id} value={floor.name} onClick={() => (handelFloorDetail(floor.details))}>{floor.name}</MenuItem>
+                                    <MenuItem key={floor.id} value={floor.id} onClick={() => (handelFloorDetail(floor.details))}>{floor.name}</MenuItem>
                                 )
                             })}
 
@@ -213,7 +213,7 @@ const RegisterForm = () => {
                         >
                             {dataFloorDetail?.map((room, index) => {
                                 return (
-                                    <MenuItem key={room.id} value={room.name}>{room.name}</MenuItem>
+                                    <MenuItem key={room.id} value={room.id}>{room.name}</MenuItem>
                                 )
                             })}
 
@@ -231,7 +231,7 @@ const RegisterForm = () => {
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
                             {data?.map((item, index) => (
-                                <MenuItem key={index} value={item.name} onClick={() => (handleOrderTypeDetail(item.details, item.pos_id))}>{item.name}</MenuItem>
+                                <MenuItem key={index} value={item.id} onClick={() => (handleOrderTypeDetail(item.details, item.pos_id))}>{item.name}</MenuItem>
                             ))}
                         </Select>
                         <InputLabel id="demo-simple-select-label1" sx={{ margin: '5px 20px 0px 12px', fontSize: '12px' }}>Kênh order</InputLabel>
@@ -244,7 +244,7 @@ const RegisterForm = () => {
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
                             {orderTypeDetail.map((item, index) => (
-                                <MenuItem key={index} value={item.channel_name}>{item.channel_name}</MenuItem>
+                                <MenuItem key={index} value={item.channel_id}>{item.channel_name}</MenuItem>
                             ))}
                         </Select>
                     </Stack>
