@@ -14,7 +14,7 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { Typography, Box, Button, TextField } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useRef } from 'react';
-import { fetchProduct, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail, setIdCard, setItemSelected, updateQuantity } from '../redux/slices/productSlice';
+import { fetchProduct, setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetStateProductSlice, setProductId, setToppingId, addToppingDetail, setIdCard, setItemSelected, updateQuantity } from '../redux/slices/productSlice';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import CloseIcon from '@mui/icons-material/Close';
@@ -23,7 +23,8 @@ import EastIcon from '@mui/icons-material/East';
 import { parseCookies } from "nookies";
 // import { set } from 'date-fns';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
-import { createOrder } from '../redux/slices/orderSlice';
+// import { createOrder } from '../redux/slices/orderSlice';
+import ConfirmationDialog from '../Component/popUpSave'
 
 const CollapsibleTable = () => {
     const currentDate = new Date().toLocaleDateString();
@@ -37,6 +38,8 @@ const CollapsibleTable = () => {
     const [isGray, setIsGray] = useState(true);
     const idCard = useSelector((state) => state.product.idCard);
     const itemSelected = useSelector((state) => state.product.itemSelected);
+
+    const dataOrderDetail = useSelector((state) => state.orderById.data.orderDetails);
 
     useEffect(() => {
         if (items.length > 0 && itemSelected.idCard !== idCard) {
@@ -66,6 +69,53 @@ const CollapsibleTable = () => {
                     </tr>
                 </TableHead>
                 <TableBody>
+                    {dataOrderDetail?.map((item, index) => (
+                        <React.Fragment key={index}>
+                            <TableRow
+                                className='h-[10px] cursor-pointer select-none'
+                                style={{ backgroundColor: '#EBEDEF' }}
+                            // onClick={() => updateIdCard(item.idCard, item)}
+                            >
+                                <td size='small' colSpan={4} className='h-[20px]'>
+                                    <Box
+                                        className='w-full h-full flex flex-row justify-between items-center pl-[5px] pr-[5px] text-[12px] border-t border-[gray] [&:nth-child(1)]: border-none'
+                                        style={{
+                                            // backgroundColor: isNew === false && item.idCard === idCard ? 'gray' : 'transparent',
+                                            // color: isGray && item.idCard === idCard ? 'white' : 'black',
+                                            width: '100%',
+                                            height: '100%'
+                                        }}
+                                        autoFocus
+                                    >
+                                        <div className="mt-1">
+                                            <div className='w-[15px] h-[15px] mr-1 inline-block text-center bg-[#3B44B6] text-[#fff] rounded-[50%]'>
+                                                {item.quantity}
+                                            </div>
+                                            <span>{item.name}</span>
+                                        </div>
+                                        {Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                                    </Box>
+                                </td>
+                            </TableRow>
+                            <TableRow
+                                className='select-none cursor-pointer'
+                                // onClick={() => updateIdCard(item.idCard, item)}
+                                style={{ backgroundColor: '#EBEDEF' }}
+                            >
+                                <td size='small' colSpan={4} >
+                                    <Box className='flex flex-row flex-wrap justify-start items-start pl-[6px] '>
+                                        {dataOrderDetail[index].details?.map((topping, index) => (
+                                            <Box key={index} size='small' className='flex text-[10px] w-[25%]'>
+                                                <p className='w-[13px] h-[13px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{topping.quantity}</p>
+                                                <p className='text-black'>{topping.name}</p>
+                                            </Box>
+                                        ))
+                                        }
+                                    </Box>
+                                </td>
+                            </TableRow>
+                        </React.Fragment>
+                    ))}
                     {items?.map((item, index) => (
                         <React.Fragment key={index}>
                             <TableRow
@@ -313,7 +363,7 @@ export default function BoxSx() {
     // const [cusPay, setCusPay] = useState('0đ');
     const pathName = usePathname();
     const handleBack = () => {
-        dispatch(resetState());
+        // dispatch(resetState());
         router.push('/Orders');
     };
     const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -346,9 +396,9 @@ export default function BoxSx() {
         console.log('aaa');
     }
 
-    const handleSubmit = () => {
-        dispatch(createOrder());
-    }
+    // const handleSubmit = () => {
+    //     dispatch(createOrder());
+    // }
 
     return (
         <Box>
@@ -481,10 +531,12 @@ export default function BoxSx() {
                         </div>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
                             <Button variant="contained" color="error" onClick={() => { handleBack() }} className='w-[50%]'><CloseIcon /></Button>
-                            <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={() => handleSubmit()}><CheckIcon /></Button>
+                            {/* <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={() => handleSubmit()}><CheckIcon /></Button> */}
+                            <ConfirmationDialog />
                         </div>
                     </div>
                 </div>
+
             </Box >
         </Box>
     );

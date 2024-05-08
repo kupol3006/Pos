@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { parseCookies } from 'nookies';
-import { selectPosId } from './orderTypeSlice';
+// import { selectPosId } from './orderTypeSlice';
 import { v4 as uuidv4 } from 'uuid';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
@@ -10,14 +10,15 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
 export const fetchProduct = createAsyncThunk(
     'product/fetchbyid',
-    async (_, { getState }) => {
-        const pos_id = selectPosId(getState());
+    async (_, { getState, rejectWithValue }) => {
+        const pos_id = getState().tableDetail.posId;
         try {
             const response = await axios.get(API_BASE_URL + 'menu/' + pos_id);
             const data = response.data.data;
             return data
-        } catch (err) {
-            console.log(err)
+        } catch (error) {
+            console.error("Error in fetchTableDetail:", error);
+            return rejectWithValue(error.message);
         }
     },
 )
@@ -153,7 +154,7 @@ export const productSlice = createSlice({
         resetStateToppingSelected: (state) => {
             state.toppingSelected = initialState.toppingSelected;
         },
-        resetState: (state) => {
+        resetStateProductSlice: (state) => {
             // Đặt lại state về giá trị ban đầu
             return initialState;
         },
@@ -195,6 +196,6 @@ export const productSlice = createSlice({
     },
 })
 
-export const { setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetState, setProductId, setToppingId, addToppingDetail, setIdCard, setItemSelected, updateQuantity } = productSlice.actions;
+export const { setProductDetail, addItems, setToping, setToppingDetail, setStoreToppingSelected, resetStateToppingSelected, resetStateProductSlice, setProductId, setToppingId, addToppingDetail, setIdCard, setItemSelected, updateQuantity } = productSlice.actions;
 
 export default productSlice.reducer;

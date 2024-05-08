@@ -42,8 +42,6 @@ export const createOrder = createAsyncThunk(
                             total: detail.topping ? detail.topping.price * detail.quantity : detail.toppingDetail ? detail.toppingDetail.price * detail.quantity : null,
                             sub_total: detail.topping ? detail.topping.price * detail.quantity : detail.toppingDetail ? detail.toppingDetail.price * detail.quantity : null,
                         })),
-
-
                 })),
             };
 

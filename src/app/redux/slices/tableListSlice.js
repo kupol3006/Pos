@@ -1,19 +1,17 @@
-// import TableDetail from '@/app/Component/tableDetail';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { set } from 'date-fns';
 import { parseCookies } from 'nookies';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
 
 
-export const fetchTable = createAsyncThunk(
-    'table/fetchTable',
+export const fetchTableList = createAsyncThunk(
+    'tableList/fetchTableList',
     async () => {
         try {
             const token = parseCookies()['token'];
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            const response = await axios.get(API_BASE_URL + 'table');
+            const response = await axios.get(API_BASE_URL + 'table/list?page=1&limit=10&tableId=1&channelId=1&status=1&diagram=true');
             const data = response.data.data;
             return data
         } catch (err) {
@@ -25,37 +23,29 @@ export const fetchTable = createAsyncThunk(
 
 const initialState = {
     data: [],
-    floorDetail: [],
     isLoading: false,
 }
 
-// Then, handle actions in your reducers:
-export const tableSlice = createSlice({
-    name: 'table',
+export const tableListSlice = createSlice({
+    name: 'tableList',
     initialState,
     reducers: {
-        setFloorDetail: (state, action) => {
-            state.floorDetail = action.payload
-        },
-        resetStateTableSlice: (state) => {
-            return initialState;
-        }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchTable.pending, (state) => {
+            .addCase(fetchTableList.pending, (state) => {
                 state.isLoading = false
             })
-            .addCase(fetchTable.fulfilled, (state, action) => {
+            .addCase(fetchTableList.fulfilled, (state, action) => {
                 state.isLoading = true
                 state.data = action.payload
             })
-            .addCase(fetchTable.rejected, (state) => {
+            .addCase(fetchTableList.rejected, (state) => {
                 state.isLoading = false
             })
     },
 })
 
-export const { setFloorDetail, resetStateTableSlice } = tableSlice.actions;
+export const { } = tableListSlice.actions;
 
-export default tableSlice.reducer;
+export default tableListSlice.reducer;

@@ -16,12 +16,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 import { useEffect } from 'react';
 
-export default function TableDetail() {
-    const room = useSelector((state) => state.table.floorDetail);
+export default function TableDetail({ floorDetail }) {
+    // const floorDetail = useSelector((state) => state.table.floorDetail);
 
     return (
         <div className='w-[80%] h-screen p-[3px] pt-[34px] flex flex-row flex-wrap gap-[3px]'>
-            {room.map((room, index) => {
+            {floorDetail.map((room, index) => {
                 return room.activeOrders.length > 0 ?
                     room.activeOrders.map((order, index) => {
                         return (

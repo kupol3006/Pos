@@ -7,26 +7,28 @@ import { updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNu
 import { useRouter } from "next/navigation";
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
-import { fetchOrderType, setOrderTypeDetail, setPosId } from '../redux/slices/orderTypeSlice';
 import { fetchStaff } from '../redux/slices/staffSlice';
 import { usePathname } from 'next/navigation';
 import { parseCookies } from "nookies";
 import { fetchTable, setFloorDetail } from '../redux/slices/tableSlice';
+import { fetchTableList } from '../redux/slices/tableListSlice';
+import { fetchTableDetail, setPosId } from '../redux/slices/tableDetailSlice';
 
 const RegisterForm = () => {
-    const data = useSelector((state) => state.orderType.data);
+
     const staffData = useSelector((state) => state.staff.data);
-    const orderTypeDetail = useSelector((state) => state.orderType.orderTypeDetail);
-    const pos_id = useSelector((state) => state.orderType.pos_id);
+
     const phone1 = useSelector((state) => state.order.phone);
     const floorNum1 = useSelector((state) => state.order.floorNum);
     const roomNum1 = useSelector((state) => state.order.roomNum);
     const orderType1 = useSelector((state) => state.order.orderType);
     const orderChannel1 = useSelector((state) => state.order.orderChannel);
     const staff1 = useSelector((state) => state.order.staff);
-    const isLoading = useSelector((state) => state.orderType.isLoading);
+
     const dataFloor = useSelector((state) => state.table.data);
     const dataFloorDetail = useSelector((state) => state.table.floorDetail);
+    const order = useSelector((state) => state.tableDetail.data);
+
 
     const [cusType, setCusType] = useState('AAA')
     const [cusQuan, setcusQuan] = useState('1')
@@ -46,9 +48,9 @@ const RegisterForm = () => {
     // const isClient = typeof window !== 'undefined';
 
     useEffect(() => {
-        dispatch(fetchOrderType());
         dispatch(fetchStaff());
         dispatch(fetchTable());
+        dispatch(fetchTableList());
     }, []);
 
     useEffect(() => {
@@ -63,9 +65,7 @@ const RegisterForm = () => {
         router.push('/');
     };
     const handleOrderTypeDetail = (orderTypeDetail, posId) => {
-        dispatch(setOrderTypeDetail(orderTypeDetail));
         dispatch(setPosId(posId));
-        console.log(orderTypeDetail);
         console.log(posId);
     };
     function handleSubmit(event) {
@@ -126,6 +126,11 @@ const RegisterForm = () => {
     const handelFloorDetail = (floorDetail) => {
         dispatch(setFloorDetail(floorDetail));
     };
+
+    const handleRoomDetail = (roomDetail) => {
+        dispatch(fetchTableDetail(roomDetail))
+    };
+
     return (
         <React.Fragment>
             <div className='w-full h-screen flex flex-row'>
@@ -213,7 +218,7 @@ const RegisterForm = () => {
                         >
                             {dataFloorDetail?.map((room, index) => {
                                 return (
-                                    <MenuItem key={room.id} value={room.id}>{room.name}</MenuItem>
+                                    <MenuItem disabled={room.status === 'deleted' || (room.multi_order === "0" && room.activeOrders.length > 0)} key={room.id} value={room.id} onClick={() => { handleRoomDetail(room) }}>{room.name}</MenuItem>
                                 )
                             })}
 
@@ -230,7 +235,7 @@ const RegisterForm = () => {
                             onChange={e => setOrderType(e.target.value)}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
-                            {data?.map((item, index) => (
+                            {order.details?.orderType?.map((item, index) => (
                                 <MenuItem key={index} value={item.id} onClick={() => (handleOrderTypeDetail(item.details, item.pos_id))}>{item.name}</MenuItem>
                             ))}
                         </Select>
@@ -243,9 +248,9 @@ const RegisterForm = () => {
                             onChange={e => setOrderChannel(e.target.value)}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
-                            {orderTypeDetail.map((item, index) => (
-                                <MenuItem key={index} value={item.channel_id}>{item.channel_name}</MenuItem>
-                            ))}
+
+                            <MenuItem key={'uni'} value={order.details?.orderChannel.id}>{order.details?.orderChannel.name}</MenuItem>
+
                         </Select>
                     </Stack>
                     <Stack sx={{ width: '49.8%', height: '50%', border: '1px black solid', borderRadius: '5px' }}>
