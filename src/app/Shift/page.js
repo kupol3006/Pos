@@ -19,7 +19,7 @@ export default function Shift() {
             <div className="w-[21%] h-[40%] pt-[44px] bg-[#fff] rounded-[3px] ml-[3px] mr-[3px]">
                 <div className='w-full h-[60%] p-[5px] flex flex-row flex-wrap'>
                     <div className="w-[50%] h-[33%] flex flex-row">
-                        <div className='w-[24px] h-full flex items-center '>
+                        <div className='w-[24px] h-full flex items-start p-[3px] '>
                             <CalendarTodayIcon sx={{ color: '#095EFF' }} fontSize='small' />
                         </div>
                         <div className='pl-[3px]'>
@@ -28,7 +28,7 @@ export default function Shift() {
                         </div>
                     </div>
                     <div className="w-[50%] h-[33%] flex flex-row">
-                        <div className='w-[24px] h-full flex items-center '>
+                        <div className='w-[24px] h-full flex items-start p-[3px] '>
                             <AccessTimeIcon sx={{ color: '#095EFF' }} fontSize='small' />
                         </div>
                         <div className='pl-[3px]'>
@@ -37,7 +37,7 @@ export default function Shift() {
                         </div>
                     </div>
                     <div className="w-[50%] h-[33%] flex flex-row">
-                        <div className='w-[24px] h-full flex items-center '>
+                        <div className='w-[24px] h-full flex items-start p-[3px] '>
                             <BookmarkBorderIcon sx={{ color: '#095EFF' }} fontSize='small' />
                         </div>
                         <div className='pl-[3px]'>
@@ -46,7 +46,7 @@ export default function Shift() {
                         </div>
                     </div>
                     <div className="w-[50%] h-[33%] flex flex-row">
-                        <div className='w-[24px] h-full flex items-center '>
+                        <div className='w-[24px] h-full flex items-start p-[3px] '>
                             <QueryStatsIcon sx={{ color: '#2D8046', backgroundColor: '#F7FFF7' }} fontSize='small' />
                         </div>
                         <div className='pl-[3px]'>

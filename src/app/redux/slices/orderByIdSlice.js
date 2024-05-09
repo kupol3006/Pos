@@ -33,6 +33,9 @@ export const orderByIdSlice = createSlice({
     name: 'OrderById',
     initialState,
     reducers: {
+        resetStateOrderByIdSlice: (state) => {
+            return initialState
+        },
 
     },
     extraReducers: (builder) => {
@@ -50,6 +53,6 @@ export const orderByIdSlice = createSlice({
     },
 })
 
-export const { } = orderByIdSlice.actions;
+export const { resetStateOrderByIdSlice } = orderByIdSlice.actions;
 
 export default orderByIdSlice.reducer;

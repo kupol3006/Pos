@@ -15,9 +15,19 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { useDispatch, useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 import { useEffect } from 'react';
+import { fetchOrderById } from '../redux/slices/orderByIdSlice';
+import { resetStateProductSlice } from '../redux/slices/productSlice';
 
 export default function TableDetail({ floorDetail }) {
     // const floorDetail = useSelector((state) => state.table.floorDetail);
+    const dispatch = useDispatch();
+    const router = useRouter();
+    const handleGetRoomData = async (room) => {
+        // dispatch(setRoomData(room));
+        await dispatch(fetchOrderById(room));
+        dispatch(resetStateProductSlice());
+        router.push('/Purchase');
+    };
 
     return (
         <div className='w-[80%] h-screen p-[3px] pt-[34px] flex flex-row flex-wrap gap-[3px]'>
@@ -26,8 +36,9 @@ export default function TableDetail({ floorDetail }) {
                     room.activeOrders.map((order, index) => {
                         return (
                             <Box
-                                key={order.id}
+                                key={index}
                                 className='w-[16.4%] h-[19%] border-[1px] rounded-[5px] cursor-pointer'
+                                onClick={() => handleGetRoomData(room)}
                             >
                                 <div className='w-full h-[17%] p-[9px] flex flex-row justify-between items-center bg-[#52A26A] text-[12px] text-[#fff] rounded-tl-[5px] rounded-tr-[5px]'>
                                     <p># {order.bill_id}</p>

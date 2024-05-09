@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Button, Container, Stack, Box, MenuItem, InputLabel } from '@mui/material';
 import { Select } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNum, updateTest, updateOrderType, updateOrderChannel, updateStaff } from '../redux/slices/orderSlice';
+import { updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNumId, updateRoomName, updateTest, updateOrderType, updateOrderChannel, updateStaff } from '../redux/slices/orderSlice';
 import { useRouter } from "next/navigation";
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
@@ -13,6 +13,7 @@ import { parseCookies } from "nookies";
 import { fetchTable, setFloorDetail } from '../redux/slices/tableSlice';
 import { fetchTableList } from '../redux/slices/tableListSlice';
 import { fetchTableDetail, setPosId } from '../redux/slices/tableDetailSlice';
+import { resetStateProductSlice } from '../redux/slices/productSlice';
 
 const RegisterForm = () => {
 
@@ -28,6 +29,8 @@ const RegisterForm = () => {
     const dataFloor = useSelector((state) => state.table.data);
     const dataFloorDetail = useSelector((state) => state.table.floorDetail);
     const order = useSelector((state) => state.tableDetail.data);
+
+    const items = useSelector((state) => state.product.items);
 
 
     const [cusType, setCusType] = useState('AAA')
@@ -62,6 +65,9 @@ const RegisterForm = () => {
 
 
     const handleBack = () => {
+        if (items.length > 0) {
+            dispatch(resetStateProductSlice());
+        }
         router.push('/');
     };
     const handleOrderTypeDetail = (orderTypeDetail, posId) => {
@@ -76,7 +82,7 @@ const RegisterForm = () => {
             dispatch(updateCusQuan(cusQuan));
             dispatch(updatePhone(phone));
             dispatch(updateFloorNum(floorNum));
-            dispatch(updateRoomNum(room));
+            dispatch(updateRoomNumId(room));
             dispatch(updateTest(test));
             dispatch(updateOrderType(orderType));
             dispatch(updateOrderChannel(orderChannel));
@@ -129,6 +135,7 @@ const RegisterForm = () => {
 
     const handleRoomDetail = (roomDetail) => {
         dispatch(fetchTableDetail(roomDetail))
+        dispatch(updateRoomName(roomDetail.name));
     };
 
     return (

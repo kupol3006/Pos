@@ -1,12 +1,3 @@
-// import { Typography, Box, Button, TextField } from '@mui/material';
-
-// export default function popUpSave() {
-//     return(
-//         <Box sx={{ width: '100%', height: '100%' }}>
-
-//         </Box>
-//     )
-// }
 import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -22,7 +13,7 @@ import { resetStateProductSlice } from '../redux/slices/productSlice';
 import { useRouter } from 'next/navigation';
 import { resetStateTableSlice } from '../redux/slices/tableSlice';
 
-export default function ConfirmationDialog() {
+export default function ConfirmationDialog(dataRoom) {
     const dispatch = useDispatch();
     const router = useRouter();
     const items = useSelector((state) => state.product.items);
@@ -38,21 +29,27 @@ export default function ConfirmationDialog() {
     };
 
     const handleConfirm = () => {
-        if (items.length > 0) {
-            dispatch(createOrder());
-            dispatch(resetStateProductSlice());
-            dispatch(resetStateTableSlice());
-            router.push('/');
-        } else {
-            alert('Không có sản phẩm nào trong giỏ hàng');
 
+        switch (dataRoom.length) {
+            case undefined:
+                if (items.length > 0) {
+                    dispatch(createOrder());
+                    dispatch(resetStateProductSlice());
+                    dispatch(resetStateTableSlice());
+                    router.push('/');
+                } else {
+                    alert('Không có sản phẩm nào trong giỏ hàng');
+                }
+                break;
+            default:
+                break;
         }
         setOpen(false);
     };
 
     return (
-        <div>
-            <Button variant="contained" color="success" type="submit" sx={{ width: '182.8%', height: "100%" }} onClick={handleClickOpen} >
+        <div className='w-[50%] h-full'>
+            <Button variant="contained" color="success" type="submit" sx={{ width: '100%', height: "100%" }} onClick={handleClickOpen} >
                 <CheckIcon />
             </Button>
             <Dialog
@@ -68,10 +65,10 @@ export default function ConfirmationDialog() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">
+                    <Button onClick={handleClose} color="primary" variant='outline' sx={{ border: '1px black solid' }}>
                         Hủy bỏ
                     </Button>
-                    <Button onClick={handleConfirm} color="primary" autoFocus>
+                    <Button onClick={handleConfirm} color="primary" autoFocus variant='contained'>
                         Xác nhận
                     </Button>
                 </DialogActions>

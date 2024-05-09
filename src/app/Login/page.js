@@ -75,7 +75,7 @@ export default function SignInSide() {
         <ThemeProvider theme={defaultTheme}>
             <Grid container component="main" sx={{ width: '100%', height: '100vh' }} >
                 {/* <Box item xs={12} sm={8} md={5} component={Paper} elevation={6} square className='m-auto flex'> */}
-                <Box item='value' xs={12} sm={8} md={5} component={Paper} elevation={6} square className='m-auto flex'>
+                <Box item='value' xs={12} sm={8} md={5} component={Paper} elevation={6} square className='m-auto flex justify-start items-start'>
                     <Box
                         sx={{
                             my: 8,
@@ -86,9 +86,9 @@ export default function SignInSide() {
                         }}
                         className='flex'
                     >
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                            <LockOutlinedIcon />
-                        </Avatar>
+                        <Box sx={{}}>
+                            <img src='logoPos.jpg' alt='logo' style={{ width: '170px', height: '100px' }} />
+                        </Box>
                         <Typography component="h1" variant="h5">
                             Đăng nhập
                         </Typography>
@@ -141,7 +141,7 @@ export default function SignInSide() {
                         </Box>
 
                     </Box>
-                    <Box className='p-[50px]'>
+                    <Box className='p-[32px]'>
                         <div className='w-[260px] h-[300px] flex flex-row items-center justify-center flex-wrap gap-[2px]'>
                             {num.map((item, index) => {
                                 return (

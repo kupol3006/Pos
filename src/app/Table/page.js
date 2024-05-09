@@ -11,18 +11,21 @@ import TableDetail from '../Component/tableDetail';
 import { fetchTable, setFloorDetail } from '../redux/slices/tableSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePathname } from 'next/navigation';
-import { resetStateTableSlice } from '../redux/slices/tableSlice';
+import { resetStateTableSlice, setShow, setFloorName } from '../redux/slices/tableSlice';
 import { resetStateProductSlice } from '../redux/slices/productSlice';
-import { fetchOrderById } from '../redux/slices/orderByIdSlice';
+import { fetchOrderById, resetStateOrderByIdSlice } from '../redux/slices/orderByIdSlice';
+
 
 export default function Table() {
-    const [show, setShow] = useState(true);
+    // const [show, setShow] = useState(true);
+    const show = useSelector((state) => state.table.show);
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
     const dataFloor = useSelector((state) => state.table.data);
     const floorDetail = useSelector((state) => state.table.floorDetail);
-    const [floorName, setFloorName] = useState('');
+    // const [floorName, setFloorName] = useState('');
+    const floorName = useSelector((state) => state.table.floorName);
 
     useEffect(() => {
         dispatch(fetchTable());
@@ -30,6 +33,7 @@ export default function Table() {
 
     const handleBack = () => {
         dispatch(resetStateTableSlice());
+        dispatch(resetStateOrderByIdSlice());
         router.push('/');
     };
     const handleSubmit = () => {
@@ -38,7 +42,7 @@ export default function Table() {
 
     const handelFloorDetail = (floorDetail, floorName) => {
         dispatch(setFloorDetail(floorDetail));
-        setFloorName(floorName);
+        dispatch(setFloorName(floorName));
     };
 
     const handleGetRoomData = async (room) => {
@@ -82,22 +86,30 @@ export default function Table() {
                 :
                 (<TableDetail floorDetail={floorDetail} />)}
             <div className='w-[20%] h-screen pt-[34px] bg-[#89878557] flex flex-col justify-between'>
-                <div className='w-[100%] h-[100px] flex flex-row text-[#fff] gap-[3px] justify-center pt-[3px] cursor-pointer select-none'>
-                    <Button variant="contained" className='w-[48%] h-full flex flex-row items-center justify-center rounded-[9px]' sx={{ backgroundColor: '#FFCA28', color: '#fff', '&:hover': { backgroundColor: '#FFCA28' } }} onClick={() => setShow(true)}>Sơ đồ bàn</Button>
-                    <Button disabled={floorDetail.length === 0} variant="contained" className='w-[48%] h-full flex flex-row items-center justify-center rounded-[9px]'
+                <div className='w-[100%] h-[100px] flex flex-row text-[#fff] gap-[3px] justify-center pt-[3px]  select-none'>
+                    <Button variant="contained" className='w-[48%] h-full flex flex-row items-center justify-center rounded-[9px] cursor-pointer'
+                        sx={{ backgroundColor: show ? '#FFCA28' : '#F7CE52', color: '#fff', '&:hover': { backgroundColor: show ? '#FFCA28' : '#F7CE52' } }} onClick={() => dispatch(setShow(true))}
+                    >
+                        Sơ đồ bàn
+                    </Button>
+                    <Button
+                        variant="contained"
+                        className='w-[48%] h-full flex flex-row items-center justify-center rounded-[9px]'
                         sx={{
-                            backgroundColor: floorDetail.length === 0 ? '#FFCA20' : '#FFCA28',
-                            "&.Mui-disabled": {
-                                background: "#FFCA20",
-                                color: "#fff"
-                            },
+                            backgroundColor: floorDetail.length === 0 || show ? '#F7CE52' : '#FFCA28',
+                            color: '#fff',
                             '&:hover': {
-                                backgroundColor: floorDetail.length === 0 ? '#ffd95b' : '#FFCA28', // màu nhạt khi disabled và hover
+                                backgroundColor: floorDetail.length === 0 || show ? '#F7CE52' : '#FFCA28',
                             },
-                        }} onClick={() => setShow(false)}>Chi tiết</Button>
+                            cursor: floorDetail.length === 0 ? 'not-allowed' : 'pointer',
+                        }}
+                        onClick={floorDetail.length === 0 ? null : () => dispatch(setShow(false))}
+                    >
+                        Chi tiết
+                    </Button>
                 </div>
                 <div className='w-[100%] h-[70%] flex flex-col text-[#fff] justify-center items-center pt-[3px] cursor-pointer select-none gap-[2px]'>
-                    {dataFloor.map((floor, index) => {
+                    {dataFloor?.map((floor, index) => {
                         return (
                             <div key={index} onClick={() => (handelFloorDetail(floor.details, floor.name))} className='w-[98%] h-[100px] bg-[#0380FF] flex flex-row items-center justify-center rounded-[9px]'>{floor.name}</div>
                         )

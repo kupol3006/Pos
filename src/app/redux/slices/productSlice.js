@@ -11,9 +11,10 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 export const fetchProduct = createAsyncThunk(
     'product/fetchbyid',
     async (_, { getState, rejectWithValue }) => {
-        const pos_id = getState().tableDetail.posId;
+        const pos_id_tableDetail = getState().tableDetail.posId;
+        const pos_id_orderById = getState().orderById.data.order_type_id;
         try {
-            const response = await axios.get(API_BASE_URL + 'menu/' + pos_id);
+            const response = await axios.get(API_BASE_URL + 'menu/' + (pos_id_orderById || pos_id_tableDetail));
             const data = response.data.data;
             return data
         } catch (error) {

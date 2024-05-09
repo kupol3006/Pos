@@ -26,6 +26,8 @@ export const fetchTable = createAsyncThunk(
 const initialState = {
     data: [],
     floorDetail: [],
+    show: true,
+    floorName: '',
     isLoading: false,
 }
 
@@ -36,6 +38,12 @@ export const tableSlice = createSlice({
     reducers: {
         setFloorDetail: (state, action) => {
             state.floorDetail = action.payload
+        },
+        setShow: (state, action) => {
+            state.show = action.payload
+        },
+        setFloorName: (state, action) => {
+            state.floorName = action.payload
         },
         resetStateTableSlice: (state) => {
             return initialState;
@@ -56,6 +64,6 @@ export const tableSlice = createSlice({
     },
 })
 
-export const { setFloorDetail, resetStateTableSlice } = tableSlice.actions;
+export const { setFloorDetail, resetStateTableSlice, setShow, setFloorName } = tableSlice.actions;
 
 export default tableSlice.reducer;

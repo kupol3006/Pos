@@ -27,11 +27,10 @@ import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import ConfirmationDialog from '../Component/popUpSave'
 
 const CollapsibleTable = () => {
-    const currentDate = new Date().toLocaleDateString();
-    const currentTime = new Date().toLocaleTimeString();
+    const currentDate = useRef(new Date().toLocaleDateString());
+    const currentTime = useRef(new Date().toLocaleTimeString());
     const staff = useSelector((state) => state.order.staff);
     const items = useSelector((state) => state.product.items);
-    const toppingSelected = useSelector((state) => state.product.toppingSelected);
     // const storeToppingSelected = useSelector((state) => state.product.storeToppingSelected);
     const dispatch = useDispatch();
     const [isNew, setIsNew] = useState(true);
@@ -39,14 +38,16 @@ const CollapsibleTable = () => {
     const idCard = useSelector((state) => state.product.idCard);
     const itemSelected = useSelector((state) => state.product.itemSelected);
 
-    const dataOrderDetail = useSelector((state) => state.orderById.data.orderDetails);
+    // Dữ liệu mới từ orderByIdSlice
+    const dataRoom = useSelector((state) => state.orderById.data);
+    const dataOrderDetail = dataRoom.orderDetails;
+    const staffOrderByID = dataRoom?.waiter?.first_name;
 
     useEffect(() => {
         if (items.length > 0 && itemSelected.idCard !== idCard) {
             dispatch(setIdCard(items[items.length - 1].idCard));
             setIsNew(true);
         }
-
         console.log(isNew);
     }, [items]);
 
@@ -60,19 +61,20 @@ const CollapsibleTable = () => {
     return (
         <TableContainer component={Paper} sx={{ width: '100%', maxHeight: '74%' }} className='h-[74%]'>
             <Table aria-label="collapsible table">
-                <TableHead size='small' className='h-[15px] border-b border-[black]' >
+                <TableHead size='small' className='w-[49.5%] bg-[#fff] text-[13px] border-b border-[black] fixed' >
                     <tr size='small'>
-                        <td size='small' style={{ padding: '0px', width: '25%', borderRight: '1px black solid' }}>{currentDate}</td>
-                        <td size='small' align="right" style={{ padding: '0px', width: '25%', borderRight: '1px black solid' }}>{currentTime}</td>
-                        <td size='small' align="center" style={{ padding: '0px', width: '25%' }}>Phục vụ:</td>
-                        <td size='small' align="center" style={{ padding: '0px', width: '25%' }}>{staff}</td>
+                        <td style={{ width: '25%', padding: '0px 10px 0px 10px', borderRight: '1px black solid' }}>{currentDate.current}</td>
+                        <td align="right" style={{ width: '25%', padding: '0px 10px 0px 10px', borderRight: '1px black solid' }}>{currentTime.current}</td>
+                        <td align="center" style={{ width: '25%', padding: '0px 10px 0px 10px', }}>Phục vụ:</td>
+                        <td align="center" style={{ width: '25%', padding: '0px 10px 0px 10px', }}>{staffOrderByID || staff}</td>
                     </tr>
                 </TableHead>
-                <TableBody>
+                <TableBody >
+                    <TableRow className='h-[20px]'></TableRow>
                     {dataOrderDetail?.map((item, index) => (
                         <React.Fragment key={index}>
                             <TableRow
-                                className='h-[10px] cursor-pointer select-none'
+                                className='h-[10px] select-none cursor-no-drop'
                                 style={{ backgroundColor: '#EBEDEF' }}
                             // onClick={() => updateIdCard(item.idCard, item)}
                             >
@@ -98,7 +100,7 @@ const CollapsibleTable = () => {
                                 </td>
                             </TableRow>
                             <TableRow
-                                className='select-none cursor-pointer'
+                                className='select-none cursor-no-drop'
                                 // onClick={() => updateIdCard(item.idCard, item)}
                                 style={{ backgroundColor: '#EBEDEF' }}
                             >
@@ -125,7 +127,7 @@ const CollapsibleTable = () => {
                             >
                                 <td size='small' colSpan={4} className='h-[20px]'>
                                     <Box
-                                        className='w-full h-full flex flex-row justify-between items-center pl-[5px] pr-[5px] text-[12px] border-t border-[gray]'
+                                        className='w-full h-full flex flex-row justify-between items-center pl-[5px] pr-[5px] text-[12px] border-t border-[gray] [nth-child(1)]: border-none'
                                         style={{
                                             backgroundColor: isNew === false && item.idCard === idCard ? 'gray' : 'transparent',
                                             color: isGray && item.idCard === idCard ? 'white' : 'black',
@@ -185,7 +187,7 @@ const Products = () => {
     const dispatch = useDispatch();
     const data = useSelector((state) => state.product.data);
     const productDetail1 = useSelector((state) => state.product.productDetail);
-    const items = useSelector((state) => state.product.items);
+    // const items = useSelector((state) => state.product.items);
     const toppings = useSelector((state) => state.product.topping);
     const toppingDetails = useSelector((state) => state.product.toppingDetail);
 
@@ -230,9 +232,7 @@ const Products = () => {
 
     return (
         <Box className='w-[31%] ml-[10px]'>
-
             <Box className='w-full flex flex-row justify-start flex-wrap'>
-
                 {show ?
                     (
                         show1 ?
@@ -279,29 +279,6 @@ const Products = () => {
                                                     onClick={() => { handleToppingClick(topping.details, topping) }}
                                                 >
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name}</Typography>
-                                                    {/* {topping.details.length > 0 ?
-                                                        (
-                                                            <Box className='w-full h-full flex flex-col justify-s items-center gap-[2px] m-auto text-[12px]'>
-                                                                {topping.details.map((detail) => {
-                                                                    const color = detail.color;
-                                                                    return (
-                                                                        <Box
-                                                                            key={detail.id}
-                                                                            sx={{ width: '90%', height: '35px', backgroundColor: color, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '5px' }}
-                                                                            onClick={() => handleToppingDetailClick(detail)}
-                                                                        >
-                                                                            {detail.name}
-                                                                        </Box>
-                                                                    )
-                                                                })}
-                                                            </Box>
-                                                        )
-                                                        :
-                                                        (
-                                                            <></>
-                                                        )
-                                                    } */}
-
                                                 </Box>
                                             ))}
                                         </div>
@@ -347,24 +324,35 @@ const Products = () => {
 
 
 export default function BoxSx() {
-    const roomNum = useSelector((state) => state.order.roomNum);
+    const dispatch = useDispatch();
+    const roomName = useSelector((state) => state.order.roomName);
     const cusQuan = useSelector((state) => state.order.cusQuan);
 
-    const dispatch = useDispatch();
-
     const staff = useSelector((state) => state.order.staff);
-    const currentTime = new Date().toLocaleTimeString();
+    const currentTime = useRef(new Date().toLocaleTimeString());
     const router = useRouter();
     const items = useSelector((state) => state.product.items);
-    const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
 
     const [tax, setTax] = useState('0');
     // const [cusPay, setCusPay] = useState('0đ');
     const pathName = usePathname();
+
+    // Dữ liệu mới từ chức năng cập nhật Order
+    const dataRoom = useSelector((state) => state.orderById.data);
+    const staffOrderByID = dataRoom?.cashier?.first_name;
+    const totalOrderByID = dataRoom.total;
+    const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0) + (totalOrderByID || 0);
+    const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
+    const roomNameOrderByID = dataRoom.table?.name;
+
+
     const handleBack = () => {
-        // dispatch(resetState());
-        router.push('/Orders');
+        if (dataRoom.length === 0) {
+            router.push('/Orders');
+        } else {
+            router.push('/Table');
+        }
+
     };
     const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     const [value, setValue] = useState('');
@@ -393,6 +381,7 @@ export default function BoxSx() {
 
     const handleUpdateQuantity = (value) => {
         dispatch(updateQuantity(value));
+        setValue('');
         console.log('aaa');
     }
 
@@ -417,7 +406,7 @@ export default function BoxSx() {
                             }}
                         >
                             <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px' }}>
-                                Phòng hoặc giao hàng: {roomNum} ---- Số lượng khách: {cusQuan}
+                                Phòng hoặc giao hàng: {roomNameOrderByID || roomName} ---- Số lượng khách: {cusQuan}
                             </Typography>
                             <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px' }}>
                                 Thuế: {tax}
@@ -472,15 +461,15 @@ export default function BoxSx() {
                         <div className="w-full h-full flex flex-col items-center pt-[3px] bg-[#c5bcb425] rounded-[5px]">
                             <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[5px] mt-[10px] leading-[4px]'>
                                 <p className=''>Nhân viên:</p>
-                                <p className=''>{staff}</p>
+                                <p className=''>{staffOrderByID || staff}</p>
                             </div>
                             <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[5px]'>
                                 <p className=''>Thu ngân:</p>
-                                <p className=''>{staff}</p>
+                                <p className=''>{staffOrderByID || staff}</p>
                             </div>
                             <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[5px] leading-[4px] mb-[5px]'>
                                 <p className=''>Lúc:</p>
-                                <p className=''>{currentTime}</p>
+                                <p className=''>{currentTime.current}</p>
                             </div>
                             <TextField
                                 id="outlined-basic" variant="outlined" size='small'
@@ -532,7 +521,7 @@ export default function BoxSx() {
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
                             <Button variant="contained" color="error" onClick={() => { handleBack() }} className='w-[50%]'><CloseIcon /></Button>
                             {/* <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={() => handleSubmit()}><CheckIcon /></Button> */}
-                            <ConfirmationDialog />
+                            <ConfirmationDialog dataRoom={dataRoom} />
                         </div>
                     </div>
                 </div>
