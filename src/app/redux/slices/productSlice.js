@@ -5,12 +5,13 @@ import { parseCookies } from 'nookies';
 import { v4 as uuidv4 } from 'uuid';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
-const token = parseCookies()['token'];
-axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
 
 export const fetchProduct = createAsyncThunk(
     'product/fetchbyid',
     async (_, { getState, rejectWithValue }) => {
+        const token = parseCookies()['token'];
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         const pos_id_tableDetail = getState().tableDetail.posId;
         const pos_id_orderById = getState().orderById.data.order_type_id;
         try {
@@ -164,21 +165,25 @@ export const productSlice = createSlice({
         },
         updateQuantity: (state, action) => {
             const value = action.payload;
+            const item = state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard);
             if (value === 'plus') {
-                state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity++;
+                if (item) {
+                    item.quantity++;
+                }
             } else if (value === 'minus') {
-                const quantity = state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity
-
-                if (quantity === 1) {
-                    state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity--
-                    state.items = state.items.filter((i) => i.quantity > 0);
+                if (item) {
+                    if (item.quantity === 1) {
+                        state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity--
+                        state.items = state.items.filter((i) => i.quantity > 0);
+                    }
+                    else if (item.quantity >= 1) {
+                        state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity--;
+                    }
                 }
-                else if (quantity >= 1) {
-                    state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity--;
-                }
-
             } else {
-                state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity = value;
+                if (item) {
+                    item.quantity = value;
+                }
             }
         },
     },

@@ -24,6 +24,7 @@ import { parseCookies } from "nookies";
 // import { set } from 'date-fns';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 // import { createOrder } from '../redux/slices/orderSlice';
+import { setUniqueID, updateQuantityOrderById, setOrderUpdate } from '../redux/slices/orderByIdSlice';
 import ConfirmationDialog from '../Component/popUpSave'
 
 const CollapsibleTable = () => {
@@ -42,6 +43,7 @@ const CollapsibleTable = () => {
     const dataRoom = useSelector((state) => state.orderById.data);
     const dataOrderDetail = dataRoom.orderDetails;
     const staffOrderByID = dataRoom?.waiter?.first_name;
+    const idUnique = useSelector((state) => state.orderById.idUnique);
 
     useEffect(() => {
         if (items.length > 0 && itemSelected.idCard !== idCard) {
@@ -52,7 +54,15 @@ const CollapsibleTable = () => {
     }, [items]);
 
     const updateIdCard = (IdCard, item) => {
-        dispatch(setIdCard(IdCard));
+        const isNumber = (n) => !isNaN(parseFloat(n)) && isFinite(n);
+        if (isNumber(IdCard)) {
+            dispatch(setUniqueID(IdCard));
+            dispatch(setIdCard(''));
+        } else {
+            dispatch(setIdCard(IdCard));
+            dispatch(setUniqueID(''));
+        }
+
         dispatch(setItemSelected(item));
         setIsNew(false);
         console.log(isNew);
@@ -74,16 +84,16 @@ const CollapsibleTable = () => {
                     {dataOrderDetail?.map((item, index) => (
                         <React.Fragment key={index}>
                             <TableRow
-                                className='h-[10px] select-none cursor-no-drop'
+                                className='h-[10px] select-none cursor-pointer'
                                 style={{ backgroundColor: '#EBEDEF' }}
-                            // onClick={() => updateIdCard(item.idCard, item)}
+                                onClick={() => updateIdCard(item.id, item)}
                             >
                                 <td size='small' colSpan={4} className='h-[20px]'>
                                     <Box
                                         className='w-full h-full flex flex-row justify-between items-center pl-[5px] pr-[5px] text-[12px] border-t border-[gray] [&:nth-child(1)]: border-none'
                                         style={{
-                                            // backgroundColor: isNew === false && item.idCard === idCard ? 'gray' : 'transparent',
-                                            // color: isGray && item.idCard === idCard ? 'white' : 'black',
+                                            backgroundColor: isNew === false && item.id === idUnique ? 'gray' : 'transparent',
+                                            color: isGray && item.id === idUnique ? 'white' : 'black',
                                             width: '100%',
                                             height: '100%'
                                         }}
@@ -100,8 +110,8 @@ const CollapsibleTable = () => {
                                 </td>
                             </TableRow>
                             <TableRow
-                                className='select-none cursor-no-drop'
-                                // onClick={() => updateIdCard(item.idCard, item)}
+                                className='select-none cursor-pointer'
+                                onClick={() => updateIdCard(item.id, item)}
                                 style={{ backgroundColor: '#EBEDEF' }}
                             >
                                 <td size='small' colSpan={4} >
@@ -191,6 +201,9 @@ const Products = () => {
     const toppings = useSelector((state) => state.product.topping);
     const toppingDetails = useSelector((state) => state.product.toppingDetail);
 
+    //Dư liệ từ OrderByIdSlice
+    const idUnique = useSelector((state) => state.orderById.idUnique);
+
     const handleShow = () => {
         setShow(!show);
     }
@@ -205,11 +218,16 @@ const Products = () => {
     };
 
     const handleProductDetailClick = (producDetailtId2, topping, productId) => {
-        setShow1(false);
-        dispatch(setToping(topping));
-        dispatch(addItems(producDetailtId2));
-        dispatch(setProductId(productId));
+        if (idUnique !== '') {
+
+        } else {
+            dispatch(setToping(topping));
+            dispatch(addItems(producDetailtId2));
+            dispatch(setProductId(productId));
+        }
+
         // console.log(items);
+        setShow1(false);
     };
     const handleToppingClick = (toppingDetail, topping) => {
         if (topping.details.length === 0) {
@@ -381,6 +399,8 @@ export default function BoxSx() {
 
     const handleUpdateQuantity = (value) => {
         dispatch(updateQuantity(value));
+        dispatch(updateQuantityOrderById(value));
+        dispatch(setOrderUpdate());
         setValue('');
         console.log('aaa');
     }
@@ -436,7 +456,7 @@ export default function BoxSx() {
                     </Box>
                     <CollapsibleTable />
                     <div className='w-full h-[16%] mt-[2px] flex flex-row flex-wrap justify-center items-center border border-[#E7E7E7]'>
-                        <div className='w-[24.6%] h-full flex-col mr-[2px]'>
+                        <div className='w-[23.6%] h-full flex-col mr-[2px]'>
                             <div className='w-full h-[31.8%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Chuyển bàn</div>
                             <div className='w-full h-[31.8%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px] cursor-pointer select-none' onClick={() => { handleUpdateQuantity('plus') }}>Tăng SL món</div>
                             <div className='w-full h-[31.8%] bg-[#0044ff] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px] cursor-pointer select-none' onClick={() => { handleUpdateQuantity('minus') }}>Giảm SL món</div>
@@ -497,7 +517,7 @@ export default function BoxSx() {
                             </div>
                         </div>
                     </div>
-                    <div className='w-full h-[50%] flex flex-col text-[11px]'>
+                    <div className='w-full h-[50%] flex flex-col text-[11px] p-[3px]'>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
                             <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thực đơn</div>
                             <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Topping</div>

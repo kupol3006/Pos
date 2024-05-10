@@ -31,12 +31,12 @@ export default function TableDetail({ floorDetail }) {
 
     return (
         <div className='w-[80%] h-screen p-[3px] pt-[34px] flex flex-row flex-wrap gap-[3px]'>
-            {floorDetail.map((room, index) => {
+            {floorDetail.map((room, roomIndex) => {
                 return room.activeOrders.length > 0 ?
-                    room.activeOrders.map((order, index) => {
+                    room.activeOrders.map((order, orderIndex) => {
                         return (
                             <Box
-                                key={index}
+                                key={`${room.id}${orderIndex}`}
                                 className='w-[16.4%] h-[19%] border-[1px] rounded-[5px] cursor-pointer'
                                 onClick={() => handleGetRoomData(room)}
                             >
@@ -55,7 +55,7 @@ export default function TableDetail({ floorDetail }) {
                         )
                     })
                     :
-                    (<></>);
+                    (<React.Fragment key={roomIndex}></React.Fragment>);
             })}
         </div>
     );

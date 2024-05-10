@@ -58,10 +58,10 @@ export default function Table() {
             {show ?
                 (
                     <div className="w-[80%] h-screen pt-[34px] flex flex-row justify-center items-center">
-                        <div className='w-[23%] flex flex-row flex-wrap gap-[10px]'>
+                        <div className='w-[23%] flex flex-row flex-wrap gap-[5px]'>
                             {floorDetail.map((room, index) => {
                                 return (
-                                    <Box key={room.id} className='w-[100px] h-[105px] text-[15px] border-[2px] border-lime-600 flex justify-center items-center relative rounded-[5px] cursor-pointer select-none'>
+                                    <Box key={room.id} className='w-[45%] h-[107px] text-[15px] border-[2px] border-lime-600 flex justify-center items-center relative rounded-[5px] cursor-pointer select-none'>
                                         {room.name}
                                         {room.activeOrders.length > 0 ?
                                             (
