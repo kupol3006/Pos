@@ -11,7 +11,12 @@ export const fetchOrderById = createAsyncThunk(
     async (room, { getState, rejectWithValue }) => {
         const token = parseCookies()['token'];
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const bill_id = room.activeOrders[0].bill_id;
+        let bill_id = '';
+        if (typeof room === 'object') {
+            bill_id = room.activeOrders[0].bill_id;
+        } else {
+            bill_id = room;
+        }
 
         try {
             const response = await axios.get(API_BASE_URL + 'order/' + `${bill_id}`);
@@ -31,6 +36,8 @@ const initialState = {
     orderUpdate: [],
     orderDelete: [],
     idUnique: '',
+    productName: '',
+    idGeneral: '',
     isLoading: false,
 }
 
@@ -41,44 +48,56 @@ export const orderByIdSlice = createSlice({
         setUniqueID: (state, action) => {
             state.idUnique = action.payload;
         },
+        setProductName: (state, action) => {
+            state.productName = action.payload;
+        },
+        setGeneralID: (state, action) => {
+            state.idGeneral = action.payload;
+        },
         setOrderUpdate: (state, action) => {
             const dataOrderDetail = state.data.orderDetails;
             const dataPrimitiveOrderDetail = state.dataPrimitive.orderDetails;
             if (state.idUnique !== '') {
                 const hasProductChanged = () => {
-                    for (let i = 0; i < dataOrderDetail.length; i++) {
-                        const itemA = dataOrderDetail[i];
-                        const itemB = dataPrimitiveOrderDetail.find(item => item.id === itemA.id);
-                        if (itemB) {
-                            if (itemA.quantity > itemB.quantity) {
-                                return { bool: true, item: itemA, topping: null };
-                            } else if (itemA.quantity <= itemB.quantity) {
-                                return { bool: true, item: itemA, topping: null };
-                            }
-                            for (let j = 0; j < (itemA.details ? itemA.details.length : 0); j++) {
-                                const toppingA = itemA.details[j];
-                                const toppingB = itemB.details.find(item => item.id === toppingA.id);
-                                if (toppingB && toppingA.quantity !== toppingB.quantity) {
-                                    return { bool: true, item: itemA, topping: toppingA };
-                                }
-                            }
+                    const item = dataOrderDetail.find((i) => i.id === state.idUnique);
+                    const itemPrimitive = dataPrimitiveOrderDetail.find((i) => i.id === state.idUnique);
+                    if (item && itemPrimitive) {
+                        if (item.quantity !== itemPrimitive.quantity) {
+                            return { bool: true, item: item, topping: null };
                         }
+                        if (item.quantity === itemPrimitive.quantity) {
+                            return { bool: true, item: { item: item, delete: true }, topping: null };
+                        }
+                        // const topping = item.details;
+                        // const topPrimitive = itemPrimitive.details;
+                        // if (topping && topPrimitive) {
+                        //     if (item.details.length !== itemPrimitive.details.length) {
+                        //         return { bool: true, item: item, topping: null };
+                        //     }
+                        //     for (let i = 0; i < item.details.length; i++) {
+                        //         if (item.details[i].quantity !== itemPrimitive.details[i].quantity) {
+                        //             return { bool: true, item: item, topping: item.details[i] };
+                        //         }
+                        //     }
+                        // }
                     }
                     return { bool: false, item: null, topping: null };
                 }
                 const productChange = hasProductChanged();
                 if (productChange.bool) {
-                    if (productChange.topping) {
-                        productChange.item.details = productChange.item.details.map(detail =>
-                            detail.id === productChange.topping.id ? productChange.topping : detail
-                        );
-                    }
+                    const item = dataOrderDetail.find((i) => i.id === state.idUnique);
+                    const itemPrimitive = dataPrimitiveOrderDetail.find((i) => i.id === state.idUnique);
                     const index = state.orderUpdate.findIndex(item => item.id === productChange.item.id);
-                    if (index !== -1) {
+                    if (productChange.item.delete) {
+                        state.orderUpdate = state.orderUpdate.filter((i) => i.id !== productChange.item.item.id);
+                    }
+                    else if (index !== -1) {
                         state.orderUpdate[index].quantity = productChange.item.quantity;
-                    } else if (productChange.item.quantity > 1) {
+                    }
+                    else if (item.quantity !== itemPrimitive.quantity) {
                         state.orderUpdate.push(productChange.item);
                     }
+
                 }
             }
         },
@@ -87,7 +106,8 @@ export const orderByIdSlice = createSlice({
         },
         updateQuantityOrderById: (state, action) => {
             const value = action.payload;
-            const item = state.data.orderDetails.find((i) => i.id === state.idUnique);
+            const item = state.data.orderDetails?.find((i) => i.id === state.idUnique);
+            const itemOfOrderUpdate = state.orderUpdate.find((i) => i.id === state.idUnique);
             if (value === 'plus') {
                 if (item) {
                     item.quantity++;
@@ -99,22 +119,70 @@ export const orderByIdSlice = createSlice({
                         state.orderDelete.push(item);
                         state.data.orderDetails.find((i) => i.id === state.idUnique).quantity--;
                         state.data.orderDetails = state.data.orderDetails.filter((i) => i.quantity > 0);
-                        state.orderUpdate.find((i) => i.id === state.idUnique).quantity--;
-                        state.orderUpdate = state.orderUpdate.filter((i) => i.quantity > 0);
+                        if (itemOfOrderUpdate) {
+                            state.orderUpdate.find((i) => i.id === state.idUnique).quantity--;
+                            state.orderUpdate = state.orderUpdate.filter((i) => i.quantity > 0);
+                        }
                     }
                     else if (item.quantity >= 1) {
                         state.data.orderDetails.find((i) => i.id === state.idUnique).quantity--;
                     }
                 }
             }
-            else {
+            else if (typeof value === 'number') {
                 if (item) {
                     item.quantity = value;
                 }
+            } else if (value === 'delete') {
+                if (item) {
+                    state.orderDelete.push(item);
+                    state.data.orderDetails = state.data.orderDetails.filter((i) => i.id !== state.idUnique);
+                    if (itemOfOrderUpdate) {
+                        state.orderUpdate = state.orderUpdate.filter((i) => i.id !== state.idUnique);
+                    }
+                }
+            }
+            else if (value === state.productName) {
+                if (item) {
+                    item.quantity++;
+                }
             }
         },
-
+        updateToppingOrderById: (state, action) => {
+            const topping = { ...action.payload, quantity: 1 };
+            const item = state.data.orderDetails.find((i) => i.id === state.idUnique);
+            const itemOfOrderUpdate = state.orderUpdate.find((i) => i.id === state.idUnique);
+            if (topping.type === 'topping') {
+                if (item) {
+                    const index = item.details.findIndex((i) => i.product_detail_id === topping.id);
+                    if (index !== -1) {
+                        item.details[index].quantity++;
+                    } else {
+                        const i = item.details.findIndex((i) => i.id === topping.id);
+                        if (i !== -1) {
+                            item.details[i].quantity++;
+                        } else {
+                            item.details.push(topping);
+                        }
+                    }
+                }
+                if (itemOfOrderUpdate) {
+                    const index = itemOfOrderUpdate.details.findIndex((i) => i.product_detail_id === topping.id);
+                    if (index !== -1) {
+                        itemOfOrderUpdate.details[index].quantity++;
+                    } else {
+                        const i = itemOfOrderUpdate.details.findIndex((i) => i.id === topping.id);
+                        if (i !== -1) {
+                            itemOfOrderUpdate.details[i].quantity++;
+                        } else {
+                            itemOfOrderUpdate.details.push(topping);
+                        }
+                    }
+                }
+            }
+        },
     },
+
     extraReducers: (builder) => {
         builder
             .addCase(fetchOrderById.pending, (state) => {
@@ -131,6 +199,6 @@ export const orderByIdSlice = createSlice({
     },
 })
 
-export const { resetStateOrderByIdSlice, setUniqueID, updateQuantityOrderById, setOrderUpdate } = orderByIdSlice.actions;
+export const { resetStateOrderByIdSlice, setUniqueID, updateQuantityOrderById, setOrderUpdate, setProductName, setGeneralID, updateToppingOrderById } = orderByIdSlice.actions;
 
 export default orderByIdSlice.reducer;

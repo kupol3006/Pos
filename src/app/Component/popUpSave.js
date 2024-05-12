@@ -12,11 +12,13 @@ import { createOrder } from '../redux/slices/orderSlice';
 import { resetStateProductSlice } from '../redux/slices/productSlice';
 import { useRouter } from 'next/navigation';
 import { resetStateTableSlice } from '../redux/slices/tableSlice';
+import { updateOrder } from '../redux/slices/orderSlice';
 
 export default function ConfirmationDialog(dataRoom) {
     const dispatch = useDispatch();
     const router = useRouter();
     const items = useSelector((state) => state.product.items);
+    const dataOrder = useSelector((state) => state.orderById.dataPrimitive);
 
     const [open, setOpen] = useState(false);
 
@@ -42,6 +44,10 @@ export default function ConfirmationDialog(dataRoom) {
                 }
                 break;
             default:
+                if (dataOrder) {
+                    dispatch(updateOrder());
+                    router.push('/');
+                }
                 break;
         }
         setOpen(false);

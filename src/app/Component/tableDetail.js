@@ -22,9 +22,9 @@ export default function TableDetail({ floorDetail }) {
     // const floorDetail = useSelector((state) => state.table.floorDetail);
     const dispatch = useDispatch();
     const router = useRouter();
-    const handleGetRoomData = async (room) => {
+    const handleGetRoomData = async (order) => {
         // dispatch(setRoomData(room));
-        await dispatch(fetchOrderById(room));
+        await dispatch(fetchOrderById(order.bill_id));
         dispatch(resetStateProductSlice());
         router.push('/Purchase');
     };
@@ -38,7 +38,7 @@ export default function TableDetail({ floorDetail }) {
                             <Box
                                 key={`${room.id}${orderIndex}`}
                                 className='w-[16.4%] h-[19%] border-[1px] rounded-[5px] cursor-pointer'
-                                onClick={() => handleGetRoomData(room)}
+                                onClick={() => handleGetRoomData(order)}
                             >
                                 <div className='w-full h-[17%] p-[9px] flex flex-row justify-between items-center bg-[#52A26A] text-[12px] text-[#fff] rounded-tl-[5px] rounded-tr-[5px]'>
                                     <p># {order.bill_id}</p>

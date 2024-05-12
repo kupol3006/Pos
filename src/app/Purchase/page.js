@@ -24,7 +24,7 @@ import { parseCookies } from "nookies";
 // import { set } from 'date-fns';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 // import { createOrder } from '../redux/slices/orderSlice';
-import { setUniqueID, updateQuantityOrderById, setOrderUpdate } from '../redux/slices/orderByIdSlice';
+import { setUniqueID, updateQuantityOrderById, setOrderUpdate, setProductName, setGeneralID, updateToppingOrderById } from '../redux/slices/orderByIdSlice';
 import ConfirmationDialog from '../Component/popUpSave'
 
 const CollapsibleTable = () => {
@@ -53,17 +53,22 @@ const CollapsibleTable = () => {
         console.log(isNew);
     }, [items]);
 
-    const updateIdCard = (IdCard, item) => {
-        const isNumber = (n) => !isNaN(parseFloat(n)) && isFinite(n);
-        if (isNumber(IdCard)) {
-            dispatch(setUniqueID(IdCard));
-            dispatch(setIdCard(''));
-        } else {
-            dispatch(setIdCard(IdCard));
+    const updateIdCard = (item) => {
+        // const isNumber = (n) => !isNaN(parseFloat(n)) && isFinite(n);
+        if (item.idCard !== undefined && typeof item.idCard !== 'number') {
+            dispatch(setIdCard(item.idCard));
+            dispatch(setItemSelected(item));
             dispatch(setUniqueID(''));
+            dispatch(setGeneralID(item.idCard));
+        }
+        else {
+            dispatch(setUniqueID(item.id));
+            dispatch(setProductName(item.name));
+            dispatch(setIdCard(''));
+            dispatch(setGeneralID(item.id));
         }
 
-        dispatch(setItemSelected(item));
+
         setIsNew(false);
         console.log(isNew);
     }
@@ -86,7 +91,7 @@ const CollapsibleTable = () => {
                             <TableRow
                                 className='h-[10px] select-none cursor-pointer'
                                 style={{ backgroundColor: '#EBEDEF' }}
-                                onClick={() => updateIdCard(item.id, item)}
+                                onClick={() => updateIdCard(item)}
                             >
                                 <td size='small' colSpan={4} className='h-[20px]'>
                                     <Box
@@ -111,7 +116,7 @@ const CollapsibleTable = () => {
                             </TableRow>
                             <TableRow
                                 className='select-none cursor-pointer'
-                                onClick={() => updateIdCard(item.id, item)}
+                                onClick={() => updateIdCard(item)}
                                 style={{ backgroundColor: '#EBEDEF' }}
                             >
                                 <td size='small' colSpan={4} >
@@ -133,7 +138,7 @@ const CollapsibleTable = () => {
                             <TableRow
                                 className='h-[10px] cursor-pointer select-none'
                                 style={{ backgroundColor: index === items.length - 1 && isNew ? 'gray' : 'transparent' }}
-                                onClick={() => updateIdCard(item.idCard, item)}
+                                onClick={() => updateIdCard(item)}
                             >
                                 <td size='small' colSpan={4} className='h-[20px]'>
                                     <Box
@@ -158,7 +163,7 @@ const CollapsibleTable = () => {
                             </TableRow>
                             <TableRow
                                 className='select-none cursor-pointer'
-                                onClick={() => updateIdCard(item.idCard, item)}
+                                onClick={() => updateIdCard(item)}
                             >
                                 <td size='small' colSpan={4} >
                                     <Box className='flex flex-row flex-wrap justify-start items-start pl-[6px] '>
@@ -200,9 +205,12 @@ const Products = () => {
     // const items = useSelector((state) => state.product.items);
     const toppings = useSelector((state) => state.product.topping);
     const toppingDetails = useSelector((state) => state.product.toppingDetail);
+    const idCard = useSelector((state) => state.product.idCard);
 
     //Dư liệ từ OrderByIdSlice
     const idUnique = useSelector((state) => state.orderById.idUnique);
+    const productName = useSelector((state) => state.orderById.productName);
+    const idGeneral = useSelector((state) => state.orderById.idGeneral);
 
     const handleShow = () => {
         setShow(!show);
@@ -217,21 +225,27 @@ const Products = () => {
         dispatch(setProductDetail(productDetail));
     };
 
-    const handleProductDetailClick = (producDetailtId2, topping, productId) => {
-        if (idUnique !== '') {
-
+    const handleProductDetailClick = (producDetailt2) => {
+        if (idUnique !== '' && productName === producDetailt2.name && idCard === '') {
+            dispatch(updateQuantityOrderById(producDetailt2.name));
+            dispatch(setOrderUpdate());
         } else {
-            dispatch(setToping(topping));
-            dispatch(addItems(producDetailtId2));
-            dispatch(setProductId(productId));
+            dispatch(addItems(producDetailt2));
         }
+        dispatch(setToping(producDetailt2.toppings));
+        dispatch(setProductId(producDetailt2.id));
 
         // console.log(items);
         setShow1(false);
     };
     const handleToppingClick = (toppingDetail, topping) => {
-        if (topping.details.length === 0) {
-            dispatch(setStoreToppingSelected(topping));
+        if (typeof idGeneral === 'number' && idCard === '') {
+            dispatch(updateToppingOrderById(topping));
+        } else {
+            if (topping.details.length === 0) {
+                dispatch(setStoreToppingSelected(topping));
+            }
+
         }
         dispatch(setToppingDetail(toppingDetail));
         dispatch(setToppingId(topping.id));
@@ -243,8 +257,12 @@ const Products = () => {
 
     };
 
-    const handleToppingDetailClick = (toppingDetail, toppingDetailId) => {
-        dispatch(addToppingDetail(toppingDetail));
+    const handleToppingDetailClick = (toppingDetail) => {
+        if (typeof idGeneral === 'number') {
+            dispatch(updateToppingOrderById(toppingDetail));
+        } else {
+            dispatch(addToppingDetail(toppingDetail));
+        }
         setShow2(true);
     };
 
@@ -269,7 +287,7 @@ const Products = () => {
                                                 key={product_detail.id}
                                                 className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px]'
                                                 sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: product_detail.color }}
-                                                onClick={() => handleProductDetailClick(product_detail, product_detail.toppings, product_detail.id)}
+                                                onClick={() => handleProductDetailClick(product_detail)}
                                             >
                                                 <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product_detail.name}</Typography>
                                             </Box>
@@ -309,7 +327,7 @@ const Products = () => {
                                                     key={toppingDetail.id}
                                                     className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px]'
                                                     sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: toppingDetail.color }}
-                                                    onClick={() => handleToppingDetailClick(toppingDetail, toppingDetail.id)}
+                                                    onClick={() => handleToppingDetailClick(toppingDetail)}
                                                 >
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{toppingDetail.name}</Typography>
                                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}><KeyboardBackspaceIcon sx={{ fontSize: 15 }} /></Typography>
@@ -347,6 +365,7 @@ export default function BoxSx() {
     const cusQuan = useSelector((state) => state.order.cusQuan);
 
     const staff = useSelector((state) => state.order.staff);
+    const currentDate = useRef(new Date().toLocaleDateString());
     const currentTime = useRef(new Date().toLocaleTimeString());
     const router = useRouter();
     const items = useSelector((state) => state.product.items);
@@ -358,8 +377,11 @@ export default function BoxSx() {
     // Dữ liệu mới từ chức năng cập nhật Order
     const dataRoom = useSelector((state) => state.orderById.data);
     const staffOrderByID = dataRoom?.cashier?.first_name;
-    const totalOrderByID = dataRoom.total;
-    const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0) + (totalOrderByID || 0);
+    const totalOrderByID = dataRoom.orderDetails?.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0;
+    const totalToppingOrderByID = dataRoom.orderDetails?.reduce((total, item) => total + (item.details?.reduce((total, item) => total + item.price * item.quantity, 0) || 0), 0);
+    const totalTopping = items.reduce((total, item) => total + (item.topping?.reduce((total, item) => total + item.topping.price * item.quantity, 0) || 0), 0);
+    const totalToppingDetail = items.reduce((total, item) => total + (item.toppingDetail?.reduce((total, item) => total + item.toppingDetail.price * item.quantity, 0) || 0), 0);
+    const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0) + totalTopping + totalToppingDetail + (totalOrderByID || 0) + (totalToppingOrderByID || 0);
     const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
     const roomNameOrderByID = dataRoom.table?.name;
 
@@ -400,9 +422,8 @@ export default function BoxSx() {
     const handleUpdateQuantity = (value) => {
         dispatch(updateQuantity(value));
         dispatch(updateQuantityOrderById(value));
-        dispatch(setOrderUpdate());
         setValue('');
-        console.log('aaa');
+        dispatch(setOrderUpdate());
     }
 
     // const handleSubmit = () => {
@@ -416,62 +437,74 @@ export default function BoxSx() {
                     <Box className='flex flex-row w-full h-[10%]' >
                         <Box
                             sx={{
-                                width: 1 / 2,
+                                width: '50%',
                                 height: '100%',
-                                padding: '1%',
-                                borderRadius: 1,
-                                bgcolor: '#00429F',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                padding: '0 10px 0 10px',
+
+                                bgcolor: '#0059D4',
                                 color: 'primary.contrastText',
                                 borderRight: '2px #fff solid',
                             }}
                         >
-                            <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '13px', lineHeight: '17px' }}>
+                                {currentDate.current}
+                            </Typography>
+                            <Typography variant="subtitle1" sx={{ fontSize: '13px', lineHeight: '17px' }}>
                                 Phòng hoặc giao hàng: {roomNameOrderByID || roomName} ---- Số lượng khách: {cusQuan}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '13px', lineHeight: '17px' }}>
                                 Thuế: {tax}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px', marginBottom: '2px' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '13px', lineHeight: '17px' }}>
                                 Tổng: {formattedTotal}
                             </Typography>
                         </Box>
                         <Box
                             sx={{
-                                width: 1 / 2,
+                                width: '50%',
                                 height: '100%',
-                                padding: '1%',
-                                borderRadius: 1,
-                                bgcolor: '#00429F',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                // justifyContent: 'center',
+                                padding: '10px',
+
+                                bgcolor: '#0059D4',
                                 color: 'primary.contrastText',
-                                borderRight: '2px #fff solid',
+
                             }}
                         >
-                            <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '13px', lineHeight: '17px' }}>
                                 Tiền khách đưa: {formattedTotal}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ lineHeight: '150%', fontSize: '12px' }}>
-                                Thanh toán: {formattedTotal}
+                            <Typography variant="subtitle1" sx={{ fontSize: '13px' }}>
+                                Thanh toán:
+                            </Typography>
+                            <Typography variant="subtitle1" sx={{ fontSize: '25px', lineHeight: '30px', fontWeight: 'bold' }}>
+                                {formattedTotal}
                             </Typography>
                         </Box>
                     </Box>
                     <CollapsibleTable />
-                    <div className='w-full h-[16%] mt-[2px] flex flex-row flex-wrap justify-center items-center border border-[#E7E7E7]'>
-                        <div className='w-[23.6%] h-full flex-col mr-[2px]'>
-                            <div className='w-full h-[31.8%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Chuyển bàn</div>
-                            <div className='w-full h-[31.8%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px] cursor-pointer select-none' onClick={() => { handleUpdateQuantity('plus') }}>Tăng SL món</div>
-                            <div className='w-full h-[31.8%] bg-[#0044ff] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px] cursor-pointer select-none' onClick={() => { handleUpdateQuantity('minus') }}>Giảm SL món</div>
+                    <div className='w-full h-[16%] mt-[2px] flex flex-row justify-center items-center border border-[#E7E7E7]'>
+                        <div className='w-[24.76%] h-full flex-col mr-[2px]'>
+                            <div className='w-full h-[31.8%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff]  rounded-[5px]'>Chuyển bàn</div>
+                            <div className='w-full h-[31.8%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff]  rounded-[5px] cursor-pointer select-none' onClick={() => { handleUpdateQuantity('plus') }}>Tăng SL món</div>
+                            <div className='w-full h-[31.8%] bg-[#0044ff] flex items-center justify-center text-[#fff]  rounded-[5px] cursor-pointer select-none' onClick={() => { handleUpdateQuantity('minus') }}>Giảm SL món</div>
                         </div>
-                        <div className='w-[24.6%] h-full flex-col mr-[2px]'>
-                            <div className='w-full h-[33%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Gộp bàn</div>
-                            <div className='w-full h-[64.3%] bg-[#0044ff] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Chọn món</div>
+                        <div className='w-[24.76%] h-full flex-col mr-[2px]'>
+                            <div className='w-full h-[33%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff]  rounded-[5px]'>Gộp bàn</div>
+                            <div className='w-full h-[64.3%] bg-[#0044ff] flex items-center justify-center text-[#fff]  rounded-[5px]'>Chọn món</div>
                         </div>
-                        <div className='w-[24.6%] h-full flex-col mr-[2px]'>
-                            <div className='w-full h-[33%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Tách món</div>
-                            <div className='w-full h-[64.3%] bg-[#0044ff] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Ghi chú</div>
+                        <div className='w-[24.76%] h-full flex-col mr-[2px]'>
+                            <div className='w-full h-[33%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff]  rounded-[5px]'>Tách món</div>
+                            <div className='w-full h-[64.3%] bg-[#0044ff] flex items-center justify-center text-[#fff]  rounded-[5px]'>Ghi chú</div>
                         </div>
-                        <div className='w-[24.6%] h-full flex-col'>
-                            <div className='w-full h-[33%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Tách đơn</div>
-                            <div className='w-full h-[64.3%] bg-[#0044ff] flex items-center justify-center text-[#fff] p-[10%] rounded-[5px]'>Tìm kiếm</div>
+                        <div className='w-[24.76%] h-full flex-col'>
+                            <div className='w-full h-[33%] bg-[#0044ff] mb-[2px] flex items-center justify-center text-[#fff]  rounded-[5px]'>Tách đơn</div>
+                            <div className='w-full h-[64.3%] bg-[#0044ff] flex items-center justify-center text-[#fff]  rounded-[5px]'>Tìm kiếm</div>
                         </div>
                     </div>
                 </Box >
@@ -479,15 +512,15 @@ export default function BoxSx() {
                 <div className='w-[19%] h-screen flex flex-col'>
                     <div className='w-full h-[50%] '>
                         <div className="w-full h-full flex flex-col items-center pt-[3px] bg-[#c5bcb425] rounded-[5px]">
-                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[5px] mt-[10px] leading-[4px]'>
+                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[13px] p-[5px] mt-[10px] leading-[4px]'>
                                 <p className=''>Nhân viên:</p>
                                 <p className=''>{staffOrderByID || staff}</p>
                             </div>
-                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[5px]'>
+                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[13px] p-[5px]'>
                                 <p className=''>Thu ngân:</p>
                                 <p className=''>{staffOrderByID || staff}</p>
                             </div>
-                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[12px] p-[5px] leading-[4px] mb-[5px]'>
+                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[13px] p-[5px] leading-[4px] mb-[5px]'>
                                 <p className=''>Lúc:</p>
                                 <p className=''>{currentTime.current}</p>
                             </div>
@@ -498,12 +531,12 @@ export default function BoxSx() {
                                 value={value}
 
                             />
-                            <div className='w-full h-full flex flex-row items-center flex-wrap p-[3px] gap-[2px]'>
+                            <div className='w-full h-full flex flex-wrap gap-[1px] p-[3px]'>
                                 {num.map((item, index) => {
                                     return (
                                         <Button
-                                            key={index} className='w-[32.7%] h-[24%]' variant="contained"
-                                            sx={{ background: '#575851' }}
+                                            key={index} variant="contained"
+                                            sx={{ background: '#575851', width: '32.7%', minWidth: '0%' }}
                                             value={item}
                                             onClick={() => handleChange(item)}
                                         >
@@ -511,13 +544,13 @@ export default function BoxSx() {
                                         </Button>
                                     )
                                 })}
-                                <Button className='w-[32.7%] h-[24%]' variant="contained" color='error' onClick={() => { handleDelete() }}>xóa</Button>
-                                <Button className='w-[32.7%] h-[24%]' variant="contained" sx={{ backgroundColor: '#086BFF' }} onClick={() => { handleUpdateQuantity(value) }} ><KeyboardReturnIcon /></Button>
+                                <Button sx={{ width: '32.7%', minWidth: '0%' }} variant="contained" color='error' onClick={() => { handleDelete() }}>xóa</Button>
+                                <Button variant="contained" sx={{ backgroundColor: '#086BFF', width: '32.7%', minWidth: '0%' }} onClick={() => { handleUpdateQuantity(value) }} ><KeyboardReturnIcon /></Button>
 
                             </div>
                         </div>
                     </div>
-                    <div className='w-full h-[50%] flex flex-col text-[11px] p-[3px]'>
+                    <div className='w-full h-[50%] flex flex-col justify-end text-[11px] p-[3px]'>
                         <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
                             <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thực đơn</div>
                             <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Topping</div>

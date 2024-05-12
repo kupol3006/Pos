@@ -11,7 +11,10 @@ export const createOrder = createAsyncThunk(
         const token = parseCookies()['token'];
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         const items = getState().product.items;
-        const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        const totalItem = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        const totalTopping = items.reduce((total, item) => total + (item.topping?.reduce((total, item) => total + item.topping.price * item.quantity, 0) || 0), 0)
+        const totalToppingDetail = items.reduce((total, item) => total + (item.toppingDetail?.reduce((total, item) => total + item.toppingDetail.price * item.quantity, 0) || 0), 0);
+        const total = totalItem + totalTopping + totalToppingDetail;
         try {
             const data = {
                 order_channel_id: getState().order.orderChannel,
@@ -23,7 +26,7 @@ export const createOrder = createAsyncThunk(
                     product_detail_id: item.id,
                     catalogue_id: item.catalogue_id,
                     quantity: item.quantity,
-                    price: 0,
+                    price: item.price,
                     price_sale: 0,
                     name: item.name,
                     type: item.type,
@@ -35,7 +38,7 @@ export const createOrder = createAsyncThunk(
                             product_detail_id: detail.topping ? detail.topping.id : detail.toppingDetail ? detail.toppingDetail.id : null,
                             catalogue_id: item.catalogue_id,
                             quantity: detail.quantity,
-                            price: 0,
+                            price: detail.topping ? detail.topping.price : detail.toppingDetail ? detail.toppingDetail.price : null,
                             price_sale: 0,
                             name: detail.topping ? detail.topping.name : detail.toppingDetail ? detail.toppingDetail.name : null,
                             type: detail.topping ? detail.topping.type : detail.toppingDetail ? detail.toppingDetail.type : null,
@@ -54,7 +57,100 @@ export const createOrder = createAsyncThunk(
         }
     },
 )
-
+export const updateOrder = createAsyncThunk(
+    'postOrderById/updateOrder',
+    async (bill_id, { getState, rejectWithValue }) => {
+        const token = parseCookies()['token'];
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        const items = getState().product.items;
+        const totalItem = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        const totalTopping = items.reduce((total, item) => total + (item.topping?.reduce((total, item) => total + item.topping.price * item.quantity, 0) || 0), 0)
+        const totalToppingDetail = items.reduce((total, item) => total + (item.toppingDetail?.reduce((total, item) => total + item.toppingDetail.price * item.quantity, 0) || 0), 0);
+        const total = totalItem + totalTopping + totalToppingDetail;
+        const order_id = getState().orderById.data.id;
+        try {
+            const data = {
+                total: total,
+                new_items: items.map((item) => ({
+                    product_detail_id: item.id,
+                    catalogue_id: item.catalogue_id,
+                    quantity: item.quantity,
+                    price: item.price,
+                    price_sale: 0,
+                    name: item.name,
+                    type: item.type,
+                    total: item.price,
+                    sub_total: item.price,
+                    details: (Array.isArray(item.topping) ? item.topping : [])
+                        .concat(Array.isArray(item.toppingDetail) ? item.toppingDetail : [])
+                        .map((detail) => ({
+                            product_detail_id: detail.topping ? detail.topping.id : detail.toppingDetail ? detail.toppingDetail.id : null,
+                            catalogue_id: item.catalogue_id,
+                            quantity: detail.quantity,
+                            price: detail.topping ? detail.topping.price : detail.toppingDetail ? detail.toppingDetail.price : null,
+                            price_sale: 0,
+                            name: detail.topping ? detail.topping.name : detail.toppingDetail ? detail.toppingDetail.name : null,
+                            type: detail.topping ? detail.topping.type : detail.toppingDetail ? detail.toppingDetail.type : null,
+                            total: detail.topping ? detail.topping.price * detail.quantity : detail.toppingDetail ? detail.toppingDetail.price * detail.quantity : null,
+                            sub_total: detail.topping ? detail.topping.price * detail.quantity : detail.toppingDetail ? detail.toppingDetail.price * detail.quantity : null,
+                        })),
+                })),
+                update_items: getState().orderById.orderUpdate.map((item) => ({
+                    product_detail_id: item.id || item.product_detail_id,
+                    catalogue_id: item.catalogue_id,
+                    quantity: item.quantity,
+                    price: item.price,
+                    price_sale: 0,
+                    name: item.name,
+                    type: item.type,
+                    total: item.price,
+                    sub_total: item.price,
+                    id: order_id,
+                    details: getState().orderById.orderUpdate.details?.map((detail) => ({
+                        product_detail_id: detail.id || detail.product_detail_id,
+                        catalogue_id: item.catalogue_id,
+                        quantity: detail.quantity,
+                        price: detail.price,
+                        price_sale: 0,
+                        name: detail.name,
+                        type: detail.type,
+                        total: detail.price,
+                        sub_total: detail.price,
+                    })),
+                })),
+                delete_items: getState().orderById.orderDelete.map((item) => ({
+                    product_detail_id: item.id || item.product_detail_id,
+                    catalogue_id: item.catalogue_id,
+                    quantity: item.quantity,
+                    price: item.price,
+                    price_sale: 0,
+                    name: item.name,
+                    type: item.type,
+                    total: item.price,
+                    sub_total: item.price,
+                    id: order_id,
+                    details: getState().orderById.orderDelete.details?.map((detail) => ({
+                        product_detail_id: detail.id || detail.product_detail_id,
+                        catalogue_id: item.catalogue_id,
+                        quantity: detail.quantity,
+                        price: detail.price,
+                        price_sale: 0,
+                        name: detail.name,
+                        type: detail.type,
+                        total: detail.price,
+                        sub_total: detail.price,
+                    })),
+                })),
+            };
+            // const res = await axios.post(API_BASE_URL + 'order/' + `${bill_id}`, data);
+            // return res.data;
+            return data;
+        } catch (error) {
+            console.error("Error in createOrder:", error);
+            return rejectWithValue(error.message);
+        }
+    },
+)
 
 
 const initialState = {
@@ -118,6 +214,16 @@ export const orderSlice = createSlice({
                 state.data = action.payload
             })
             .addCase(createOrder.rejected, (state) => {
+                state.isLoading = false
+            })
+            .addCase(updateOrder.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(updateOrder.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.data = action.payload
+            })
+            .addCase(updateOrder.rejected, (state) => {
                 state.isLoading = false
             })
     },

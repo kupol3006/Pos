@@ -87,28 +87,17 @@ export const productSlice = createSlice({
             const topping = action.payload;
             if (state.items.length > 0) {
                 state.items.map((item, index) => {
-                    // if (item.id === state.productId) {
-                    //     if (!state.items[index].topping) {
-                    //         state.items[index].topping = [];
-                    //         // state.items[index].topping.quantity++;
-                    //         state.items[index].topping.push({ topping, quantity: 1 });
-
-                    //     } else if (state.items[index].topping.find((i) => i.topping.idCard === state.idCard)) {
-                    //         state.items[index].topping.find((i) => i.topping.id === topping.id).quantity++;
-                    //     } else {
-                    //         // Thêm topping vào mảng topping hiện tại
-                    //         state.items[index].topping.push({ topping, quantity: 1 });
-                    //     }
-
-                    // }
-
                     if (item.idCard === state.idCard) {
-                        if (!state.items[index].topping) {
+                        if (state.items[index].toppingDetail?.find((i) => i.toppingDetail.id === topping.id)) {
+                            state.items[index].toppingDetail.find((i) => i.toppingDetail.id === topping.id).quantity++;
+                        }
+                        else if (!state.items[index].topping) {
                             state.items[index].topping = [];
                             // state.items[index].topping.quantity++;
                             state.items[index].topping.push({ topping, quantity: 1 });
 
-                        } else if (state.items[index].topping.find((i) => i.topping.id === topping.id)) {
+                        }
+                        else if (state.items[index].topping.find((i) => i.topping.id === topping.id)) {
                             state.items[index].topping.find((i) => i.topping.id === topping.id).quantity++;
                         } else {
                             // Thêm topping vào mảng topping hiện tại
@@ -125,24 +114,16 @@ export const productSlice = createSlice({
             const toppingDetail = action.payload;
             if (state.items.length > 0) {
                 state.items.map((item, index) => {
-                    // if (item.id === state.productId) {
-                    //     if (!state.items[index].toppingDetail) {
-                    //         state.items[index].toppingDetail = [];
-                    //         // state.items[index].topping.quantity++;
-                    //         state.items[index].toppingDetail.push({ toppingDetail, quantity: 1 });
-                    //     } else if (state.items[index].toppingDetail.find((i) => i.toppingDetail.id === toppingDetail.id)) {
-                    //         state.items[index].toppingDetail.find((i) => i.toppingDetail.id === toppingDetail.id).quantity++;
-                    //     } else {
-                    //         // Thêm topping vào mảng topping hiện tại
-                    //         state.items[index].toppingDetail.push({ toppingDetail, quantity: 1 });
-                    //     }
-                    // }
                     if (item.idCard === state.idCard) {
-                        if (!state.items[index].toppingDetail) {
+                        if (state.items[index].topping.find((i) => i.topping.id === toppingDetail.id)) {
+                            state.items[index].topping.find((i) => i.topping.id === toppingDetail.id).quantity++;
+                        }
+                        else if (!state.items[index].toppingDetail) {
                             state.items[index].toppingDetail = [];
                             // state.items[index].topping.quantity++;
                             state.items[index].toppingDetail.push({ toppingDetail, quantity: 1 });
-                        } else if (state.items[index].toppingDetail.find((i) => i.toppingDetail.id === toppingDetail.id)) {
+                        }
+                        else if (state.items[index].toppingDetail.find((i) => i.toppingDetail.id === toppingDetail.id)) {
                             state.items[index].toppingDetail.find((i) => i.toppingDetail.id === toppingDetail.id).quantity++;
                         } else {
                             // Thêm topping vào mảng topping hiện tại

@@ -277,7 +277,7 @@ const RegisterForm = () => {
                         </Select>
                     </Stack>
                 </form>
-                <div className='w-[21%] h-screen p-[1px] flex flex-col text-[14px]'>
+                <div className='w-[21%] h-screen p-[2px] flex flex-col text-[14px]'>
                     <div className='w-full h-[14%] mb-[1px] flex justify-center items-center bg-[#0044ff] text-[#fff] font-semibold rounded-[7px]'>
                         Nhập order
                     </div>
@@ -296,20 +296,13 @@ const RegisterForm = () => {
                         <Button variant="contained" color="error" onClick={() => { handleBack() }} className='w-[50%]'><CloseIcon /></Button>
                         <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={(event) => { handleSubmit(event) }}><CheckIcon /></Button>
                     </div>
-                    <div className="w-full h-[42.1%] flex flex-col items-center pt-[3px]">
-                        {/* <TextField
-                            id="outlined-basic" variant="outlined" size='small'
-                            sx={{ width: '98%', background: '#fff', borderRadius: '5px' }}
-                            inputProps={{ style: { height: '20px' } }}
-                            value={value}
-
-                        /> */}
-                        <div className='w-full h-full flex flex-row items-center flex-wrap gap-[2px]'>
+                    <div className="w-full h-[43.4%] flex flex-col items-center justify-end pt-[3px]">
+                        <div className='w-full h-full flex flex-row items-center flex-wrap gap-[1px]'>
                             {num.map((item, index) => {
                                 return (
                                     <Button
-                                        key={index} className='w-[32.7%] h-[25%]' variant="contained"
-                                        sx={{ background: '#575851', fontSize: '22px' }}
+                                        key={index} className='w-[32.9%] h-[25%]' variant="contained"
+                                        sx={{ background: '#575851', fontSize: '22px', minWidth: '0' }}
                                         value={item}
                                         onClick={(event) => handleNumPadClick(item, event)}
                                         onMouseDown={(event) => event.preventDefault()}
@@ -318,8 +311,8 @@ const RegisterForm = () => {
                                     </Button>
                                 )
                             })}
-                            <Button className='w-[32.7%] h-[25%]' variant="contained" sx={{ background: '#575851', fontSize: '22px' }} onClick={(event) => handleNumPadClick('.', event)} value='.'>.</Button>
-                            <Button className='w-[32.7%] h-[25%]' variant="contained" sx={{ fontSize: '22px' }} color='error' onClick={(event) => { handleDelete(event) }}>xóa</Button>
+                            <Button className='w-[32.9%] h-[25%]' variant="contained" sx={{ background: '#575851', fontSize: '22px', minWidth: '0' }} onClick={(event) => handleNumPadClick('.', event)} value='.'>.</Button>
+                            <Button className='w-[32.9%] h-[25%]' variant="contained" sx={{ fontSize: '22px', minWidth: '0' }} color='error' onClick={(event) => { handleDelete(event) }}>xóa</Button>
                         </div>
                     </div>
                 </div>
