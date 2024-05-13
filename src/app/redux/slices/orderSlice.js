@@ -20,6 +20,8 @@ export const createOrder = createAsyncThunk(
                 order_channel_id: getState().order.orderChannel,
                 order_type_id: getState().order.orderType,
                 table_id: getState().order.roomNum,
+                waiter_code: getState().order.staff.code,
+                cashier_code: getState().order.staff.code,
                 total: total,
                 sub_total: total,
                 order_details: items.map((item) => ({
@@ -63,11 +65,14 @@ export const updateOrder = createAsyncThunk(
         const token = parseCookies()['token'];
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         const items = getState().product.items;
+        const dataOrder = getState().orderById.data;
         const totalItem = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
         const totalTopping = items.reduce((total, item) => total + (item.topping?.reduce((total, item) => total + item.topping.price * item.quantity, 0) || 0), 0)
         const totalToppingDetail = items.reduce((total, item) => total + (item.toppingDetail?.reduce((total, item) => total + item.toppingDetail.price * item.quantity, 0) || 0), 0);
-        const total = totalItem + totalTopping + totalToppingDetail;
-        const order_id = getState().orderById.data.id;
+        const totalOrderByID = dataOrder.orderDetails?.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0;
+        const totalToppingOrderByID = dataOrder.orderDetails?.reduce((total, item) => total + (item.details?.reduce((total, item) => total + item.price * item.quantity, 0) || 0), 0);
+        const total = totalItem + totalTopping + totalToppingDetail + (totalOrderByID || 0) + (totalToppingOrderByID || 0);
+        // const order_id = getState().orderById.data.id;
         try {
             const data = {
                 total: total,
@@ -96,7 +101,7 @@ export const updateOrder = createAsyncThunk(
                         })),
                 })),
                 update_items: getState().orderById.orderUpdate.map((item) => ({
-                    product_detail_id: item.id || item.product_detail_id,
+                    product_detail_id: item.product_detail_id,
                     catalogue_id: item.catalogue_id,
                     quantity: item.quantity,
                     price: item.price,
@@ -105,7 +110,7 @@ export const updateOrder = createAsyncThunk(
                     type: item.type,
                     total: item.price,
                     sub_total: item.price,
-                    id: order_id,
+                    id: item.id,
                     details: getState().orderById.orderUpdate.details?.map((detail) => ({
                         product_detail_id: detail.id || detail.product_detail_id,
                         catalogue_id: item.catalogue_id,
@@ -119,7 +124,7 @@ export const updateOrder = createAsyncThunk(
                     })),
                 })),
                 delete_items: getState().orderById.orderDelete.map((item) => ({
-                    product_detail_id: item.id || item.product_detail_id,
+                    product_detail_id: item.product_detail_id,
                     catalogue_id: item.catalogue_id,
                     quantity: item.quantity,
                     price: item.price,
@@ -128,7 +133,7 @@ export const updateOrder = createAsyncThunk(
                     type: item.type,
                     total: item.price,
                     sub_total: item.price,
-                    id: order_id,
+                    id: item.id,
                     details: getState().orderById.orderDelete.details?.map((detail) => ({
                         product_detail_id: detail.id || detail.product_detail_id,
                         catalogue_id: item.catalogue_id,
@@ -142,9 +147,9 @@ export const updateOrder = createAsyncThunk(
                     })),
                 })),
             };
-            // const res = await axios.post(API_BASE_URL + 'order/' + `${bill_id}`, data);
-            // return res.data;
-            return data;
+            const res = await axios.post(API_BASE_URL + 'order/' + `${bill_id}`, data);
+            return res.data;
+            // return data;
         } catch (error) {
             console.error("Error in createOrder:", error);
             return rejectWithValue(error.message);
@@ -155,6 +160,7 @@ export const updateOrder = createAsyncThunk(
 
 const initialState = {
     data: [],
+    dataOrderUpdate: [],
     isLoading: false,
     cusType: '',
     cusQuan: '',
@@ -165,7 +171,7 @@ const initialState = {
     test: '',
     orderType: '',
     orderChannel: '',
-    staff: '',
+    staff: {},
 }
 
 export const orderSlice = createSlice({
@@ -221,7 +227,7 @@ export const orderSlice = createSlice({
             })
             .addCase(updateOrder.fulfilled, (state, action) => {
                 state.isLoading = false
-                state.data = action.payload
+                state.dataOrderUpdate = action.payload
             })
             .addCase(updateOrder.rejected, (state) => {
                 state.isLoading = false

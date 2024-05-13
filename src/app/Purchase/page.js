@@ -24,17 +24,18 @@ import { parseCookies } from "nookies";
 // import { set } from 'date-fns';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 // import { createOrder } from '../redux/slices/orderSlice';
-import { setUniqueID, updateQuantityOrderById, setOrderUpdate, setProductName, setGeneralID, updateToppingOrderById } from '../redux/slices/orderByIdSlice';
+import { setUniqueID, updateQuantityOrderById, setOrderUpdate, setProductName, setGeneralID, updateToppingOrderById, resetStateOrderByIdSlice, setIsNew } from '../redux/slices/orderByIdSlice';
 import ConfirmationDialog from '../Component/popUpSave'
 
 const CollapsibleTable = () => {
     const currentDate = useRef(new Date().toLocaleDateString());
     const currentTime = useRef(new Date().toLocaleTimeString());
-    const staff = useSelector((state) => state.order.staff);
+    const staff = useSelector((state) => state.order.staff.first_name);
     const items = useSelector((state) => state.product.items);
     // const storeToppingSelected = useSelector((state) => state.product.storeToppingSelected);
     const dispatch = useDispatch();
     const [isNew, setIsNew] = useState(true);
+    const isNew1 = useSelector((state) => state.orderById.isNew);
     const [isGray, setIsGray] = useState(true);
     const idCard = useSelector((state) => state.product.idCard);
     const itemSelected = useSelector((state) => state.product.itemSelected);
@@ -49,8 +50,9 @@ const CollapsibleTable = () => {
         if (items.length > 0 && itemSelected.idCard !== idCard) {
             dispatch(setIdCard(items[items.length - 1].idCard));
             setIsNew(true);
+            // dispatch(setIsNew(true));
         }
-        console.log(isNew);
+        // console.log(isNew);
     }, [items]);
 
     const updateIdCard = (item) => {
@@ -70,7 +72,8 @@ const CollapsibleTable = () => {
 
 
         setIsNew(false);
-        console.log(isNew);
+        // dispatch(setIsNew(false));
+        // console.log(isNew);
     }
 
     return (
@@ -93,12 +96,15 @@ const CollapsibleTable = () => {
                                 style={{ backgroundColor: '#EBEDEF' }}
                                 onClick={() => updateIdCard(item)}
                             >
-                                <td size='small' colSpan={4} className='h-[20px]'>
+                                <td size='small' colSpan={4}
+                                    className='h-[20px]'
+                                    style={{ backgroundColor: isNew === false && item.id === idUnique ? 'red' : 'transparent' }}
+                                >
                                     <Box
                                         className='w-full h-full flex flex-row justify-between items-center pl-[5px] pr-[5px] text-[12px] border-t border-[gray] [&:nth-child(1)]: border-none'
                                         style={{
-                                            backgroundColor: isNew === false && item.id === idUnique ? 'gray' : 'transparent',
-                                            color: isGray && item.id === idUnique ? 'white' : 'black',
+                                            // backgroundColor: isNew === false && item.id === idUnique ? 'red' : 'transparent',
+                                            color: isGray && item.id === idUnique && idCard === '' ? 'white' : 'black',
                                             width: '100%',
                                             height: '100%'
                                         }}
@@ -119,7 +125,7 @@ const CollapsibleTable = () => {
                                 onClick={() => updateIdCard(item)}
                                 style={{ backgroundColor: '#EBEDEF' }}
                             >
-                                <td size='small' colSpan={4} >
+                                <td size='small' colSpan={4}>
                                     <Box className='flex flex-row flex-wrap justify-start items-start pl-[6px] '>
                                         {dataOrderDetail[index].details?.map((topping, index) => (
                                             <Box key={index} size='small' className='flex text-[10px] w-[25%]'>
@@ -137,14 +143,17 @@ const CollapsibleTable = () => {
                         <React.Fragment key={index}>
                             <TableRow
                                 className='h-[10px] cursor-pointer select-none'
-                                style={{ backgroundColor: index === items.length - 1 && isNew ? 'gray' : 'transparent' }}
+                                // style={{ backgroundColor: index === items.length - 1 && isNew ? 'gray' : 'transparent' }}
                                 onClick={() => updateIdCard(item)}
                             >
-                                <td size='small' colSpan={4} className='h-[20px]'>
+                                <td size='small' colSpan={4}
+                                    className='h-[20px]'
+                                    style={{ backgroundColor: (isNew === false || isNew1) && item.idCard === idCard ? 'gray' : 'transparent' }}
+                                >
                                     <Box
                                         className='w-full h-full flex flex-row justify-between items-center pl-[5px] pr-[5px] text-[12px] border-t border-[gray] [nth-child(1)]: border-none'
                                         style={{
-                                            backgroundColor: isNew === false && item.idCard === idCard ? 'gray' : 'transparent',
+                                            // backgroundColor: isNew === false && item.idCard === idCard ? 'gray' : 'transparent',
                                             color: isGray && item.idCard === idCard ? 'white' : 'black',
                                             width: '100%',
                                             height: '100%'
@@ -207,7 +216,7 @@ const Products = () => {
     const toppingDetails = useSelector((state) => state.product.toppingDetail);
     const idCard = useSelector((state) => state.product.idCard);
 
-    //Dư liệ từ OrderByIdSlice
+    //Dư liệu từ OrderByIdSlice
     const idUnique = useSelector((state) => state.orderById.idUnique);
     const productName = useSelector((state) => state.orderById.productName);
     const idGeneral = useSelector((state) => state.orderById.idGeneral);
@@ -237,6 +246,7 @@ const Products = () => {
 
         // console.log(items);
         setShow1(false);
+        dispatch(setIsNew(true));
     };
     const handleToppingClick = (toppingDetail, topping) => {
         if (typeof idGeneral === 'number' && idCard === '') {
@@ -258,7 +268,7 @@ const Products = () => {
     };
 
     const handleToppingDetailClick = (toppingDetail) => {
-        if (typeof idGeneral === 'number') {
+        if (typeof idGeneral === 'number' && idCard === '') {
             dispatch(updateToppingOrderById(toppingDetail));
         } else {
             dispatch(addToppingDetail(toppingDetail));
@@ -364,7 +374,7 @@ export default function BoxSx() {
     const roomName = useSelector((state) => state.order.roomName);
     const cusQuan = useSelector((state) => state.order.cusQuan);
 
-    const staff = useSelector((state) => state.order.staff);
+    const staff = useSelector((state) => state.order.staff.first_name);
     const currentDate = useRef(new Date().toLocaleDateString());
     const currentTime = useRef(new Date().toLocaleTimeString());
     const router = useRouter();
@@ -373,6 +383,8 @@ export default function BoxSx() {
     const [tax, setTax] = useState('0');
     // const [cusPay, setCusPay] = useState('0đ');
     const pathName = usePathname();
+    const idCard = useSelector((state) => state.product.idCard);
+
 
     // Dữ liệu mới từ chức năng cập nhật Order
     const dataRoom = useSelector((state) => state.orderById.data);
@@ -384,12 +396,15 @@ export default function BoxSx() {
     const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0) + totalTopping + totalToppingDetail + (totalOrderByID || 0) + (totalToppingOrderByID || 0);
     const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
     const roomNameOrderByID = dataRoom.table?.name;
+    const idGeneral = useSelector((state) => state.orderById.idGeneral);
+    const idUnique = useSelector((state) => state.orderById.idUnique);
 
 
     const handleBack = () => {
         if (dataRoom.length === 0) {
             router.push('/Orders');
         } else {
+            dispatch(resetStateOrderByIdSlice());
             router.push('/Table');
         }
 
@@ -403,9 +418,20 @@ export default function BoxSx() {
     }
 
     const handleDelete = () => {
-        let arr = value.split('');
-        arr.splice(arr.length - 1, 1);
-        setValue(arr.join(''));
+        if (value !== '') {
+            let arr = value.split('');
+            arr.splice(arr.length - 1, 1);
+            setValue(arr.join(''));
+        }
+        else if (typeof idGeneral === 'number' && idCard === '') {
+            dispatch(updateQuantityOrderById('delete'));
+            dispatch(setOrderUpdate());
+        } else {
+            dispatch(updateQuantity('delete'));
+        }
+        // let arr = value.split('');
+        // arr.splice(arr.length - 1, 1);
+        // setValue(arr.join(''));
     }
 
     useEffect(() => {
@@ -420,10 +446,17 @@ export default function BoxSx() {
     }, []);
 
     const handleUpdateQuantity = (value) => {
-        dispatch(updateQuantity(value));
-        dispatch(updateQuantityOrderById(value));
+        if (typeof idGeneral === 'number' && idCard === '') {
+            dispatch(updateQuantityOrderById(value));
+            dispatch(setOrderUpdate());
+        }
+        else {
+            dispatch(updateQuantity(value));
+        }
+        // dispatch(updateQuantity(value));
+        // dispatch(updateQuantityOrderById(value));
         setValue('');
-        dispatch(setOrderUpdate());
+        // dispatch(setOrderUpdate());
     }
 
     // const handleSubmit = () => {
@@ -435,54 +468,55 @@ export default function BoxSx() {
             <Box className='flex flex-row w-full h-screen' sx={{ gap: '2px' }} >
                 <Box className='flex flex-col w-[50%] h-screen' >
                     <Box className='flex flex-row w-full h-[10%]' >
+                        <img src='logoS3.png' style={{ width: '10%', height: '100%', backgroundColor: '#F4F6F6' }}></img>
                         <Box
                             sx={{
-                                width: '50%',
+                                width: '45%',
                                 height: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 justifyContent: 'center',
-                                padding: '0 10px 0 10px',
+                                padding: '0 0.5% 0 0.5%',
 
                                 bgcolor: '#0059D4',
                                 color: 'primary.contrastText',
                                 borderRight: '2px #fff solid',
                             }}
                         >
-                            <Typography variant="subtitle1" sx={{ fontSize: '13px', lineHeight: '17px' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '70%', lineHeight: '12px' }}>
                                 {currentDate.current}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ fontSize: '13px', lineHeight: '17px' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '70%', lineHeight: '12px' }}>
                                 Phòng hoặc giao hàng: {roomNameOrderByID || roomName} ---- Số lượng khách: {cusQuan}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ fontSize: '13px', lineHeight: '17px' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '70%', lineHeight: '12px' }}>
                                 Thuế: {tax}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ fontSize: '13px', lineHeight: '17px' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '70%', lineHeight: '12px' }}>
                                 Tổng: {formattedTotal}
                             </Typography>
                         </Box>
                         <Box
                             sx={{
-                                width: '50%',
+                                width: '45%',
                                 height: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                // justifyContent: 'center',
-                                padding: '10px',
+                                justifyContent: 'center',
+                                padding: '0 1% 0 1%',
 
                                 bgcolor: '#0059D4',
                                 color: 'primary.contrastText',
 
                             }}
                         >
-                            <Typography variant="subtitle1" sx={{ fontSize: '13px', lineHeight: '17px' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '70%', lineHeight: '8px' }}>
                                 Tiền khách đưa: {formattedTotal}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ fontSize: '13px' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '70%' }}>
                                 Thanh toán:
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ fontSize: '25px', lineHeight: '30px', fontWeight: 'bold' }}>
+                            <Typography variant="subtitle1" sx={{ fontSize: '110%', lineHeight: '14px', fontWeight: 'bold' }}>
                                 {formattedTotal}
                             </Typography>
                         </Box>

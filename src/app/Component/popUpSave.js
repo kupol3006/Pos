@@ -13,12 +13,14 @@ import { resetStateProductSlice } from '../redux/slices/productSlice';
 import { useRouter } from 'next/navigation';
 import { resetStateTableSlice } from '../redux/slices/tableSlice';
 import { updateOrder } from '../redux/slices/orderSlice';
+import { resetStateOrderByIdSlice } from '../redux/slices/orderByIdSlice';
 
 export default function ConfirmationDialog(dataRoom) {
     const dispatch = useDispatch();
     const router = useRouter();
     const items = useSelector((state) => state.product.items);
     const dataOrder = useSelector((state) => state.orderById.dataPrimitive);
+    const bill_id = useSelector((state) => state.orderById.dataPrimitive.id);
 
     const [open, setOpen] = useState(false);
 
@@ -30,25 +32,23 @@ export default function ConfirmationDialog(dataRoom) {
         setOpen(false);
     };
 
-    const handleConfirm = () => {
-
-        switch (dataRoom.length) {
-            case undefined:
-                if (items.length > 0) {
-                    dispatch(createOrder());
-                    dispatch(resetStateProductSlice());
-                    dispatch(resetStateTableSlice());
-                    router.push('/');
-                } else {
-                    alert('Không có sản phẩm nào trong giỏ hàng');
-                }
-                break;
-            default:
-                if (dataOrder) {
-                    dispatch(updateOrder());
-                    router.push('/');
-                }
-                break;
+    const handleConfirm = async () => {
+        if (!dataOrder || dataOrder.length === 0) {
+            if (items.length > 0) {
+                await dispatch(createOrder());
+                dispatch(resetStateProductSlice());
+                dispatch(resetStateTableSlice());
+                router.push('/');
+            } else {
+                alert('Không có sản phẩm nào trong giỏ hàng');
+            }
+        } else {
+            if (dataOrder) {
+                await dispatch(updateOrder(bill_id));
+                dispatch(resetStateOrderByIdSlice());
+                dispatch(resetStateTableSlice());
+                router.push('/');
+            }
         }
         setOpen(false);
     };

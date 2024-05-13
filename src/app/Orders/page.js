@@ -24,7 +24,7 @@ const RegisterForm = () => {
     const roomNum1 = useSelector((state) => state.order.roomNum);
     const orderType1 = useSelector((state) => state.order.orderType);
     const orderChannel1 = useSelector((state) => state.order.orderChannel);
-    const staff1 = useSelector((state) => state.order.staff);
+    const staff1 = useSelector((state) => state.order.staff.first_name);
 
     const dataFloor = useSelector((state) => state.table.data);
     const dataFloorDetail = useSelector((state) => state.table.floorDetail);
@@ -272,7 +272,7 @@ const RegisterForm = () => {
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
                             {staffData?.map((item, index) => (
-                                <MenuItem key={index} value={item.staff.first_name}>{item.staff.first_name}</MenuItem>
+                                <MenuItem key={index} value={item.staff}>{item.staff.first_name}</MenuItem>
                             ))}
                         </Select>
                     </Stack>
@@ -296,7 +296,7 @@ const RegisterForm = () => {
                         <Button variant="contained" color="error" onClick={() => { handleBack() }} className='w-[50%]'><CloseIcon /></Button>
                         <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={(event) => { handleSubmit(event) }}><CheckIcon /></Button>
                     </div>
-                    <div className="w-full h-[43.4%] flex flex-col items-center justify-end pt-[3px]">
+                    <div className="w-full h-[43.2%] flex flex-col items-center justify-end pt-[3px]">
                         <div className='w-full h-full flex flex-row items-center flex-wrap gap-[1px]'>
                             {num.map((item, index) => {
                                 return (

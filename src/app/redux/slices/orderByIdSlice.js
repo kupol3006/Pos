@@ -38,6 +38,7 @@ const initialState = {
     idUnique: '',
     productName: '',
     idGeneral: '',
+    isNew: true,
     isLoading: false,
 }
 
@@ -129,11 +130,7 @@ export const orderByIdSlice = createSlice({
                     }
                 }
             }
-            else if (typeof value === 'number') {
-                if (item) {
-                    item.quantity = value;
-                }
-            } else if (value === 'delete') {
+            else if (value === 'delete') {
                 if (item) {
                     state.orderDelete.push(item);
                     state.data.orderDetails = state.data.orderDetails.filter((i) => i.id !== state.idUnique);
@@ -145,6 +142,11 @@ export const orderByIdSlice = createSlice({
             else if (value === state.productName) {
                 if (item) {
                     item.quantity++;
+                }
+            }
+            else {
+                if (item) {
+                    item.quantity = parseInt(value);
                 }
             }
         },
@@ -181,6 +183,9 @@ export const orderByIdSlice = createSlice({
                 }
             }
         },
+        setIsNew: (state, action) => {
+            state.isNew = action.payload;
+        },
     },
 
     extraReducers: (builder) => {
@@ -199,6 +204,6 @@ export const orderByIdSlice = createSlice({
     },
 })
 
-export const { resetStateOrderByIdSlice, setUniqueID, updateQuantityOrderById, setOrderUpdate, setProductName, setGeneralID, updateToppingOrderById } = orderByIdSlice.actions;
+export const { resetStateOrderByIdSlice, setUniqueID, updateQuantityOrderById, setOrderUpdate, setProductName, setGeneralID, updateToppingOrderById, setIsNew } = orderByIdSlice.actions;
 
 export default orderByIdSlice.reducer;

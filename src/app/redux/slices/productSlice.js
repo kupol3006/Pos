@@ -115,7 +115,7 @@ export const productSlice = createSlice({
             if (state.items.length > 0) {
                 state.items.map((item, index) => {
                     if (item.idCard === state.idCard) {
-                        if (state.items[index].topping.find((i) => i.topping.id === toppingDetail.id)) {
+                        if (state.items[index].topping?.find((i) => i.topping.id === toppingDetail.id)) {
                             state.items[index].topping.find((i) => i.topping.id === toppingDetail.id).quantity++;
                         }
                         else if (!state.items[index].toppingDetail) {
@@ -161,7 +161,12 @@ export const productSlice = createSlice({
                         state.items.find((i) => i.idCard === state.itemSelected.idCard || i.idCard === state.idCard).quantity--;
                     }
                 }
-            } else {
+            } else if (value === 'delete') {
+                if (item) {
+                    state.items = state.items.filter((i) => i.idCard !== state.itemSelected.idCard || i.idCard !== state.idCard);
+                }
+            }
+            else {
                 if (item) {
                     item.quantity = value;
                 }
