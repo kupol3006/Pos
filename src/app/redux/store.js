@@ -8,6 +8,7 @@ import tableListReducer from './slices/tableListSlice.js'
 import tableDetailReducer from './slices/tableDetailSlice.js'
 import orderByIdReducer from './slices/orderByIdSlice.js'
 import moneyReducer from './slices/moneySlice.js'
+import shiftReducer from './slices/shiftSlice.js'
 
 export const store = configureStore({
     reducer: {
@@ -20,5 +21,6 @@ export const store = configureStore({
         tableDetail: tableDetailReducer,
         orderById: orderByIdReducer,
         money: moneyReducer,
+        shift: shiftReducer,
     },
 })

@@ -21,8 +21,8 @@ export const fetchMoney = createAsyncThunk(
     },
 )
 export const postMoney = createAsyncThunk(
-    'money/postMoney',
-    async (type, amount, { getState, rejectWithValue }) => {
+    'moneyPost/postMoney',
+    async ({ type, amount }, { getState, rejectWithValue }) => {
         try {
             const token = parseCookies()['token'];
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -31,8 +31,7 @@ export const postMoney = createAsyncThunk(
                 amount: amount
             };
             const response = await axios.post(API_BASE_URL + 'money', money);
-            const data = response.data.data;
-            return data
+            return response
         } catch (error) {
             console.error("Error in createOrder:", error);
             return rejectWithValue(error.message);
@@ -63,6 +62,16 @@ export const moneySlice = createSlice({
                 state.data = action.payload
             })
             .addCase(fetchMoney.rejected, (state) => {
+                state.isLoading = false
+            })
+            .addCase(postMoney.pending, (state) => {
+                state.isLoading = false
+            })
+            .addCase(postMoney.fulfilled, (state, action) => {
+                state.isLoading = true
+                state.dataPostMoney = action.payload
+            })
+            .addCase(postMoney.rejected, (state) => {
                 state.isLoading = false
             })
     },

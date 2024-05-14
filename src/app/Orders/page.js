@@ -7,7 +7,7 @@ import { updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNu
 import { useRouter } from "next/navigation";
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
-import { fetchStaff } from '../redux/slices/staffSlice';
+import { fetchStaffShift } from '../redux/slices/staffSlice';
 import { usePathname } from 'next/navigation';
 import { parseCookies } from "nookies";
 import { fetchTable, setFloorDetail } from '../redux/slices/tableSlice';
@@ -51,7 +51,7 @@ const RegisterForm = () => {
     // const isClient = typeof window !== 'undefined';
 
     useEffect(() => {
-        dispatch(fetchStaff());
+        dispatch(fetchStaffShift('in'));
         dispatch(fetchTable());
         dispatch(fetchTableList());
     }, []);

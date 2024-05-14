@@ -7,6 +7,7 @@ import { format } from 'date-fns-tz';
 import { Box, TextField, Button } from '@mui/material';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import { postMoney } from '../redux/slices/moneySlice';
 
 export default function MonOut() {
     const router = useRouter();
@@ -18,9 +19,12 @@ export default function MonOut() {
     const handleBack = () => {
         router.push('/');
     }
+
+    const [load, setLoad] = useState(false);
+
     useEffect(() => {
         dispatch(fetchMoney('sub'));
-    }, [])
+    }, [load])
 
     // NumPad
     const handleNumPadClick = (num, event) => {
@@ -30,37 +34,47 @@ export default function MonOut() {
     const [showNumPad, setShowNumPad] = useState(false);
     const styles = {
         open: {
-            display: 'flex',
+            // display: 'flex',
             transform: 'translateY(0)',
             transition: 'transform 0.3s ease-out',
         },
         closed: {
-            display: 'none',
+            // display: 'none',
             transform: 'translateY(100%)',
             transition: 'transform 0.3s ease-in',
         },
     };
     const [value, setValue] = useState('');
+
+    const handleSubMoney = async () => {
+        if (typeof parseInt(value) === 'number' && parseInt(value) > 0) {
+            await dispatch(postMoney({ type: 'sub', amount: parseInt(value) }));
+            // setValue('');
+            setShowNumPad(!showNumPad);
+            setLoad(!load);
+        }
+    }
     const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-    const handleChange = (num) => {
+    const handleChange = (num, event) => {
+        event.preventDefault();
         setValue(prevValue => prevValue + `${num}`)
-        console.log(value);
+        // console.log(value);
     }
     const handleDelete = (event) => {
-        setValue(value.slice(0, -1));
         event.preventDefault();
+        setValue(value.slice(0, -1));
     }
     const handleClose = () => {
         setShowNumPad(!showNumPad);
     }
     return (
-        <div className="w-full h-screen flex flex-row">
+        <div className="w-full h-screen flex flex-row relative overflow-hidden">
             <h1 className="w-full p-[10px] text-center bg-[#424bf4] text-[#fff] fixed">Lịch sử rút tiền từ két</h1>
             <div className="w-[85%] h-screen pt-[44px] flex flex-col justify-start items-center">
                 <h1 className='text-[16px] font-bold'>Lịch sử rút tiền</h1>
                 <p className='text-[13px]'>Ngày: {currentDate.current}</p>
-                <p className='text-[13px]'>Ca: 3 <p className='inline-block font-semibold'>lúc</p> [{currentTime.current}]</p>
+                <p className='text-[13px]'>Ca: 3 <span className='inline-block font-semibold'>lúc</span> [{currentTime.current}]</p>
                 <div className='w-[65%] flex justify-between border-t-[2px] border-black border-dotted mt-[7px]'>
                     <p className='text-[12px] font-semibold'>Thời gian</p>
                     <p className='text-[12px] font-semibold'>Số tiền</p>
@@ -103,7 +117,7 @@ export default function MonOut() {
 
                         value={value}
                     />
-                    <Button variant='contained' sx={{ width: '13%', height: '40px', borderTopLeftRadius: 0, borderBottomLeftRadius: 0, fontSize: '10px' }}>Xác nhận</Button>
+                    <Button variant='contained' sx={{ width: '13%', height: '40px', borderTopLeftRadius: 0, borderBottomLeftRadius: 0, fontSize: '10px' }} onClick={() => handleSubMoney()}>Xác nhận</Button>
 
                 </Box>
                 <div className="w-[25%] h-full flex justify-center items-start pt-[20px]">
@@ -124,7 +138,7 @@ export default function MonOut() {
                                         }
                                     }}
                                     value={item}
-                                    onClick={() => handleChange(item)}
+                                    onClick={(event) => handleChange(item, event)}
                                     onMouseDown={(event) => event.preventDefault()}
                                 >
                                     {item}
@@ -132,7 +146,7 @@ export default function MonOut() {
                             )
                         })}
                         <Button className='w-[33%] h-[25%]' variant="contained" sx={{ color: 'black', background: '#fff', fontSize: '22px', minWidth: '0', '&:hover': { background: '#ddd', } }} onClick={(event) => handleNumPadClick('.', event)} value='.'>.</Button>
-                        <Button className='w-[33%] h-[25%]' variant="contained" sx={{ color: 'black', fontSize: '22px', minWidth: '0', backgroundColor: '#CECECE', '&:hover': { backgroundColor: 'darkgray', } }}><KeyboardReturnIcon /></Button>
+                        <Button className='w-[33%] h-[25%]' variant="contained" sx={{ color: 'black', fontSize: '22px', minWidth: '0', backgroundColor: '#CECECE', '&:hover': { backgroundColor: 'darkgray', } }} onClick={() => handleSubMoney()}><KeyboardReturnIcon /></Button>
                     </div>
                     <div className='w-[25%] h-[205px] flex flex-col justify-start flex-wrap gap-[1px] ml-[1px]'>
                         <Button className='w-full h-[25%]' variant="contained" sx={{ fontSize: '16px', minWidth: '0' }} color='error' onClick={() => handleClose()} value='.'>Đóng</Button>

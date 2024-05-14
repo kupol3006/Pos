@@ -1,5 +1,7 @@
+import { common } from '@mui/material/colors';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+// import { set } from 'date-fns';
 import { parseCookies } from 'nookies';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
@@ -7,22 +9,63 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
 
 export const fetchStaff = createAsyncThunk(
     'staff/fetchStaff',
-    async () => {
+    async (type, { getState, rejectWithValue }) => {
         try {
             const token = parseCookies()['token'];
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            const response = await axios.get(API_BASE_URL + 'work_day/staff?type=in');
+            const response = await axios.get(API_BASE_URL + 'staff');
             const data = response.data.data;
             return data
-        } catch (err) {
-            console.log(err)
+        } catch (error) {
+            console.error("Error in createOrder:", error);
+            return rejectWithValue(error.message);
+        }
+    },
+)
+export const fetchStaffShift = createAsyncThunk(
+    'staffShift/fetchStaffShift',
+    async (type, { getState, rejectWithValue }) => {
+        try {
+            const token = parseCookies()['token'];
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            const response = await axios.get(API_BASE_URL + 'work_day/staff?type=' + `${type}`);
+            const data = response.data.data;
+            return data
+        } catch (error) {
+            console.error("Error in createOrder:", error);
+            return rejectWithValue(error.message);
+        }
+    },
+)
+export const checkInOutStaff = createAsyncThunk(
+    'checkInOut/checkInOutStaff',
+    async (type, { getState, rejectWithValue }) => {
+        const currentTime = new Date().toISOString();
+        try {
+            const token = parseCookies()['token'];
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            const data = {
+                type: type,
+                staff_id: getState().staff.staffPosId,
+                time_start: currentTime,
+                time_finish: currentTime
+            }
+            const response = await axios.post(API_BASE_URL + 'staff');
+            return response.data.data;
+        } catch (error) {
+            console.error("Error in createOrder:", error);
+            return rejectWithValue(error.message);
         }
     },
 )
 
 
 const initialState = {
+    dataStaffList: [],
     data: [],
+    dataCheckInOut: [],
+    commonData: [],
+    staffPosId: '',
     isLoading: false,
 }
 
@@ -31,6 +74,16 @@ export const staffSlice = createSlice({
     name: 'staff',
     initialState,
     reducers: {
+        setStaffPosId: (state, action) => {
+            state.staffPosId = action.payload
+        },
+        checkStaffInshift: (state, action) => {
+            for (let i = 0; i < state.dataStaffList.length; i++) {
+                if (state.dataStaffList[i].pos_id === state.data[i]?.staff_id) {
+                    state.commonData.push(state.dataStaffList[i]);
+                }
+            }
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -39,14 +92,34 @@ export const staffSlice = createSlice({
             })
             .addCase(fetchStaff.fulfilled, (state, action) => {
                 state.isLoading = true
-                state.data = action.payload
+                state.dataStaffList = action.payload
             })
             .addCase(fetchStaff.rejected, (state) => {
+                state.isLoading = false
+            })
+            .addCase(fetchStaffShift.pending, (state) => {
+                state.isLoading = false
+            })
+            .addCase(fetchStaffShift.fulfilled, (state, action) => {
+                state.isLoading = true
+                state.data = action.payload
+            })
+            .addCase(fetchStaffShift.rejected, (state) => {
+                state.isLoading = false
+            })
+            .addCase(checkInOutStaff.pending, (state) => {
+                state.isLoading = false
+            })
+            .addCase(checkInOutStaff.fulfilled, (state, action) => {
+                state.isLoading = true
+                state.dataCheckInOut = action.payload
+            })
+            .addCase(checkInOutStaff.rejected, (state) => {
                 state.isLoading = false
             })
     },
 })
 
-export const { } = staffSlice.actions;
+export const { setStaffPosId } = staffSlice.actions;
 
 export default staffSlice.reducer;
