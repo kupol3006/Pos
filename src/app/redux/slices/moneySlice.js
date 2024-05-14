@@ -20,10 +20,30 @@ export const fetchMoney = createAsyncThunk(
         }
     },
 )
+export const postMoney = createAsyncThunk(
+    'money/postMoney',
+    async (type, amount, { getState, rejectWithValue }) => {
+        try {
+            const token = parseCookies()['token'];
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            const money = {
+                type: type,
+                amount: amount
+            };
+            const response = await axios.post(API_BASE_URL + 'money', money);
+            const data = response.data.data;
+            return data
+        } catch (error) {
+            console.error("Error in createOrder:", error);
+            return rejectWithValue(error.message);
+        }
+    },
+)
 
 
 const initialState = {
     data: [],
+    dataPostMoney: [],
     isLoading: false,
 }
 
