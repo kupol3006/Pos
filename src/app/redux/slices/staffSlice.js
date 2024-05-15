@@ -1,7 +1,8 @@
 import { common } from '@mui/material/colors';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-// import { set } from 'date-fns';
+import { set } from 'date-fns';
+
 import { parseCookies } from 'nookies';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
@@ -48,10 +49,11 @@ export const checkInOutStaff = createAsyncThunk(
                 type: type,
                 staff_id: getState().staff.staffPosId,
                 time_start: currentTime,
-                time_finish: currentTime
+                time_finish: null
             }
-            const response = await axios.post(API_BASE_URL + 'staff');
+            const response = await axios.post(API_BASE_URL + 'work_day/staff', data);
             return response.data.data;
+            // return data
         } catch (error) {
             console.error("Error in createOrder:", error);
             return rejectWithValue(error.message);
@@ -67,6 +69,7 @@ const initialState = {
     commonData: [],
     staffPosId: '',
     isLoading: false,
+    render: false,
 }
 
 // Then, handle actions in your reducers:
@@ -78,12 +81,27 @@ export const staffSlice = createSlice({
             state.staffPosId = action.payload
         },
         checkStaffInshift: (state, action) => {
-            for (let i = 0; i < state.dataStaffList.length; i++) {
-                if (state.dataStaffList[i].pos_id === state.data[i]?.staff_id) {
-                    state.commonData.push(state.dataStaffList[i]);
+            for (let i = 0; i < state.data.length; i++) {
+                const itemExist = state.dataStaffList.find(item => item.pos_id === state.data[i].staff_id);
+                if (itemExist) {
+                    if (state.commonData.length === 0) {
+                        state.commonData.push(itemExist);
+                    } else {
+                        const itemExistInCommonData = state.commonData.find(item => item.pos_id === state.data[i].staff_id);
+                        if (!itemExistInCommonData) {
+                            state.commonData.push(itemExist);
+                        }
+                    }
+
                 }
             }
-        }
+        },
+        setRender: (state) => {
+            state.render = !state.render
+        },
+        resetStaffPosId: (state) => {
+            state.staffPosId = ''
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -120,6 +138,6 @@ export const staffSlice = createSlice({
     },
 })
 
-export const { setStaffPosId } = staffSlice.actions;
+export const { setStaffPosId, checkStaffInshift, resetStaffPosId, setRender } = staffSlice.actions;
 
 export default staffSlice.reducer;

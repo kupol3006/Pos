@@ -9,6 +9,7 @@ import tableDetailReducer from './slices/tableDetailSlice.js'
 import orderByIdReducer from './slices/orderByIdSlice.js'
 import moneyReducer from './slices/moneySlice.js'
 import shiftReducer from './slices/shiftSlice.js'
+import workDayReducer from './slices/workDaySlice.js'
 
 export const store = configureStore({
     reducer: {
@@ -22,5 +23,6 @@ export const store = configureStore({
         orderById: orderByIdReducer,
         money: moneyReducer,
         shift: shiftReducer,
+        workDay: workDayReducer,
     },
 })

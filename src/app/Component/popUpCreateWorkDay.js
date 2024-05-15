@@ -7,11 +7,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch, useSelector } from 'react-redux';
-import { checkInOutStaff } from '../redux/slices/staffSlice';
+import { createShiftDay } from '../redux/slices/shiftSlice';
 
-export default function ConfirmationDialog(value, type) {
+export default function CreateWorkDay() {
     const dispatch = useDispatch();
-    const staffPosId = useSelector(state => state.staff.staffPosId);
+    const dataWorkDayShiftList = useSelector(state => state.shift.dataWorkDayShiftList);
 
     const [open, setOpen] = useState(false);
 
@@ -24,7 +24,7 @@ export default function ConfirmationDialog(value, type) {
     };
 
     const handleConfirm = () => {
-        dispatch(checkInOutStaff(type));
+        dispatch(createShiftDay());
         setOpen(false);
     };
 
@@ -37,11 +37,14 @@ export default function ConfirmationDialog(value, type) {
                 sx={{
                     width: '100%', height: "100%", borderTopLeftRadius: 0,
                     borderBottomLeftRadius: 0, fontSize: '10px',
-                    backgroundColor: value && staffPosId !== '' ? '#1976D2' : '#086BFF80'
+                    backgroundColor: '#086BFF80',
+                    ":hover": {
+                        backgroundColor: '#086BFF80',
+                    }
                 }}
-                onClick={handleClickOpen}
+                onClick={undefined}
             >
-                Đăng ký NV
+                Tạo ngày
             </Button>
             <Dialog
                 open={open}
@@ -49,18 +52,18 @@ export default function ConfirmationDialog(value, type) {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">Xác nhận lưu đơn hàng</DialogTitle>
+                <DialogTitle id="alert-dialog-title">Xác nhận</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Bạn có chắc chắn muốn lưu đơn hàng này không?
+                        Xác nhận tạo ca làm việc mới cho ngày hiện tại?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary" variant='outline' sx={{ border: '1px black solid' }}>
-                        Hủy bỏ
+                        Không
                     </Button>
                     <Button onClick={handleConfirm} color="primary" autoFocus variant='contained'>
-                        Xác nhận
+                        Đồng ý
                     </Button>
                 </DialogActions>
             </Dialog>
