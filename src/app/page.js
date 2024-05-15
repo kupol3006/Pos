@@ -25,9 +25,6 @@ export default function Home() {
     } else {
       router.push("/Login");
     }
-    if (dataCloseShift.success === false) {
-      alert('Đóng ca làm việc không thành công')
-    }
     dispatch(fetchWorkDayShiftList())
   }, [isCloseShift]);
   return (
