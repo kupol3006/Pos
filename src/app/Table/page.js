@@ -28,7 +28,10 @@ export default function Table() {
     const floorName = useSelector((state) => state.table.floorName);
 
     useEffect(() => {
-        dispatch(fetchTable());
+        async function fetchData() {
+            const resultTable = await dispatch(fetchTable()).unwrap();
+        }
+        fetchData();
     }, [pathname]);
 
     const handleBack = () => {

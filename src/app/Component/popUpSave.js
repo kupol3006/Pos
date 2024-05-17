@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { resetStateTableSlice } from '../redux/slices/tableSlice';
 import { updateOrder } from '../redux/slices/orderSlice';
 import { resetStateOrderByIdSlice } from '../redux/slices/orderByIdSlice';
+import { toast, ToastContainer, Bounce, Flip } from 'react-toastify';
 
 export default function ConfirmationDialog(dataRoom) {
     const dispatch = useDispatch();
@@ -21,6 +22,7 @@ export default function ConfirmationDialog(dataRoom) {
     const items = useSelector((state) => state.product.items);
     const dataOrder = useSelector((state) => state.orderById.dataPrimitive);
     const bill_id = useSelector((state) => state.orderById.dataPrimitive.id);
+    const dataOrderUpdate = useSelector((state) => state.order.dataOrderUpdate);
 
     const [open, setOpen] = useState(false);
 
@@ -35,18 +37,37 @@ export default function ConfirmationDialog(dataRoom) {
     const handleConfirm = async () => {
         if (!dataOrder || dataOrder.length === 0) {
             if (items.length > 0) {
-                await dispatch(createOrder());
+                const resultCreateOrder = await dispatch(createOrder()).unwrap();
                 dispatch(resetStateProductSlice());
                 dispatch(resetStateTableSlice());
+                console.log(resultCreateOrder);
                 router.push('/');
             } else {
                 alert('Không có sản phẩm nào trong giỏ hàng');
             }
         } else {
             if (dataOrder) {
-                await dispatch(updateOrder(bill_id));
+                const resultAction = await dispatch(updateOrder(bill_id)).unwrap();
                 dispatch(resetStateOrderByIdSlice());
                 dispatch(resetStateTableSlice());
+
+                const toastMessage = resultAction.message;
+                localStorage.setItem('toastMessage', toastMessage);
+                localStorage.setItem('status', resultAction.success ? true : false)
+
+                // const toastOptions = {
+                //     position: "bottom-center",
+                //     autoClose: 3000,
+                //     hideProgressBar: false,
+                //     closeOnClick: true,
+                //     pauseOnHover: true,
+                //     draggable: true,
+                //     progress: undefined,
+                //     theme: "dark",
+                //     transition: Flip,
+                // };
+                // localStorage.setItem('toastOptions', JSON.stringify(toastOptions));
+
                 router.push('/');
             }
         }

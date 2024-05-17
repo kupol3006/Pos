@@ -8,11 +8,13 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch, useSelector } from 'react-redux';
 import { closeShiftDay, setCloseShift } from '../redux/slices/shiftSlice';
+import { toast, ToastContainer, Bounce, Flip } from 'react-toastify';
 
 export default function ConfirmationDialog1() {
     const dispatch = useDispatch();
     const staffPosId = useSelector(state => state.staff.staffPosId);
     const dataWorkDayShiftList = useSelector(state => state.shift.dataWorkDayShiftList);
+    const dataCloseShift = useSelector(state => state.shift.dataCloseShift);
 
 
     const [open, setOpen] = useState(false);
@@ -25,10 +27,29 @@ export default function ConfirmationDialog1() {
         setOpen(false);
     };
 
-    const handleConfirm = () => {
-        dispatch(closeShiftDay());
-        dispatch(setCloseShift());
-        setOpen(false);
+    const handleConfirm = async () => {
+        try {
+            const resultAction = await dispatch(closeShiftDay()).unwrap();
+            const toastMessage = resultAction.message;
+            localStorage.setItem('toastMessage', toastMessage);
+            localStorage.setItem('status', resultAction.success ? true : false)
+            // const toastOptions = {
+            //     position: "bottom-center",
+            //     autoClose: 3000,
+            //     hideProgressBar: false,
+            //     closeOnClick: true,
+            //     pauseOnHover: true,
+            //     draggable: true,
+            //     progress: undefined,
+            //     theme: "dark",
+            //     transition: Flip,
+            // };
+            // localStorage.setItem('toastOptions', JSON.stringify(toastOptions));
+            dispatch(setCloseShift());
+            setOpen(false);
+        } catch (error) {
+            console.error("Error in handleConfirm:", error);
+        }
     };
 
     return (
