@@ -111,7 +111,7 @@ export const updateOrder = createAsyncThunk(
                     total: item.price,
                     sub_total: item.price,
                     id: item.id,
-                    details: getState().orderById.orderUpdate.details?.map((detail) => ({
+                    details: item.details.map((detail) => ({
                         product_detail_id: detail.id || detail.product_detail_id,
                         catalogue_id: item.catalogue_id,
                         quantity: detail.quantity,
@@ -134,7 +134,7 @@ export const updateOrder = createAsyncThunk(
                     total: item.price,
                     sub_total: item.price,
                     id: item.id,
-                    details: getState().orderById.orderDelete.details?.map((detail) => ({
+                    details: item.details.map((detail) => ({
                         product_detail_id: detail.id || detail.product_detail_id,
                         catalogue_id: item.catalogue_id,
                         quantity: detail.quantity,

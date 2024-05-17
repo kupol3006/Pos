@@ -1,32 +1,74 @@
 'use client';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { parseCookies } from "nookies";
 import Menu from './Header/page'
 import ConfirmationDialog1 from './Component/popUpCloseShift';
 import ConfirmationDialog2 from './Component/popUpCloseDay';
 import { fetchWorkDayShiftList } from './redux/slices/shiftSlice';
+import { toast, ToastContainer, Bounce, Flip } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { usePathname } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
+  const pathname = usePathname();
   // const token = parseCookies()["token"];
   const [isTokenValid, setTokenValid] = useState(false);
   const dispatch = useDispatch();
   const dataWorkDayShiftList = useSelector(state => state.shift.dataWorkDayShiftList);
   const isCloseShift = useSelector(state => state.shift.isCloseShift);
-  const dataCloseShift = useSelector(state => state.shift.dataCloseShift);
+  // const dataCloseShift = useSelector(state => state.shift.dataCloseShift);
+  // const dataOrderUpdate = useSelector(state => state.order.dataOrderUpdate);
 
   useEffect(() => {
+    handleTokenValidation();
+    displayToastMessage();
+    async function fetchData() {
+      const resultShiftList = await dispatch(fetchWorkDayShiftList()).unwrap();
+    }
+    fetchData();
+  }, [isCloseShift]);
+
+  function handleTokenValidation() {
     const token = parseCookies()["token"];
-    if (token !== undefined) {
+    if (token) {
       setTokenValid(true);
     } else {
       router.push("/Login");
     }
-    dispatch(fetchWorkDayShiftList())
-  }, [isCloseShift]);
+  }
+
+  function displayToastMessage() {
+    const message = localStorage.getItem('toastMessage');
+    const status = localStorage.getItem('status');
+    if (message && status) {
+      const toastFunction = status === 'true' ? toast.success : toast.error;
+      toastFunction(message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Flip,
+      });
+      setTimeout(() => {
+        clearToastMessage();
+      }, 9);
+    }
+  }
+
+  function clearToastMessage() {
+    localStorage.removeItem('toastMessage');
+    localStorage.removeItem('toastOptions');
+    localStorage.removeItem('status');
+  }
+
   return (
     <>
       {isTokenValid ?
@@ -116,6 +158,7 @@ export default function Home() {
                 </div> */}
               </div>
             </div>
+
           </div >
         )
         :

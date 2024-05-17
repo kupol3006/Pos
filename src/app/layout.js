@@ -11,6 +11,7 @@ import { parseCookies } from 'nookies'
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation'
 import { AuthProvider } from './Context/logout'
+import { ToastContainer } from 'react-toastify';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,6 +38,17 @@ export default function RootLayout({ children }) {
             <ThemeProvider theme={theme}>
               <AuthProvider>
                 {children}
+                <ToastContainer
+                  toastStyle={{
+                    minHeight: '20px',
+                    padding: '8px',
+                    fontSize: '12px',
+                  }}
+                  bodyStyle={{
+                    margin: 0,
+                    padding: 0,
+                  }}
+                />
               </AuthProvider>
             </ThemeProvider>
           </AppRouterCacheProvider>

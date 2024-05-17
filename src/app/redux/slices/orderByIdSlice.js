@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { set } from 'date-fns';
 import { parseCookies } from 'nookies';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
@@ -69,18 +68,6 @@ export const orderByIdSlice = createSlice({
                         if (item.quantity === itemPrimitive.quantity) {
                             return { bool: true, item: { item: item, delete: true }, topping: null };
                         }
-                        // const topping = item.details;
-                        // const topPrimitive = itemPrimitive.details;
-                        // if (topping && topPrimitive) {
-                        //     if (item.details.length !== itemPrimitive.details.length) {
-                        //         return { bool: true, item: item, topping: null };
-                        //     }
-                        //     for (let i = 0; i < item.details.length; i++) {
-                        //         if (item.details[i].quantity !== itemPrimitive.details[i].quantity) {
-                        //             return { bool: true, item: item, topping: item.details[i] };
-                        //         }
-                        //     }
-                        // }
                     }
                     return { bool: false, item: null, topping: null };
                 }
