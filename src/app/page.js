@@ -39,10 +39,6 @@ export default function Home() {
     } else {
       router.push("/Login");
     }
-<<<<<<< HEAD
-    dispatch(fetchWorkDayShiftList())
-  }, [isCloseShift]);
-=======
   }
 
   function displayToastMessage() {
@@ -72,7 +68,6 @@ export default function Home() {
     localStorage.removeItem('toastOptions');
     localStorage.removeItem('status');
   }
->>>>>>> main
 
   return (
     <>
