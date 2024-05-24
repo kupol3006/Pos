@@ -1,8 +1,5 @@
-import { common } from '@mui/material/colors';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { set } from 'date-fns';
-
 import { parseCookies } from 'nookies';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
@@ -15,10 +12,10 @@ export const fetchStaff = createAsyncThunk(
             const token = parseCookies()['token'];
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             const response = await axios.get(API_BASE_URL + 'staff');
-            const data = response.data.data;
+            const data = response.data;
             return data
         } catch (error) {
-            console.error("Error in createOrder:", error);
+            console.error("Error in fetchStaff:", error);
             return rejectWithValue(error.message);
         }
     },
@@ -33,7 +30,7 @@ export const fetchStaffShift = createAsyncThunk(
             const data = response.data.data;
             return data
         } catch (error) {
-            console.error("Error in createOrder:", error);
+            console.error("Error in fetchStaffShift:", error);
             return rejectWithValue(error.message);
         }
     },
@@ -52,10 +49,10 @@ export const checkInOutStaff = createAsyncThunk(
                 time_finish: null
             }
             const response = await axios.post(API_BASE_URL + 'work_day/staff', data);
-            return response.data.data;
+            return response.data;
             // return data
         } catch (error) {
-            console.error("Error in createOrder:", error);
+            console.error("Error in checkInOutStaff:", error);
             return rejectWithValue(error.message);
         }
     },
@@ -82,7 +79,7 @@ export const staffSlice = createSlice({
         },
         checkStaffInshift: (state, action) => {
             for (let i = 0; i < state.data.length; i++) {
-                const itemExist = state.dataStaffList.find(item => item.pos_id === state.data[i].staff_id);
+                const itemExist = state.dataStaffList.data.find(item => item.pos_id === state.data[i].staff_id);
                 if (itemExist) {
                     if (state.commonData.length === 0) {
                         state.commonData.push(itemExist);

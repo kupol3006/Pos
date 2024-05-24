@@ -13,7 +13,7 @@ export const fetchProduct = createAsyncThunk(
         const token = parseCookies()['token'];
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         const pos_id_tableDetail = getState().tableDetail.posId;
-        const pos_id_orderById = getState().orderById.data.order_type_id;
+        const pos_id_orderById = getState().orderById.data.order_channel_id;
         try {
             const response = await axios.get(API_BASE_URL + 'menu/' + (pos_id_orderById || pos_id_tableDetail));
             const data = response.data.data;
@@ -54,26 +54,50 @@ export const productSlice = createSlice({
         },
         addItems: (state, action) => {
             const item = action.payload;
-            const existItem = state.items.find((i) => i.id === item.id);
+            // const existItem = state.items.find((i) => i.id === item.id);
             const uniqueId = uuidv4();
 
-            if (state.items.length === 0) {
-                state.items.push({ ...item, quantity: 1, idCard: uniqueId });
-            }
-            else if (state.items.find((i) => i.idCard === state.itemSelected.idCard)) {
-                const itemToUpdate = state.items.find((i) => i.id === item.id && i.idCard === state.itemSelected.idCard);
-                if (itemToUpdate) {
-                    itemToUpdate.quantity++;
-                } else {
-                    state.itemSelected = [];
+            if (item.id) {
+                if (state.items.length === 0) {
                     state.items.push({ ...item, quantity: 1, idCard: uniqueId });
                 }
-            }
-            else {
-                if (state.items[state.items.length - 1].id === item.id) {
-                    state.items[state.items.length - 1].quantity++;
-                } else {
+                else if (state.items.find((i) => i.idCard === state.itemSelected.idCard)) {
+                    const itemToUpdate = state.items.find((i) => i.id === item.id && i.idCard === state.itemSelected.idCard);
+
+                    if (itemToUpdate) {
+                        itemToUpdate.quantity++;
+                    } else {
+                        state.itemSelected = [];
+                        state.items.push({ ...item, quantity: 1, idCard: uniqueId });
+                    }
+                }
+                else {
+                    if (state.items[state.items.length - 1].id === item.id) {
+                        state.items[state.items.length - 1].quantity++;
+                    } else {
+                        state.items.push({ ...item, quantity: 1, idCard: uniqueId });
+                    }
+                }
+            } else {
+                if (state.items.length === 0) {
                     state.items.push({ ...item, quantity: 1, idCard: uniqueId });
+                }
+                else if (state.items.find((i) => i.idCard === state.itemSelected.idCard)) {
+                    const itemToUpdate = state.items.find((i) => i.pos_code === item.pos_code && i.idCard === state.itemSelected.idCard);
+
+                    if (itemToUpdate) {
+                        itemToUpdate.quantity++;
+                    } else {
+                        state.itemSelected = [];
+                        state.items.push({ ...item, quantity: 1, idCard: uniqueId });
+                    }
+                }
+                else {
+                    if (state.items[state.items.length - 1].pos_code === item.pos_code) {
+                        state.items[state.items.length - 1].quantity++;
+                    } else {
+                        state.items.push({ ...item, quantity: 1, idCard: uniqueId });
+                    }
                 }
             }
         },

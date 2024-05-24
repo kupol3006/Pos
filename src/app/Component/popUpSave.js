@@ -40,10 +40,22 @@ export default function ConfirmationDialog(dataRoom) {
                 const resultCreateOrder = await dispatch(createOrder()).unwrap();
                 dispatch(resetStateProductSlice());
                 dispatch(resetStateTableSlice());
-                console.log(resultCreateOrder);
+                const toastMessage = resultCreateOrder.message;
+                localStorage.setItem('toastMessage', toastMessage);
+                localStorage.setItem('status', resultCreateOrder.success ? true : false)
                 router.push('/');
             } else {
-                alert('Không có sản phẩm nào trong giỏ hàng');
+                toast.error('Vui lòng chọn sản phẩm trước khi lưu đơn hàng!', {
+                    position: "bottom-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Flip,
+                });
             }
         } else {
             if (dataOrder) {

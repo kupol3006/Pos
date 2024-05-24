@@ -11,6 +11,8 @@ import { fetchWorkDayShiftList } from './redux/slices/shiftSlice';
 import { toast, ToastContainer, Bounce, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { usePathname } from "next/navigation";
+import { fetchWorkDayInfor } from "./redux/slices/workDaySlice";
+import { Button } from "@mui/material";
 
 export default function Home() {
   const router = useRouter();
@@ -28,6 +30,7 @@ export default function Home() {
     displayToastMessage();
     async function fetchData() {
       const resultShiftList = await dispatch(fetchWorkDayShiftList()).unwrap();
+      const resultWorkDayInfor = await dispatch(fetchWorkDayInfor()).unwrap();
     }
     fetchData();
   }, [isCloseShift]);
@@ -69,93 +72,140 @@ export default function Home() {
     localStorage.removeItem('status');
   }
 
+  const handlePush = (path) => {
+    router.push(path);
+  }
+
   return (
     <>
       {isTokenValid ?
         (
           <div>
             <Menu />
-            <div className="w-full  flex flex-row mt-[64px]">
-              <div className="w-[40%]  p-[10px]">
+            {/* <div className="w-full flex flex-row mt-[64px]"> */}
+            <div className="w-full grid grid-cols-5 grid-rows-[33.33%_66.66%] gap-2 pt-[64px]">
+              <div className="w-[100%] h-full  p-[10px] col-start-1 col-end-3">
                 <h1 className="font-semibold text-[18px] mt-3 mb-2">Đơn hàng</h1>
-                <div className="flex flex-row flex-wrap justify-start gap-[10px]">
-                  <Link href={dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? '/Orders' : ''}
-                    className={`w-[43%] h-[70px] ${dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? 'bg-[#008000]' : 'bg-[#6BAD8C]'} flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]`}
+                <div className="grid grid-cols-2 grid-rows-2 gap-2">
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: dataWorkDayShiftList?.length > 0 ? '#6BAD8C' : '#008000', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[100%] flex justify-center items-center row-start-1 row-end-3"
+                    onClick={() => { dataWorkDayShiftList?.length > 0 ? undefined : handlePush('/Orders') }}
                   >
-                    <h3>Lập order</h3>
-                  </Link>
-                  <Link href={dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? '/Table' : ''} className={`w-[43%] h-[70px] ${dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? 'bg-[#008000]' : 'bg-[#6BAD8C]'} flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]`}>
-                    <h3>Mở sơ đồ bàn</h3>
-                  </Link>
-                  <Link href={'/OrderFinished'} className="w-[43%] h-[70px] bg-[#FF0000] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Các đơn hàng đã đóng</h3>
-                  </Link>
+                    Lập order
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: dataWorkDayShiftList?.length > 0 ? '#6BAD8C' : '#008000', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[70px] flex justify-center items-center"
+                    onClick={() => { dataWorkDayShiftList?.length > 0 ? undefined : handlePush('/Table') }}
+                  >
+                    Mở sơ đồ bàn
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: dataWorkDayShiftList?.length > 0 ? '#F5B7B1' : '#FF0000', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[70px] flex justify-center items-center"
+                    onClick={() => { dataWorkDayShiftList?.length > 0 ? undefined : handlePush('/OrderFinished') }}
+                  >
+                    Các đơn hàng đã đóng
+                  </Button>
                 </div>
-                {/* <h1 className="font-semibold text-[18px] mt-3 mb-2">Menu bán hàng</h1>
-                <div className="flex flex-row flex-wrap justify-start gap-[10px]">
-                  <Link href={'/OutStock'} className="w-[43%] h-[70px] bg-[#00f2ff] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Các món ngưng bán</h3>
-                  </Link>
-                  <Link href={''} className="w-[43%] h-[70px] bg-[#00f2ff] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Các món ăn bị giới hạn</h3>
-                  </Link>
-                </div>
-                <h1 className="font-semibold text-[18px] mt-3s mb-2">Menu bán hàng</h1>
-                <div className="flex flex-row flex-wrap justify-start gap-[10px]">
-                  <Link href={''} className="w-[43%] h-[70px] bg-[#0000FF] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Lập order</h3>
-                  </Link>
-                </div> */}
               </div>
-              <div className="w-[60%]  p-[10px]">
-                <h1 className="font-semibold text-[18px] mt-3 mb-2">Đơn hàng</h1>
-                <div className="flex flex-row flex-wrap justify-start gap-[10px]">
-                  <Link href={'/Shift'} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Cấu hình ngày làm việc</h3>
-                  </Link>
-                  {/* <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Đóng ca làm việc</h3>
-                  </Link> */}
+              <div className="w-[100%] h-full p-[10px] col-start-3 col-end-6">
+                <h1 className="font-semibold text-[18px] mt-3 mb-2">Nghiệp vụ ca làm việc</h1>
+                <div className="grid grid-cols-3 grid-rows-2 gap-2">
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#CA9300', color: '#fff', borderRadius: '10px', fontSize: '11px', gridColumn: '1/3', }}
+                    className="w-[100%] h-[70px] flex justify-center items-center"
+                    onClick={() => { handlePush('/Shift') }}
+                  >
+                    Cấu hình ngày làm việc
+                  </Button>
                   <ConfirmationDialog1 />
-                  <ConfirmationDialog2 />
-                  <Link href={dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? '/MonOut' : ''}
-                    className={`w-[31%] h-[70px] ${dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? 'bg-[#CA9300]' : 'bg-[#FFD65A]'} flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]`}
+                  {/* <ConfirmationDialog2 /> */}
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: dataWorkDayShiftList?.length > 0 ? '#FFD65A' : '#CA9300', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[70px] flex justify-center items-center"
+                    onClick={() => { dataWorkDayShiftList?.length > 0 ? undefined : handlePush('/MonOut') }}
                   >
-                    <h3>Rút tiền từ két</h3>
-                  </Link>
-                  <Link href={dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? '/MonIn' : ''}
-                    className={`w-[31%] h-[70px] ${dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? 'bg-[#CA9300]' : 'bg-[#FFD65A]'} flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]`}
+                    Rút tiền từ két
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: dataWorkDayShiftList?.length > 0 ? '#FFD65A' : '#CA9300', color: '#fff', borderRadius: '10px', fontSize: '11px', gridColumn: '-1/-3', }}
+                    className="w-[100%] h-[70px] flex justify-center items-center"
+                    onClick={() => { dataWorkDayShiftList?.length > 0 ? undefined : handlePush('/MonIn') }}
                   >
-                    <h3>Nộp tiền vào két</h3>
-                  </Link>
+                    Nộp tiền từ két
+                  </Button>
                 </div>
-                {/* <h1 className="font-semibold text-[18px] mt-3 mb-2">Đơn hàng</h1> */}
-                {/* <div className="flex flex-row flex-wrap justify-start gap-[10px]">
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Cấu hình ca làm việc</h3>
-                  </Link>
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Đóng ca làm việc</h3>
-                  </Link>
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Đóng ngày làm việc</h3>
-                  </Link>
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Các đơn hàng đã đóng</h3>
-                  </Link>
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Các đơn hàng đã đóng</h3>
-                  </Link>
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Các đơn hàng đã đóng</h3>
-                  </Link>
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Các đơn hàng đã đóng</h3>
-                  </Link>
-                  <Link href={''} className="w-[31%] h-[70px] bg-[#CA9300] flex justify-center items-center text-[#fff] text-[13px] rounded-[10px]">
-                    <h3>Các đơn hàng đã đóng</h3>
-                  </Link>
-                </div> */}
+
+              </div>
+              <div className="w-[100%] h-full p-[10px] pt-[60px] col-start-1 col-end-6">
+                <h1 className="font-semibold text-[18px] mt-3 mb-2">Báo cáo</h1>
+                <div className="w-full h-full grid grid-cols-6 grid-rows-2 gap-2">
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#CA9300', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[100%] flex justify-center items-center  row-start-1 row-end-3"
+                    onClick={() => {/* handle navigation here */ }}
+                  >
+                    Doanh thu theo ca làm việc
+                  </Button>
+
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#CA9300', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[100%] flex justify-center items-center row-start-1 row-end-3"
+                    onClick={() => {/* handle navigation here */ }}
+                  >
+                    Doanh thu theo ngày làm việc
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#CA9300', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[100%] flex justify-center items-center"
+                    onClick={() => {/* handle navigation here */ }}
+                  >
+                    Doanh thu theo loại bán hàng
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#CA9300', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[100%] flex justify-center items-center"
+                    onClick={() => {/* handle navigation here */ }}
+                  >
+                    Doanh thu theo kênh bán hàng
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#CA9300', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[100%] flex justify-center items-center"
+                    onClick={() => {/* handle navigation here */ }}
+                  >
+                    Doanh thu theo kênh thanh toán
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#CA9300', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[100%] flex justify-center items-center"
+                    onClick={() => {/* handle navigation here */ }}
+                  >
+                    Doanh thu theo mục sản phẩm
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#CA9300', color: '#fff', borderRadius: '10px', fontSize: '11px' }}
+                    className="w-[100%] h-[100%] flex justify-center items-center col-start-5 col-end-7 row-start-1 row-end-3"
+                    onClick={() => {/* handle navigation here */ }}
+                  >
+                    Doanh thu theo sản phẩm
+                  </Button>
+                </div>
               </div>
             </div>
 

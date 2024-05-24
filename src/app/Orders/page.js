@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Button, Container, Stack, Box, MenuItem, InputLabel } from '@mui/material';
 import { Select } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNumId, updateRoomName, updateTest, updateOrderType, updateOrderChannel, updateStaff } from '../redux/slices/orderSlice';
+import { updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNumId, updateRoomName, updateTest, updateOrderType, updateOrderChannel, updateStaff, updateStaffName } from '../redux/slices/orderSlice';
 import { useRouter } from "next/navigation";
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
@@ -14,6 +14,8 @@ import { fetchTable, setFloorDetail } from '../redux/slices/tableSlice';
 import { fetchTableList } from '../redux/slices/tableListSlice';
 import { fetchTableDetail, setPosId } from '../redux/slices/tableDetailSlice';
 import { resetStateProductSlice } from '../redux/slices/productSlice';
+import { toast, ToastContainer, Bounce, Flip } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const RegisterForm = () => {
 
@@ -24,7 +26,7 @@ const RegisterForm = () => {
     const roomNum1 = useSelector((state) => state.order.roomNum);
     const orderType1 = useSelector((state) => state.order.orderType);
     const orderChannel1 = useSelector((state) => state.order.orderChannel);
-    const staff1 = useSelector((state) => state.order.staff.first_name);
+    const staff1 = useSelector((state) => state.order.staff);
 
     const dataFloor = useSelector((state) => state.table.data);
     const dataFloorDetail = useSelector((state) => state.table.floorDetail);
@@ -51,9 +53,15 @@ const RegisterForm = () => {
     // const isClient = typeof window !== 'undefined';
 
     useEffect(() => {
-        dispatch(fetchStaffShift('in'));
-        dispatch(fetchTable());
-        dispatch(fetchTableList());
+        async function fetchData() {
+            const resultTable = await dispatch(fetchTable()).unwrap();
+            const resultTableList = await dispatch(fetchTableList()).unwrap();
+            const resultStaff = await dispatch(fetchStaffShift('in')).unwrap();
+            // dispatch(fetchStaffShift('in'));
+            // dispatch(fetchTable());
+            // dispatch(fetchTableList());
+        }
+        fetchData();
     }, []);
 
     useEffect(() => {
@@ -70,10 +78,19 @@ const RegisterForm = () => {
         }
         router.push('/');
     };
-    const handleOrderTypeDetail = (orderTypeDetail, posId) => {
-        dispatch(setPosId(posId));
-        console.log(posId);
+    const handleOrderTypeDetail = (orderTypeDetail) => {
+        // dispatch(setPosId(posId));
+        // console.log(posId);
     };
+
+    const handleSetPosId = (posId) => {
+        dispatch(setPosId(posId));
+    }
+
+    const handleUpdateStaffName = (staffName) => {
+        dispatch(updateStaffName(staffName));
+    }
+
     function handleSubmit(event) {
         event.preventDefault();
         // console.log(cusType, cusQuan, phone, floorNum, test, orderType, orderChannel, staff)
@@ -89,7 +106,17 @@ const RegisterForm = () => {
             dispatch(updateStaff(staff));
             router.push('/Purchase');
         } else {
-            alert('Vui lòng nhập đầy đủ thông tin');
+            toast.error('Vui lòng nhập đầy đủ thông tin', {
+                position: "bottom-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Flip,
+            });
         }
     }
 
@@ -201,7 +228,7 @@ const RegisterForm = () => {
                             labelId="demo-simple-select-helper-label"
                             id="demo-simple-select-helper"
                             // label="Chọn giường"
-                            value={floorNum}
+                            value={floorNum || ''}
                             size='small'
                             onChange={e => setfloorNum(e.target.value)}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
@@ -218,7 +245,7 @@ const RegisterForm = () => {
                             labelId="demo-simple-select-helper-label1"
                             id="demo-simple-select-helper1"
                             // label="Chọn giường"
-                            value={room}
+                            value={room || ''}
                             size='small'
                             onChange={e => setRoom(e.target.value)}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
@@ -237,26 +264,26 @@ const RegisterForm = () => {
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={orderType}
+                            value={orderType || ''}
                             size='small'
                             onChange={e => setOrderType(e.target.value)}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
                             {order.details?.orderType?.map((item, index) => (
-                                <MenuItem key={index} value={item.id} onClick={() => (handleOrderTypeDetail(item.details, item.pos_id))}>{item.name}</MenuItem>
+                                <MenuItem key={index} value={item.pos_id} onClick={() => (handleOrderTypeDetail(item.details))}>{item.name}</MenuItem>
                             ))}
                         </Select>
                         <InputLabel id="demo-simple-select-label1" sx={{ margin: '5px 20px 0px 12px', fontSize: '12px' }}>Kênh order</InputLabel>
                         <Select
                             labelId="demo-simple-select-label1"
                             id="demo-simple-select1"
-                            value={orderChannel}
+                            value={orderChannel || ''}
                             size='small'
                             onChange={e => setOrderChannel(e.target.value)}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
 
-                            <MenuItem key={'uni'} value={order.details?.orderChannel.id}>{order.details?.orderChannel.name}</MenuItem>
+                            <MenuItem key={'uni'} value={order.details?.orderChannel.pos_id} onClick={() => handleSetPosId(order.details?.order_channel_id)}>{order.details?.orderChannel.name}</MenuItem>
 
                         </Select>
                     </Stack>
@@ -266,13 +293,13 @@ const RegisterForm = () => {
                         <Select
                             labelId="demo-simple-select-label2"
                             id="demo-simple-select2"
-                            value={staff}
+                            value={staff || ''}
                             size='small'
                             onChange={e => setStaff(e.target.value)}
                             sx={{ marginTop: 1, margin: '0px 10px 0px 10px', fontSize: '10px' }}
                         >
                             {staffData?.map((item, index) => (
-                                <MenuItem key={index} value={item.staff}>{item.staff.first_name}</MenuItem>
+                                <MenuItem key={item.staff.code} value={item.staff.code} onClick={() => handleUpdateStaffName(item.staff.first_name)}>{item.staff.first_name}</MenuItem>
                             ))}
                         </Select>
                     </Stack>
@@ -316,6 +343,7 @@ const RegisterForm = () => {
                         </div>
                     </div>
                 </div>
+                {/* <ToastContainer /> */}
             </div>
 
         </React.Fragment >

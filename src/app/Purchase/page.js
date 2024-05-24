@@ -25,12 +25,13 @@ import { parseCookies } from "nookies";
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 // import { createOrder } from '../redux/slices/orderSlice';
 import { setUniqueID, updateQuantityOrderById, setOrderUpdate, setProductName, setGeneralID, updateToppingOrderById, resetStateOrderByIdSlice, setIsNew } from '../redux/slices/orderByIdSlice';
-import ConfirmationDialog from '../Component/popUpSave'
+import ConfirmationDialog from '../Component/popUpSave';
+import { set } from 'date-fns';
 
 const CollapsibleTable = () => {
     const currentDate = useRef(new Date().toLocaleDateString());
     const currentTime = useRef(new Date().toLocaleTimeString());
-    const staff = useSelector((state) => state.order.staff.first_name);
+    const staff = useSelector((state) => state.order.staffName);
     const items = useSelector((state) => state.product.items);
     // const storeToppingSelected = useSelector((state) => state.product.storeToppingSelected);
     const dispatch = useDispatch();
@@ -180,7 +181,7 @@ const CollapsibleTable = () => {
                                             items[index].topping?.map((topping, index) => (
                                                 <Box key={index} size='small' className='flex text-[10px] w-[25%]'>
                                                     <p className='w-[13px] h-[13px] flex flex-row justify-center items-center text-center mr-1 bg-[#00000069] text-[#fff] rounded-[50%]'>{topping.quantity}</p>
-                                                    <p>{topping.topping.name}</p>
+                                                    <p>{topping.topping.name || topping.topping.product.name}</p>
                                                 </Box>
                                             ))
                                         }
@@ -229,38 +230,61 @@ const Products = () => {
         setShow1(!show1);
     }
 
-    const handleProductClick = (productId, productDetail) => {
-        setShow(true);
-        dispatch(setProductDetail(productDetail));
+    const handleProductClick = (type, productDetail, productSpecialPrice, product, productModiGroups) => {
+
+        if (type === 'category') {
+            dispatch(setProductDetail(productDetail));
+        } else if (type === 'product') {
+            dispatch(addItems(product));
+        } else if (type === 'service') {
+            dispatch(setProductDetail(productSpecialPrice))
+        } else if (type === 'combo') {
+            dispatch(addItems(product))
+            dispatch(setProductDetail(productModiGroups))
+        }
+        if (type !== 'product') {
+            setShow(true);
+        }
     };
 
     const handleProductDetailClick = (producDetailt2) => {
         if (idUnique !== '' && productName === producDetailt2.name && idCard === '') {
             dispatch(updateQuantityOrderById(producDetailt2.name));
             dispatch(setOrderUpdate());
-        } else {
+        } else if (producDetailt2.price !== undefined) {
             dispatch(addItems(producDetailt2));
+            dispatch(setToping(producDetailt2.toppings));
+        } else {
+            dispatch(setToping(producDetailt2.modifiers));
         }
-        dispatch(setToping(producDetailt2.toppings));
+        // dispatch(setToping(producDetailt2.toppings));
         dispatch(setProductId(producDetailt2.id));
 
-        // console.log(items);
-        setShow1(false);
+        if (producDetailt2.pos_code === undefined) {
+            setShow1(false);
+        } else {
+            setShow1(true);
+
+        }
+        // setShow1(false);
         dispatch(setIsNew(true));
     };
     const handleToppingClick = (toppingDetail, topping) => {
         if (typeof idGeneral === 'number' && idCard === '') {
             dispatch(updateToppingOrderById(topping));
         } else {
-            if (topping.details.length === 0) {
+            if (topping.details?.length === 0) {
                 dispatch(setStoreToppingSelected(topping));
             }
+            // else if (topping.product.type === 'product') {
+            //     dispatch(setStoreToppingSelected(topping));
+            // }
 
         }
         dispatch(setToppingDetail(toppingDetail));
         dispatch(setToppingId(topping.id));
 
-        if (toppingDetail.length > 0) {
+        if (toppingDetail?.length > 0) {
             setShow2(false);
         }
 
@@ -294,9 +318,9 @@ const Products = () => {
                                         </Box>
                                         {productDetail1.map((product_detail) => (
                                             <Box
-                                                key={product_detail.id}
+                                                key={product_detail.id || product_detail.pos_code}
                                                 className='w-[32%] h-[100px] m-[1px] flex justify-center items-center rounded-[10px]'
-                                                sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: product_detail.color }}
+                                                sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: product_detail.color || '#2E4053 ' }}
                                                 onClick={() => handleProductDetailClick(product_detail)}
                                             >
                                                 <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product_detail.name}</Typography>
@@ -317,14 +341,14 @@ const Products = () => {
                                             >
                                                 <Typography variant="h6" component="div" sx={{ fontSize: '15px' }}><KeyboardBackspaceIcon /></Typography>
                                             </Box>
-                                            {toppings.map((topping) => (
+                                            {toppings?.map((topping) => (
                                                 <Box
                                                     key={topping.id}
                                                     className='w-[32%] h-[100px] m-[1px] flex flex-col justify-center items-center rounded-[10px]'
-                                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: topping.color }}
+                                                    sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: topping.color || topping.product.color }}
                                                     onClick={() => { handleToppingClick(topping.details, topping) }}
                                                 >
-                                                    <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name}</Typography>
+                                                    <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{topping.name || topping.product.name}</Typography>
                                                 </Box>
                                             ))}
                                         </div>
@@ -354,10 +378,10 @@ const Products = () => {
                                     key={index}
                                     className='w-[32%] h-[100px] m-[1px] flex flex-col flex-wrap justify-center items-center rounded-[10px]'
                                     sx={{ color: 'primary.contrastText', cursor: 'pointer', userSelect: 'none', backgroundColor: product.color }}
-                                    onClick={() => handleProductClick(product.id, product.details)} // Truyền ID và tên sản phẩm vào hàm handleProductClick
+                                    onClick={() => handleProductClick(product.type, product.details, product.specialPrices, product, product.modiGroups)}
                                 >
                                     <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}>{product.name}</Typography>
-                                    <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}><EastIcon sx={{ fontSize: 15 }} /></Typography>
+                                    {product.type === 'product' ? null : <Typography variant="h6" component="div" sx={{ fontSize: '15px', textAlign: 'center' }}><EastIcon sx={{ fontSize: 15 }} /></Typography>}
                                 </Box>
                             ))}
                         </div>
@@ -374,7 +398,7 @@ export default function BoxSx() {
     const roomName = useSelector((state) => state.order.roomName);
     const cusQuan = useSelector((state) => state.order.cusQuan);
 
-    const staff = useSelector((state) => state.order.staff.first_name);
+    const staff = useSelector((state) => state.order.staffName);
     const currentDate = useRef(new Date().toLocaleDateString());
     const currentTime = useRef(new Date().toLocaleTimeString());
     const router = useRouter();

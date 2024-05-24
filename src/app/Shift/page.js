@@ -17,6 +17,8 @@ import CreateShift from '../Component/popUpCreateShift';
 import CreateWorkDay from '../Component/popUpCreateWorkDay';
 import { fetchWorkDayShiftList } from '../redux/slices/shiftSlice';
 import { fetchWorkDayInfor } from '../redux/slices/workDaySlice';
+import { toast, ToastContainer, Bounce, Flip } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Shift() {
     const router = useRouter();
@@ -31,10 +33,11 @@ export default function Shift() {
     const isCreateShift = useSelector(state => state.shift.isCreateShift);
 
     // Dữ liệu từ staffSlice
-    const staffList = useSelector(state => state.staff.dataStaffList);
+    const staffList = useSelector(state => state.staff.dataStaffList.data);
     const staffPosId = useSelector(state => state.staff.staffPosId);
     const staffInShift = useSelector(state => state.staff.data);
     const staffInShiftReverse = [...staffInShift]?.reverse();
+    // const staffInShiftReverse = [];
     const commonData = useSelector(state => state.staff.commonData);
     const renderData = useSelector(state => state.staff.render);
 
@@ -53,15 +56,43 @@ export default function Shift() {
 
     useEffect(() => {
         async function fetchData() {
-            await dispatch(fetchStaff());
-            await dispatch(fetchStaffShift('in'));
-            await dispatch(fetchWorkDayShiftList());
-            await dispatch(fetchWorkDayInfor());
+            await dispatch(fetchStaff()).unwrap();
+            await dispatch(fetchStaffShift('in')).unwrap();
+            await dispatch(fetchWorkDayShiftList()).unwrap();
+            await dispatch(fetchWorkDayInfor()).unwrap();
             dispatch(checkStaffInshift());
         }
         fetchData();
-        console.log(workDayInfor);
+        displayToastMessage();
     }, [renderData, isCreateShift]);
+
+    function displayToastMessage() {
+        const message = localStorage.getItem('toastMessage');
+        const status = localStorage.getItem('status');
+        if (message && status) {
+            const toastFunction = status === 'true' ? toast.success : toast.error;
+            toastFunction(message, {
+                position: "bottom-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Flip,
+            });
+            setTimeout(() => {
+                clearToastMessage();
+            }, 9);
+        }
+    }
+
+    function clearToastMessage() {
+        localStorage.removeItem('toastMessage');
+        localStorage.removeItem('toastOptions');
+        localStorage.removeItem('status');
+    }
 
     return (
         <div className="w-full flex flex-row bg-[#EFEFEF]">
@@ -137,7 +168,7 @@ export default function Shift() {
                 <div className='w-full h-[95%] flex flex-row flex-wrap bg-[#fff] rounded-[5px] p-[2px] pt-[46px] gap-[1px]'>
                     {dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ?
                         <div className='w-full h-[200px] flex flex-row flex-wrap bg-[#fff] rounded-[5px] gap-[1px]'>
-                            {staffList.map((staff, index) => {
+                            {staffList?.map((staff, index) => {
                                 return (
                                     <Box key={index} sx={{
                                         width: '24.9%',

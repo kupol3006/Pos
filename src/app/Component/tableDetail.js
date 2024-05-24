@@ -24,24 +24,24 @@ export default function TableDetail({ floorDetail }) {
     const router = useRouter();
     const handleGetRoomData = async (order) => {
         // dispatch(setRoomData(room));
-        await dispatch(fetchOrderById(order.bill_id));
+        await dispatch(fetchOrderById(order.bill_id)).unwrap();
         dispatch(resetStateProductSlice());
         router.push('/Purchase');
     };
 
     return (
-        <div className='w-[80%] h-screen p-[3px] pt-[34px] flex flex-row flex-wrap gap-[3px]'>
+        <div className='w-[80%] h-[200px] p-[3px] pt-[34px] flex flex-row flex-wrap gap-[3px]'>
             {floorDetail.map((room, roomIndex) => {
                 return room.activeOrders.length > 0 ?
                     room.activeOrders.map((order, orderIndex) => {
                         return (
                             <Box
                                 key={`${room.id}${orderIndex}`}
-                                className='w-[16.4%] h-[19%] border-[1px] rounded-[5px] cursor-pointer'
+                                className='w-[16.4%] h-[110px] border-[1px] rounded-[5px] cursor-pointer'
                                 onClick={() => handleGetRoomData(order)}
                             >
                                 <div className='w-full h-[17%] p-[9px] flex flex-row justify-between items-center bg-[#52A26A] text-[12px] text-[#fff] rounded-tl-[5px] rounded-tr-[5px]'>
-                                    <p># {order.bill_id}</p>
+                                    <p># {order.order.code}</p>
                                     <p><PersonOutlineIcon sx={{ fontSize: 14, marginBottom: '2px' }} />{order.order.count_customer}</p>
                                 </div>
                                 <div className='w-full h-[66%] text-[11px] p-[2px]'>

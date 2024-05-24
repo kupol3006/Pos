@@ -14,7 +14,7 @@ export const fetchShift = createAsyncThunk(
             const response = await axios.get(API_BASE_URL + 'work_day/shift');
             return response.data.data;
         } catch (error) {
-            console.error("Error in createOrder:", error);
+            console.error("Error in fetchShift:", error);
             return rejectWithValue(error.message);
         }
     },
@@ -28,7 +28,7 @@ export const fetchWorkDayShiftList = createAsyncThunk(
             const response = await axios.get(API_BASE_URL + 'work_day/shift');
             return response.data.data;
         } catch (error) {
-            console.error("Error in createOrder:", error);
+            console.error("Error in fetchWorkDayShiftList:", error);
             return rejectWithValue(error.message);
         }
     },
@@ -42,7 +42,7 @@ export const createShiftDay = createAsyncThunk(
             const response = await axios.post(API_BASE_URL + 'work_day/shift');
             return response.data.data;
         } catch (error) {
-            console.error("Error in createOrder:", error);
+            console.error("Error in createShiftDay:", error);
             return rejectWithValue(error.message);
         }
     },
@@ -56,7 +56,7 @@ export const closeShiftDay = createAsyncThunk(
             const response = await axios.put(API_BASE_URL + 'work_day/shift');
             return response.data;
         } catch (error) {
-            console.error("Error in updateShift:", error);
+            console.error("Error in closeShiftDay:", error);
             return rejectWithValue(error.message);
         }
     },

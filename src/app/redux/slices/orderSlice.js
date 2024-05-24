@@ -20,8 +20,8 @@ export const createOrder = createAsyncThunk(
                 order_channel_id: getState().order.orderChannel,
                 order_type_id: getState().order.orderType,
                 table_id: getState().order.roomNum,
-                waiter_code: getState().order.staff.code,
-                cashier_code: getState().order.staff.code,
+                waiter_code: getState().order.staff,
+                cashier_code: getState().order.staff,
                 total: total,
                 sub_total: total,
                 order_details: items.map((item) => ({
@@ -171,7 +171,8 @@ const initialState = {
     test: '',
     orderType: '',
     orderChannel: '',
-    staff: {},
+    staff: '',
+    staffName: '',
 }
 
 export const orderSlice = createSlice({
@@ -208,6 +209,9 @@ export const orderSlice = createSlice({
         updateStaff: (state, action) => {
             state.staff = action.payload;
         },
+        updateStaffName: (state, action) => {
+            state.staffName = action.payload;
+        }
 
     },
     extraReducers: (builder) => {
@@ -235,7 +239,7 @@ export const orderSlice = createSlice({
     },
 });
 
-export const { updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNumId, updateRoomName, updateTest, updateOrderType, updateOrderChannel, updateStaff } = orderSlice.actions;
+export const { updateCusType, updateCusQuan, updatePhone, updateFloorNum, updateRoomNumId, updateRoomName, updateTest, updateOrderType, updateOrderChannel, updateStaff, updateStaffName } = orderSlice.actions;
 // export const selectForm = (state) => state.form;
 
 export default orderSlice.reducer;

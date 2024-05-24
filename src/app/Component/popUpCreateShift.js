@@ -8,6 +8,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch, useSelector } from 'react-redux';
 import { createShiftDay, setIsCreateShift } from '../redux/slices/shiftSlice';
+import { toast, ToastContainer, Bounce, Flip } from 'react-toastify';
 
 export default function CreateShift() {
     const dispatch = useDispatch();
@@ -23,8 +24,11 @@ export default function CreateShift() {
         setOpen(false);
     };
 
-    const handleConfirm = () => {
-        dispatch(createShiftDay());
+    const handleConfirm = async () => {
+        const resultAction = await dispatch(createShiftDay()).unwrap();
+        const toastMessage = resultAction.id !== undefined ? 'Tạo ca làm việc thành công' : 'Tạo ca làm việc thất bại';
+        localStorage.setItem('toastMessage', toastMessage);
+        localStorage.setItem('status', resultAction.id !== undefined ? true : false)
         dispatch(setIsCreateShift());
         setOpen(false);
     };

@@ -31,8 +31,8 @@ export default function ConfirmationDialog1() {
         try {
             const resultAction = await dispatch(closeShiftDay()).unwrap();
             const toastMessage = resultAction.message;
-            localStorage.setItem('toastMessage', toastMessage);
-            localStorage.setItem('status', resultAction.success ? true : false)
+            localStorage.setItem('toastMessage', toastMessage || 'Đóng ca làm việc thành công');
+            localStorage.setItem('status', resultAction.success || typeof (resultAction.data.id) === 'number' ? true : false)
             // const toastOptions = {
             //     position: "bottom-center",
             //     autoClose: 3000,
@@ -53,20 +53,21 @@ export default function ConfirmationDialog1() {
     };
 
     return (
-        <div className='w-[31%] h-[70px]'>
+        <div className='w-[100%] h-[70px]'>
             <Button
                 variant="contained"
                 color="primary"
                 type="submit"
                 sx={{
                     width: '100%', height: "100%",
-                    fontSize: '10px',
+                    fontSize: '11px',
                     borderRadius: '10px',
                     backgroundColor: dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? '#CA9300' : '#FFD65A',
                     ":hover": {
                         backgroundColor: dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? '#CA9300' : '#FFD65A',
 
-                    }
+                    },
+                    
                 }}
                 onClick={dataWorkDayShiftList !== undefined && dataWorkDayShiftList !== null && dataWorkDayShiftList.length !== 0 ? handleClickOpen : undefined}
             >

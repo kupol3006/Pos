@@ -24,6 +24,7 @@ export const fetchWorkDayInfor = createAsyncThunk(
 
 const initialState = {
     dataWorkdayInfor: [],
+    dataShiftsOfDay: [],
     isLoading: false,
 }
 
@@ -41,6 +42,7 @@ export const workDaySlice = createSlice({
             .addCase(fetchWorkDayInfor.fulfilled, (state, action) => {
                 state.isLoading = true
                 state.dataWorkdayInfor = action.payload
+                state.dataShiftsOfDay = action.payload.shifts
             })
             .addCase(fetchWorkDayInfor.rejected, (state) => {
                 state.isLoading = false

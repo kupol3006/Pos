@@ -8,6 +8,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkInOutStaff, resetStaffPosId, setRender } from '../redux/slices/staffSlice';
+import { toast, ToastContainer, Bounce, Flip } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ConfirmationDialog({ value, type }) {
     const dispatch = useDispatch();
@@ -23,8 +25,11 @@ export default function ConfirmationDialog({ value, type }) {
         setOpen(false);
     };
 
-    const handleConfirm = () => {
-        dispatch(checkInOutStaff(type));
+    const handleConfirm = async () => {
+        const result = await dispatch(checkInOutStaff(type)).unwrap();
+        const toastMessage = result.success ? 'Đăng ký thành công' : 'Đăng ký thất bại';
+        localStorage.setItem('toastMessage', toastMessage);
+        localStorage.setItem('status', result.success ? true : false)
         dispatch(resetStaffPosId());
         dispatch(setRender());
         setOpen(false);
