@@ -4,7 +4,6 @@ import { setCookie, destroyCookie } from 'nookies';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_KEY;
 
-
 export const loginAsync = createAsyncThunk(
     'auth/login',
     async ({ code, pin }) => {
@@ -48,10 +47,9 @@ export const loginSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        // standard reducer logic, with auto-generated action types per reducer
+
     },
     extraReducers: (builder) => {
-        // Add reducers for additional action types here, and handle loading state as needed
         builder
             .addCase(loginAsync.pending, (state) => {
                 state.isLogin = false

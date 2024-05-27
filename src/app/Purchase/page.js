@@ -21,12 +21,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import EastIcon from '@mui/icons-material/East';
 import { parseCookies } from "nookies";
-// import { set } from 'date-fns';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 // import { createOrder } from '../redux/slices/orderSlice';
 import { setUniqueID, updateQuantityOrderById, setOrderUpdate, setProductName, setGeneralID, updateToppingOrderById, resetStateOrderByIdSlice, setIsNew } from '../redux/slices/orderByIdSlice';
 import ConfirmationDialog from '../Component/popUpSave';
-import { set } from 'date-fns';
+import Payments from '../Component/payment';
+import PaymentOrder from '../Component/popUpPaymentOrder';
 
 const CollapsibleTable = () => {
     const currentDate = useRef(new Date().toLocaleDateString());
@@ -487,10 +487,17 @@ export default function BoxSx() {
     //     dispatch(createOrder());
     // }
 
+    const [showPayment, setShowPayment] = useState(false);
+    const [cusPay, setCusPay] = useState(total);
+    const handleCusPay = (value) => {
+        setCusPay(value);
+        setValue('');
+    }
+
     return (
         <Box>
             <Box className='flex flex-row w-full h-screen' sx={{ gap: '2px' }} >
-                <Box className='flex flex-col w-[50%] h-screen' >
+                <Box className='flex flex-col w-[50%] h-screens' >
                     <Box className='flex flex-row w-full h-[10%]' >
                         <img src='logoS3.png' style={{ width: '10%', height: '100%', backgroundColor: '#F4F6F6' }}></img>
                         <Box
@@ -528,14 +535,12 @@ export default function BoxSx() {
                                 flexDirection: 'column',
                                 justifyContent: 'center',
                                 padding: '0 1% 0 1%',
-
                                 bgcolor: '#0059D4',
                                 color: 'primary.contrastText',
-
                             }}
                         >
                             <Typography variant="subtitle1" sx={{ fontSize: '70%', lineHeight: '8px' }}>
-                                Tiền khách đưa: {formattedTotal}
+                                Tiền khách đưa: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(cusPay) || formattedTotal}
                             </Typography>
                             <Typography variant="subtitle1" sx={{ fontSize: '70%' }}>
                                 Thanh toán:
@@ -566,22 +571,34 @@ export default function BoxSx() {
                         </div>
                     </div>
                 </Box >
-                <Products />
+                {/* <Products />
+                <Payments /> */}
+                {showPayment ? <Payments /> : <Products />}
                 <div className='w-[19%] h-screen flex flex-col'>
                     <div className='w-full h-[50%] '>
-                        <div className="w-full h-full flex flex-col items-center pt-[3px] bg-[#c5bcb425] rounded-[5px]">
-                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[13px] p-[5px] mt-[10px] leading-[4px]'>
-                                <p className=''>Nhân viên:</p>
-                                <p className=''>{staffOrderByID || staff}</p>
-                            </div>
-                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[13px] p-[5px]'>
-                                <p className=''>Thu ngân:</p>
-                                <p className=''>{staffOrderByID || staff}</p>
-                            </div>
-                            <div className='w-full flex flex-row justify-between text-[#9B958E] text-[13px] p-[5px] leading-[4px] mb-[5px]'>
-                                <p className=''>Lúc:</p>
-                                <p className=''>{currentTime.current}</p>
-                            </div>
+                        <div className="w-full h-full flex flex-col items-center pt-[3px] bg-[#c5bcb425]">
+                            {showPayment ?
+                                <div className='w-full h-[150px] flex flex-col justify-center items-center text-[20px]'>
+                                    <h1>Tiền khách trả</h1>
+                                    <h1>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(cusPay) || formattedTotal}</h1>
+                                </div>
+
+                                :
+                                <div className='w-full flex flex-col items-center'>
+                                    <div className='w-full flex flex-row justify-between text-[#9B958E] text-[13px] p-[5px] mt-[10px] leading-[4px]'>
+                                        <p className=''>Nhân viên:</p>
+                                        <p className=''>{staffOrderByID || staff}</p>
+                                    </div>
+                                    <div className='w-full flex flex-row justify-between text-[#9B958E] text-[13px] p-[5px]'>
+                                        <p className=''>Thu ngân:</p>
+                                        <p className=''>{staffOrderByID || staff}</p>
+                                    </div>
+                                    <div className='w-full flex flex-row justify-between text-[#9B958E] text-[13px] p-[5px] leading-[4px] mb-[5px]'>
+                                        <p className=''>Lúc:</p>
+                                        <p className=''>{currentTime.current}</p>
+                                    </div>
+                                </div>
+                            }
                             <TextField
                                 id="outlined-basic" variant="outlined" size='small'
                                 sx={{ width: '98%', background: '#fff', borderRadius: '5px' }}
@@ -603,38 +620,63 @@ export default function BoxSx() {
                                     )
                                 })}
                                 <Button sx={{ width: '32.7%', minWidth: '0%' }} variant="contained" color='error' onClick={() => { handleDelete() }}>xóa</Button>
-                                <Button variant="contained" sx={{ backgroundColor: '#086BFF', width: '32.7%', minWidth: '0%' }} onClick={() => { handleUpdateQuantity(value) }} ><KeyboardReturnIcon /></Button>
+                                <Button variant="contained" sx={{ backgroundColor: '#086BFF', width: '32.7%', minWidth: '0%' }} onClick={() => { showPayment ? handleCusPay(value) : handleUpdateQuantity(value) }} ><KeyboardReturnIcon /></Button>
 
                             </div>
                         </div>
                     </div>
-                    <div className='w-full h-[50%] flex flex-col justify-end text-[11px] p-[3px]'>
-                        <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thực đơn</div>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Topping</div>
+                    {showPayment ?
+                        <div className='w-full h-[9%] flex flex-row gap-[2px] p-[3px] pt-[0]'>
+                            {/* <Button variant="contained" color="success" type="submit" className='w-[50%]'
+                                onClick={() => handleSubmit()}
+                                sx={{ fontSize: '10px' }}
+                            >Xác nhận thanh toán</Button> */}
+                            <PaymentOrder />
+                            <Button variant="contained" color="error" onClick={() => { setShowPayment(false) }} className='w-[50%]'><CloseIcon /></Button>
                         </div>
-                        <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Mã nhận từ bàn phím</div>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Bổ sung</div>
+                        :
+                        <div className='w-full h-[50%] flex flex-col justify-end text-[11px] p-[3px]'>
+                            <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
+                                <Button
+                                    variant="contained"
+                                    className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] rounded-[5px]'
+                                    sx={{ backgroundColor: '#0044ff', fontSize: '10px' }}
+                                    onClick={() => { setShowPayment(false) }}
+                                >
+                                    Thực Đơn
+                                </Button>
+                                <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Topping</div>
+                            </div>
+                            <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
+                                <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Mã nhận từ bàn phím</div>
+                                <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Bổ sung</div>
+                            </div>
+                            <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
+                                <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thanh toán ví</div>
+                                <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>In kiểm món</div>
+                            </div>
+                            <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
+                                <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Tạm tính</div>
+                                <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Mở két tiền</div>
+                            </div>
+                            <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
+                                <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Giảm giá</div>
+                                <Button
+                                    variant="contained"
+                                    className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] rounded-[5px]'
+                                    sx={{ backgroundColor: '#0044ff', fontSize: '10px' }}
+                                    onClick={() => { setShowPayment(true) }}
+                                >
+                                    Thanh toán
+                                </Button>
+                            </div>
+                            <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
+                                <Button variant="contained" color="error" onClick={() => { handleBack() }} className='w-[50%]'><CloseIcon /></Button>
+                                {/* <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={() => handleSubmit()}><CheckIcon /></Button> */}
+                                <ConfirmationDialog dataRoom={dataRoom} />
+                            </div>
                         </div>
-                        <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thanh toán ví</div>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>In kiểm món</div>
-                        </div>
-                        <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Tạm tính</div>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Mở két tiền</div>
-                        </div>
-                        <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Giảm giá</div>
-                            <div className='w-[50%] h-[100%] flex justify-center items-center text-[#fff] bg-[#0044ff] rounded-[5px]'>Thanh toán</div>
-                        </div>
-                        <div className='w-full h-[16%] flex flex-row gap-[2px] mt-[2px]'>
-                            <Button variant="contained" color="error" onClick={() => { handleBack() }} className='w-[50%]'><CloseIcon /></Button>
-                            {/* <Button variant="contained" color="success" type="submit" className='w-[50%]' onClick={() => handleSubmit()}><CheckIcon /></Button> */}
-                            <ConfirmationDialog dataRoom={dataRoom} />
-                        </div>
-                    </div>
+                    }
                 </div>
 
             </Box >
